@@ -1,0 +1,41 @@
+$dark: #1E1E1E;
+$light: #fff;
+$primary: #B76A3B;
+$grey: #B1B1B1;
+$darkGrey: #4D4D4D;
+
+.dark-bg {
+    background: $dark;
+}
+
+.primary-color {
+    color: $primary;
+}
+
+.light-color {
+    color: $light;
+}
+
+.grey-color {
+    color: $grey;
+}
+
+.dark-grey-border {
+    border-color: $darkGrey;
+}
+
+.primary-color-border {
+    border-color: $primary;
+}
+
+.inter-font {
+    font-family: 'Inter', 'ui-sans-serif', 'system-ui';
+}
+
+body {
+    background: $dark;
+    background-repeat: no-repeat;
+    height: 100%;
+    margin: 0;
+    background-attachment: fixed;
+}
