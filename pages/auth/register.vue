@@ -5,12 +5,12 @@
       </div>
     </div>
 
-    <div class="w-10/12 mx-auto mt-12">
-        <div class="font-judson text-login-offwhite text-center text-2xl fon">
+    <div class="w-10/12 mx-auto mt-8">
+        <div class="font-judson text-login-offwhite text-center text-2xl">
             <span>Create account</span>
         </div>
 
-        <div class="flex flex-col items-center mt-10">
+        <div class="flex flex-col items-center mt-6">
           <div class="sm:w-96 w-full flex justify-between">
             <div class="w-5/12">
               <label for="first_name" class="font-inter text-login-offwhite text-xs">First name*</label>
@@ -91,6 +91,28 @@
                     <img src="/img/eye.svg">
                 </span>
           </div>
+          <div class="text-xs font-inter text-login-offwhite sm:w-96 w-full mt-2">
+            <span>By signing up, I agree with borderless cart's 
+              <NuxtLink to="#" class="text-primary">user agreement</NuxtLink>
+              and 
+              <NuxtLink to="#" class="text-primary">privacy policy</NuxtLink></span>
+          </div>
+
+          <div class="sm:w-96 w-full mt-4">
+                <button class="font-judson text-light-grey py-2.5 text-lg w-full bg-button-color rounded">
+                    Sign up
+                </button>
+          </div>
+
+          <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">
+                <div class="text-input-placeholder">
+                   <span>Already have an account?</span>
+                </div>
+                
+                <NuxtLink to="/auth/login" class="hover:button-color text-primary">
+                    Login
+                </NuxtLink>
+            </div>
         </div>
     </div>
 

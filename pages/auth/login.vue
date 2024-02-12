@@ -69,7 +69,7 @@
                    <span>Don't have an account yet?</span>
                 </div>
                 
-                <NuxtLink to="#" class="hover:button-color text-primary">
+                <NuxtLink to="/auth/register" class="hover:button-color text-primary">
                     Sign Up
                 </NuxtLink>
             </div>
