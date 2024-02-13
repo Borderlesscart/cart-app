@@ -1,9 +1,5 @@
 <template>
-    <div class="w-11/12 sm:w-10/12 flex mx-auto mt-6">
-      <div class="w-1/2">
-        <img src="/img/logo.svg" class="w-9 h-11">
-      </div>
-    </div>
+    <NuxtLayout name="public-layout"></NuxtLayout>
 
     <div class="w-10/12 mx-auto mt-12">
         <div class="font-judson text-login-offwhite text-center text-2xl fon">
@@ -14,33 +10,15 @@
         <!-- Form input -->
         <div class="flex flex-col items-center mt-10">
             <div class="sm:w-96 w-full">
-                <input 
-                 class="font-inter rounded w-full bg-dark
-                 outline-none focus:outline-input-borde  
-                 py-2.5 px-2.5 text-md border border-input-border 
-                 placeholder-input-placeholder text-input-placeholder
-                 autofill:bg-dark " 
-                 type="text" 
-                 name="email" 
-                 placeholder="email or phone"
-                 autofocus
-                >
+                <GeneralTextInput type="text" name="email" place-holder="email or phone" :auto-focus="true"/>
             </div>
 
             <div class="sm:w-96 w-full mt-6">
-                <input 
-                 class="font-inter rounded w-full bg-dark
-                 outline-none focus:outline-input-borde 
-                 py-2.5 px-2.5 text-md border border-input-border 
-                 placeholder-input-placeholder text-input-placeholder
-                 autofill:bg-dark" 
-                 type="password" 
-                 name="password" 
-                 placeholder="password"
-                >
-                <span class="float-right cursor-pointer relative bottom-8 right-4">
-                    <img src="/img/eye.svg">
-                </span>
+                <GeneralPasswordInput
+                  name="password" 
+                  place-holder="password" 
+                  label-name="password"
+            />
             </div>
 
             <div class="sm:w-96 w-full mt-6 font-inter text-xs flex justify-between text-login-grey">
@@ -59,9 +37,7 @@
                 </NuxtLink>
             </div>
             <div class="sm:w-96 w-full mt-6">
-                <button class="font-judson text-light-grey py-2.5 text-lg w-full bg-button-color rounded">
-                    Login
-                </button>
+                <GeneralButton name="Login"/>
             </div>
 
             <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">

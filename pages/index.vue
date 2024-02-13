@@ -1,18 +1,6 @@
 <template>
     <!-- Top header -->
-    <div class="w-11/12 sm:w-10/12 flex mx-auto mt-6">
-      <div class="w-1/2">
-        <img src="img/logo.svg" class="w-9 h-11">
-      </div>
-      <div class="w-1/2 flex justify-end">
-        <div class="notify-icon m-auto">
-         <img src="img/notify.svg" class="w-4">
-        </div>
-        <div class="profile-icon">
-          <img src="img/profile.svg" class="w-10 h-10">
-        </div>
-      </div>
-    </div>
+    <NuxtLayout name="dashboard-layout"></NuxtLayout>
 
     <!-- Nav bar -->
     <div class="w-10/12 border-b border-dark-grey flex mt-16 m-auto text-off-white justify-between sm:justify-around sm:text-base text-sm">
@@ -28,20 +16,20 @@
       </div>
       <div class="mt-6 flex flex-wrap grow">
         <div class="flex flex-col sm:mr-6 mr-4 cursor-pointer">
-          <img src="img/united-states.svg" class="sm:w-16 w-14 m-auto">
+          <img src="img/united-states.svg" class="sm:w-14 w-12 m-auto">
           <span class="text-xs mt-2">United states</span>
         </div>
         <div class="flex flex-col sm:mr-6 mr-4 cursor-pointer">
-          <img src="img/united-kingdom.svg" class="sm:w-16 w-14 m-auto">
+          <img src="img/united-kingdom.svg" class="sm:w-14 w-12 m-auto">
           <span class="text-xs mt-2">United kingdom</span>
         </div>
         <div class="flex flex-col cursor-pointer">
-          <img src="img/china.svg" class="sm:w-16 w-14 m-auto">
+          <img src="img/china.svg" class="sm:w-14 w-12 m-auto">
           <span class="text-xs mt-2">United states</span>
         </div>
       </div>
       <!-- Estimated arrival time to Nigeria -->
-      <div class="mt-10 sm:text-sm text-xs text-primary">
+      <div class="mt-10  text-xs text-primary">
         <span>Expected time of arrival to Nigeria is 7 days</span>
       </div>
       <!-- Address block -->

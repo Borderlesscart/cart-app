@@ -1,0 +1,58 @@
+<template>
+    <div>
+        <label v-if="showLabel" :for="name" class="font-inter text-login-offwhite text-xs">{{labelName}}{{optional?'':'*'}}</label>
+                <input 
+                class="font-inter rounded w-full bg-dark
+                outline-none focus:outline-input-borde  
+                py-2.5 px-2.5 text-md border border-input-border 
+                autofill:bg-dark" 
+                :class="showLabel? 
+                'placeholder-dark-grey text-input-placeholder': 
+                'placeholder-input-placeholder text-input-placeholder'
+                "
+                 type="password" 
+                 :name="name"
+                 :placeholder="placeHolder"
+                 :autofocus="autoFocus"
+                 :id="name"
+                >
+                <span class="float-right cursor-pointer relative bottom-8 right-4">
+                    <img src="/img/eye.svg">
+                </span>
+    </div>
+</template>
+<script lang="ts" setup>
+import { onMounted, ref, toRefs } from 'vue';
+
+    const props = defineProps({
+        name: {
+          type: String,
+          default: ''  
+        },
+        placeHolder: {
+          type: String,
+          default: ''  
+        },
+        autoFocus: {
+            type: Boolean,
+            default: false,
+            required: false
+        },
+        showLabel: {
+            type: Boolean,
+            default: false,
+            required: false
+        },
+        labelName: {
+            type: String,
+            default: 'Label Name',
+            required: false
+        },
+        optional: {
+            type: Boolean,
+            default: false
+        }
+    })
+
+    const { name, placeHolder, autoFocus, showLabel, labelName, optional} = toRefs(props)
+</script>
