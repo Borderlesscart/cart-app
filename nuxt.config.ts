@@ -8,7 +8,17 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true, },
   modules: [
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    '@pinia/nuxt'
   ],
-  css: ['~/assets/css/config.scss']
+  css: ['~/assets/css/config.scss'],
+  runtimeConfig: {
+    baseUrl: 'localhost:4000/'
+  },
+  axios: {
+    baseURL: 'localhost:4000/',
+    proxyHeaders: false,
+    credentials: false
+  }
+  
 })

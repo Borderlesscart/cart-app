@@ -1,5 +1,5 @@
 <template>
-    <button :on-clicked="buttonClicked" class="font-judson text-light-grey py-2.5 text-lg w-full bg-button-color rounded">
+    <button @click.prevent="buttonClicked()" class="font-judson text-light-grey py-2.5 text-lg w-full bg-button-color rounded">
         {{ name }}
     </button>
 </template>

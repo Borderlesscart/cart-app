@@ -4,8 +4,8 @@
         <div class="font-judson text-login-offwhite text-center text-2xl fon">
             <span>Forgot password?</span>
         </div>
-    </div>
-    <div class="flex flex-col items-center mt-10">
+
+        <div class="flex flex-col items-center mt-10">
         <div class="sm:w-96 w-full mt-6">
                 <GeneralPasswordInput
                   name="phone" 
@@ -18,7 +18,10 @@
         <div class="sm:w-96 w-full mt-2">
                 <GeneralButton name="Change password" v-on:clicked=""/>
         </div>
+        </div>
+
     </div>
+    
 
     
 </template>

@@ -10,7 +10,7 @@
         <!-- Form input -->
         <div class="flex flex-col items-center mt-10">
             <div class="sm:w-96 w-full">
-                <GeneralTextInput type="text" name="email" place-holder="email or phone" :auto-focus="true"/>
+                <GeneralTextInput type="text" name="email" place-holder="email or phone" :auto-focus="true" v-model="data.user_id"/>
             </div>
 
             <div class="sm:w-96 w-full mt-6">
@@ -18,6 +18,7 @@
                   name="password" 
                   place-holder="password" 
                   label-name="password"
+                  v-model="data.password"
             />
             </div>
 
@@ -32,12 +33,12 @@
                     <label for="remember">Remember Me</label> -->
                 </div>
                 
-                <NuxtLink to="#" class="hover:text-input-placeholder">
+                <NuxtLink to="/auth/forgot-password" class="hover:text-input-placeholder">
                     Forgot Password?
                 </NuxtLink>
             </div>
             <div class="sm:w-96 w-full mt-6">
-                <GeneralButton name="Login"/>
+                <GeneralButton name="Login" @clicked="loginUser(data)"/>
             </div>
 
             <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">
@@ -60,3 +61,24 @@
         background-color: #1E1E1E !important;
     }
 </style>
+
+<script lang="ts" setup>
+    import { ref } from 'vue';
+    // setup Data
+    const data = ref({user_id: '', password: ''})
+
+    const validateFormInput = async () => {
+
+    }
+    // const nuxtApp = useNuxtApp()
+    // const authStore = nuxtApp.authStore
+    const authStore = useAuthStore()
+    const loginUser = async (data: any) => {
+        // console.log(data)
+        authStore.login(data) 
+    }
+
+    
+    // const emit = defineEmits()
+
+</script>

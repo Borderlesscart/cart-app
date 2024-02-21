@@ -14,5 +14,6 @@
       <Link href="https://fonts.googleapis.com/css2?family=Judson&display=swap" rel="stylesheet" />
     </Head>
     <NuxtPage />
+  
   </div>
 </template>

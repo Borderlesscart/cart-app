@@ -3,9 +3,9 @@
         <label v-if="showLabel" :for="name" class="font-inter text-login-offwhite text-xs">{{labelName}}{{optional?'':'*'}}</label>
         <input 
             class="font-inter rounded w-full bg-dark
-            outline-none focus:outline-input-borde  
+            outline-none 
             py-2.5 px-2.5 text-md border border-input-border 
-            autofill:bg-dark" 
+            autofill:bg-dark focus:ring focus:ring-input-border" 
             :class="showLabel? 
             'placeholder-dark-grey text-input-placeholder': 
             'placeholder-input-placeholder text-input-placeholder'
