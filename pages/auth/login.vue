@@ -10,10 +10,18 @@
         <!-- Form input -->
         <div class="flex flex-col items-center mt-10">
             <div class="sm:w-96 w-full">
-                <GeneralTextInput type="text" name="email" place-holder="email or phone" :auto-focus="true" v-model="data.user_id"/>
+                <GeneralTextInput 
+                type="text" 
+                name="email" 
+                place-holder="email or phone"
+                :auto-focus="true"
+                :form-submitted="formSubmitted"
+                @input="value => data.user_id = value"
+                @valid="value => validateFormInput(value, 'user_id')"
+                />
             </div>
 
-            <div class="sm:w-96 w-full mt-6">
+            <div class="sm:w-96 w-full mt-2">
                 <GeneralPasswordInput
                   name="password" 
                   place-holder="password" 
@@ -38,7 +46,11 @@
                 </NuxtLink>
             </div>
             <div class="sm:w-96 w-full mt-6">
-                <GeneralButton name="Login" @clicked="loginUser(data)"/>
+                <GeneralButton 
+                    name="Login" 
+                    @clicked="loginUser(data)"
+                    :disabled="validFormFields.length !== formFields"
+                />
             </div>
 
             <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">
@@ -66,16 +78,25 @@
     import { ref } from 'vue';
     // setup Data
     const data = ref({user_id: '', password: ''})
+    const formSubmitted = ref(false)
+    const formFields = ref(Object.keys(data.value).length)
+    const validFormFields = ref<string[]>([])
 
-    const validateFormInput = async () => {
-
+    const validateFormInput = (valid: boolean, formInput: string) => {
+        if(valid){
+            if(!validFormFields.value.includes(formInput)){
+                validFormFields.value.push(formInput)
+            }        
+        }else{
+            validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
+        }
     }
-    // const nuxtApp = useNuxtApp()
-    // const authStore = nuxtApp.authStore
+
     const authStore = useAuthStore()
     const loginUser = async (data: any) => {
-        // console.log(data)
-        authStore.login(data) 
+        console.log(data)
+        formSubmitted.value = true
+        // authStore.login(data) 
     }
 
     

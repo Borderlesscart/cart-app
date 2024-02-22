@@ -16,7 +16,8 @@ module.exports = {
         'input-border': 'rgba(178, 116, 80, 0.28)',
         'login-grey': 'rgba(255, 255, 255, 0.21)',
         'input-placeholder': '#868181',
-        'button-color': '#744A35'
+        'button-color': '#744A35',
+        'btn-disabled-color': '#5E483D'
       }
     }
 }

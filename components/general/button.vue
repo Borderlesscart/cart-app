@@ -1,5 +1,10 @@
 <template>
-    <button @click.prevent="buttonClicked()" class="font-judson text-light-grey py-2.5 text-lg w-full bg-button-color rounded">
+    <button 
+    @click.prevent="buttonClicked()" 
+    class="font-judson py-2.5 text-lg w-full rounded"
+    :class="disabled?'bg-btn-disabled-color text-login-offwhite':'bg-button-color text-light-grey'"
+    :disabled="disabled"
+    >
         {{ name }}
     </button>
 </template>
@@ -10,6 +15,10 @@
         name: {
             type: String,
             default: 'button name'
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     })
 

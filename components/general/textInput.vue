@@ -15,11 +15,15 @@
             :placeholder="placeHolder"
             :autofocus="autoFocus"
             :id="name"
+            v-model="computedInputValue"
             >
+        <span v-if="formSubmitted && !optional || isInputDirty" class="font-inter text-xs text-primary">{{ errors.required }}</span> &nbsp;
+        <span v-if="formSubmitted && !optional || !isValidEmail" class="font-inter text-xs text-primary">{{ errors.is_email }}</span>
     </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, toRefs } from 'vue';
+import { validateEmail } from "~/composable/util";
 
     const props = defineProps({
         type: {
@@ -52,8 +56,59 @@ import { onMounted, ref, toRefs } from 'vue';
         optional: {
             type: Boolean,
             default: false
+        },
+        formSubmitted: {
+            type: Boolean,
+            default: false
+        },
+        value: {
+            type: String,
+            default: '',
         }
     })
 
-    const { type, name, placeHolder, autoFocus, showLabel, labelName, optional} = toRefs(props)
+    const { type, name, placeHolder, autoFocus, showLabel, labelName, optional, formSubmitted, value} = toRefs(props)
+
+    const emits = defineEmits([
+        'input',
+        'valid'
+    ])
+
+    const isInputDirty = ref(false)
+    const inputValue = ref('')
+    const errors = ref({
+        'required': `phone or email is required`,
+        'is_email': `must be email`
+    })
+    const isValidEmail = ref(true)
+
+    const computedInputValue = computed<string>({     
+       get() : string {
+        return inputValue.value
+       },
+       
+       set(value : string) {
+        emits('valid', true)
+
+        if(!value){
+            emits('valid', false)
+            isInputDirty.value = true
+        }else{
+            isInputDirty.value = false
+        }
+
+        if(type.value === 'email'){
+            const validEmail = validateEmail(value)
+            isValidEmail.value = (validEmail)?true:false
+            if(validEmail){
+                isValidEmail.value = true
+            }else{
+                isValidEmail.value = false
+                emits('valid', false)
+            }
+        }
+        inputValue.value = value;
+        emits('input', value)
+       }   
+    })
 </script>
