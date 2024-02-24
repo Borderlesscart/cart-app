@@ -10,15 +10,29 @@
                 'placeholder-dark-grey text-input-placeholder': 
                 'placeholder-input-placeholder text-input-placeholder'
                 "
-                 type="password" 
+                 :type="hidePassword?'password':'text'" 
                  :name="name"
                  :placeholder="placeHolder"
                  :autofocus="autoFocus"
                  :id="name"
+                 v-model="computedInputValue"
                 >
-                <span class="float-right cursor-pointer relative bottom-8 right-4">
+                <span 
+                v-if="hidePassword" 
+                class="float-right cursor-pointer relative bottom-8 right-4"
+                @click="toggleHidePassword()"
+                >
                     <img src="/img/eye.svg">
                 </span>
+                <span 
+                v-else
+                class="float-right cursor-pointer relative bottom-8 right-4"
+                @click="toggleHidePassword()"
+                >
+                    <img src="/img/crossed-eye.svg">
+                </span>
+                <span v-if="!optional && isInputDirty" class="font-inter text-xs text-primary">{{ errors.required }}</span> &nbsp;
+                <span v-if="!optional &&  isInputDirty || !isValidPassword" class="font-inter text-xs text-primary">{{ errors.password_length }}</span> &nbsp;
     </div>
 </template>
 <script lang="ts" setup>
@@ -55,4 +69,51 @@ import { onMounted, ref, toRefs } from 'vue';
     })
 
     const { name, placeHolder, autoFocus, showLabel, labelName, optional} = toRefs(props)
+
+    const hidePassword = ref(true)
+
+    const toggleHidePassword = () => {
+        hidePassword.value = !hidePassword.value
+    }
+
+    const inputValue = ref('')
+    const errors = ref({
+        'password_length': 'Password must be 6 characters or more',
+        'required': 'field is required'
+    })
+    const isValidPassword = ref(true)
+    const isInputDirty = ref(false)
+
+    const emits = defineEmits([
+        'input',
+        'valid'
+    ])
+
+    const computedInputValue = computed<string>({     
+       get() : string {
+        return inputValue.value
+       },
+       
+       set(value : string) {
+        emits('valid', true)
+        isInputDirty.value = false
+        isValidPassword.value = true
+
+        if(!value){
+            emits('valid', false)
+            
+            isInputDirty.value = true
+        }
+
+        if(value.length < 6){
+            emits('valid', false)
+            
+            isValidPassword.value = false
+            console.log(isValidPassword.value, isInputDirty.value)
+        }
+
+        inputValue.value = value;
+        emits('input', value)
+       }   
+    })
 </script>

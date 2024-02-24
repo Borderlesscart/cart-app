@@ -15,7 +15,6 @@
                 name="email" 
                 place-holder="email or phone"
                 :auto-focus="true"
-                :form-submitted="formSubmitted"
                 @input="value => data.user_id = value"
                 @valid="value => validateFormInput(value, 'user_id')"
                 />
@@ -26,7 +25,8 @@
                   name="password" 
                   place-holder="password" 
                   label-name="password"
-                  v-model="data.password"
+                  @input="value => data.password = value"
+                  @valid="value => validateFormInput(value, 'password')"
             />
             </div>
 
@@ -95,8 +95,8 @@
     const authStore = useAuthStore()
     const loginUser = async (data: any) => {
         console.log(data)
-        formSubmitted.value = true
-        // authStore.login(data) 
+        // formSubmitted.value = true
+        await authStore.login(data) 
     }
 
     
