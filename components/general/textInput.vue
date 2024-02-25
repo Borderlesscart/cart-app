@@ -77,7 +77,7 @@ import { validateEmail } from "~/composable/util";
     const isInputDirty = ref(false)
     const inputValue = ref('')
     const errors = ref({
-        'required': `phone or email is required`,
+        'required': `${placeHolder.value} is required`,
         'is_email': `must be email`
     })
     const isValidEmail = ref(true)

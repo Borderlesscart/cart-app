@@ -62,6 +62,8 @@
                     Sign Up
                 </NuxtLink>
             </div>
+
+            
         </div>
 
     </div>
@@ -72,6 +74,7 @@
     input:-internal-autofill-selected {
         background-color: #1E1E1E !important;
     }
+    
 </style>
 
 <script lang="ts" setup>

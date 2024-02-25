@@ -14,6 +14,12 @@
       <Link href="https://fonts.googleapis.com/css2?family=Judson&display=swap" rel="stylesheet" />
     </Head>
     <NuxtPage />
-  
+
+    <div class="w-11/12 sm:w-10/12 flex mx-auto">
+      <GeneralError/>
+    </div>   
+    <!-- <div class="w-11/12 sm:w-10/12 flex mx-auto">
+      <GeneralSuccess/>
+    </div>  -->
   </div>
 </template>
