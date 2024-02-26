@@ -1,5 +1,8 @@
 <script setup lang="ts">
   const title = ref('Borderless cart - Ship goods from abroad to Nigeria')
+
+  const notificationStore = useNotificationStore()
+
 </script>
 
 <template>
@@ -15,11 +18,19 @@
     </Head>
     <NuxtPage />
 
-    <div class="w-11/12 sm:w-10/12 flex mx-auto">
-      <GeneralError/>
+    <div 
+      v-if="notificationStore.error.message"
+      class="w-11/12 sm:w-10/12 flex mx-auto">
+      <GeneralError 
+      :message="notificationStore.error.message"
+      :flash="notificationStore.error.flash"/>
     </div>   
-    <!-- <div class="w-11/12 sm:w-10/12 flex mx-auto">
-      <GeneralSuccess/>
-    </div>  -->
+    <div 
+    v-if="notificationStore.success.message"
+    class="w-11/12 sm:w-10/12 flex mx-auto">
+      <GeneralSuccess
+      :message="notificationStore.success.message"
+      :flash="notificationStore.success.flash"/>
+    </div> 
   </div>
 </template>
