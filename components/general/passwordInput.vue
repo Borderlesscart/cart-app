@@ -106,10 +106,8 @@ import { onMounted, ref, toRefs } from 'vue';
         }
 
         if(value.length < 6){
-            emits('valid', false)
-            
+            emits('valid', false)        
             isValidPassword.value = false
-            console.log(isValidPassword.value, isInputDirty.value)
         }
 
         inputValue.value = value;

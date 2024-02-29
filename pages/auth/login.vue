@@ -47,9 +47,9 @@
             </div>
             <div class="sm:w-96 w-full mt-6">
                 <GeneralButton 
-                    name="Login" 
+                    :name="formSubmitting?'Loading...':'Login'" 
                     @clicked="loginUser(data)"
-                    :disabled="validFormFields.length !== formFields"
+                    :disabled="validFormFields.length !== formFields || formSubmitting"
                 />
             </div>
 
@@ -81,7 +81,7 @@
     import { ref } from 'vue';
     // setup Data
     const data = ref({user_id: '', password: ''})
-    const formSubmitted = ref(false)
+    const formSubmitting = ref(false)
     const formFields = ref(Object.keys(data.value).length)
     const validFormFields = ref<string[]>([])
 
@@ -97,9 +97,9 @@
 
     const authStore = useAuthStore()
     const loginUser = async (data: any) => {
-        console.log(data)
-        // formSubmitted.value = true
+        formSubmitting.value = true
         await authStore.login(data) 
+        formSubmitting.value = false
     }
 
     

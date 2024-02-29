@@ -103,4 +103,12 @@
      </div>
     </div>
 </template>
+<script lang="ts" setup>
+   import { onMounted, ref, toRefs } from 'vue';
+
+   onMounted(() => {
+        const user = useCookie('user')
+        console.log(user.value)
+    })
+</script>
   

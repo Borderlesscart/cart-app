@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNotificationStore } from '#imports';
 
 export const API = axios.create({
     baseURL: 'http://localhost:4000/',
@@ -8,25 +9,21 @@ export const API = axios.create({
   API.interceptors.request.use(
     (request) => {
       // automatically set token in axios default header
-    //   const token = JSON.parse(localStorage.getItem('token'));
+      const jwtToken = useCookie('jwtToken')
   
-    //   const clientToken = JSON.parse(localStorage.getItem('client-token'));
-    //   const path = location.pathname.split('/')[1];
-    //   if (path === 'client-portal' && clientToken) {
-    //     request.headers.authorization = 'Bearer ' + clientToken;
-    //     return request;
-    //   }
-  
-    //   if (token) {
-    //     request.headers.authorization = 'Bearer ' + token;
-    //   }
-  
+      if (jwtToken) {
+        request.headers.authorization = 'Bearer ' + jwtToken;
+      }
       // Important: request interceptors **must** return the request.
       return request;
     },
-    (error) => {
-        // Trigger Error component
-      return Promise.reject(error);
+    (err) => {
+        const notificationStore = useNotificationStore()
+        const errorMessage =
+                err?.response?.data?.message ||
+                err?.response?.message ||
+                err?.toString()
+        notificationStore.updateError(errorMessage)
     }
   );
   
@@ -36,42 +33,28 @@ export const API = axios.create({
     },
     (err) => {
       const originalRequest = err.config;
-      const authStore = useAuthStore()
-    //   authStore.login({user_id:'', password:''})
-      console.log(err)
+      const notificationStore = useNotificationStore()
+
       if (err?.response?.status === 404) {
-        throw new Error(
-          err.response?.data?.message || `${err.config.url} not found`
-        );
+        notificationStore.updateError(err.response?.data?.message || `${err.config.url} not found`)
       } else if (err?.response?.status === 403) {
-        // this.$toast.error(this.message);
-        throw new Error('Permission error');
+        notificationStore.updateError(`Permission Error`)
       } else if (err?.response?.status === 401 && !originalRequest._retry) {
-        // checking for error as a result of expired/missing api jwt token
         originalRequest._retry = true;
-        // toaster.error(
-        //   'Failing to read data: user authentication invalid/expired! Redirecting...',
-        //   {
-        //     position: POSITION.TOP_LEFT,
-        //     timeout: 5000,
-        //   }
-        // );
-  
+        notificationStore.updateError(`user authentication invalid/expired: redirecting to login...`)
         //Check if router is currently in client-portal
         const path = location.pathname.split('/')[1];
   
-        if (path === 'client-portal' || path === 'client-login') {
-          localStorage.removeItem('client-token');
-          localStorage.removeItem('client');
-        } else {
           localStorage.removeItem('user');
-          localStorage.removeItem('token');
-          localStorage.removeItem('vuex');
-        }
+          localStorage.removeItem('token');  
   
         // return router.go(0); // refresh page and auto-redirect to login
       } else {
-        return Promise.reject(err);
+        const errorMessage =
+                err?.response?.data?.message ||
+                err?.response?.message ||
+                err?.toString()
+        notificationStore.updateError(errorMessage)
       }
     }
   );

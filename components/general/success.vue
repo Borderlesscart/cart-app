@@ -4,7 +4,7 @@
                 <span>
                     {{ message }}
                 </span>
-                <button>
+                <button @click="clearMessage()">
                     <img src="/img/cancel.svg" class="h-6 w-6"/>
                 </button>
             </div>
