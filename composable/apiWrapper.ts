@@ -6,13 +6,13 @@ export const API = axios.create({
     withCredentials: false,
   });
 
+  // 
+
   API.interceptors.request.use(
-    (request) => {
-      // automatically set token in axios default header
+    (request) => {    
       const jwtToken = useCookie('jwtToken')
-  
-      if (jwtToken) {
-        request.headers.authorization = 'Bearer ' + jwtToken;
+      if (jwtToken.value) {
+        request.headers.authorization = 'Bearer ' + jwtToken.value.access_token;
       }
       // Important: request interceptors **must** return the request.
       return request;
@@ -41,14 +41,10 @@ export const API = axios.create({
         notificationStore.updateError(`Permission Error`)
       } else if (err?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        notificationStore.updateError(`user authentication invalid/expired: redirecting to login...`)
-        //Check if router is currently in client-portal
-        const path = location.pathname.split('/')[1];
-  
-          localStorage.removeItem('user');
-          localStorage.removeItem('token');  
-  
-        // return router.go(0); // refresh page and auto-redirect to login
+        
+        notificationStore.updateError(`user authentication invalid/expired: redirecting to login...`)  
+     
+        navigateTo('/auth/login')
       } else {
         const errorMessage =
                 err?.response?.data?.message ||

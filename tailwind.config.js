@@ -19,7 +19,8 @@ module.exports = {
         'button-color': '#744A35',
         'btn-disabled-color': '#5E483D',
         'light-dark': '#3D3D3D',
-        'website-white': '#EAE8E8'
+        'website-white': '#EAE8E8',
+        'almost-dark': '#2D2D2D'
       }
     }
 }

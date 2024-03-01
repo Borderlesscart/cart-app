@@ -4,8 +4,8 @@
 
     <!-- Nav bar -->
     <div class="w-10/12 border-b border-dark-grey flex mt-16 m-auto text-off-white justify-between sm:justify-around sm:text-base text-sm">
-      <div class="cursor-pointer primary-color border-b primary-color-border font-inter"><span>Get shipping address</span></div>
-      <div class="cursor-pointer font-inter"><span>Deliveries</span></div>
+      <div class="cursor-pointer primary-color border-b primary-color-border font-inter"><NuxtLink to="#">Get shipping address</NuxtLink></div>
+      <div class="cursor-pointer font-inter"><NuxtLink to="#">Deliveries</NuxtLink></div>
       <!-- <div class="cursor-pointer font-inter"><span>Exchange rate</span></div> -->
     </div>
 
@@ -104,11 +104,22 @@
     </div>
 </template>
 <script lang="ts" setup>
-   import { onMounted, ref, toRefs } from 'vue';
+   import { onMounted, ref, toRefs, onBeforeMount} from 'vue';
 
    onMounted(() => {
         const user = useCookie('user')
-        console.log(user.value)
+        const jwtToken = useCookie('jwtToken')
+        // if(!jwtToken.value){
+        //     // navigateTo('auth/login')
+        // }
+        console.log(user.value, jwtToken.value)
+    })
+
+    onBeforeMount(() => {
+      const jwtToken = useCookie('jwtToken')
+      if(!jwtToken.value){
+        navigateTo('auth/login')
+      }
     })
 </script>
   
