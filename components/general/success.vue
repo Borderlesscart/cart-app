@@ -34,7 +34,8 @@
     }
 
     onMounted(() => {
-        if(flash){
+        console.log(flash.value)
+        if(flash.value === true){
             setTimeout(() => {
                 clearMessage()
             }, 3000);

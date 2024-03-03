@@ -33,7 +33,7 @@
     }
 
     onMounted(() => {
-        if(flash){
+        if(flash.value){
             setTimeout(() => {
                 clearMessage()
             }, 3000);

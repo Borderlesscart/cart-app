@@ -5,6 +5,15 @@ export const loginUser = async (data: any): Promise<any> => {
    return await API.post(baseApi.auth.login, data)
 }
 
+export const registerUser = async (data: any): Promise<any> => {
+    return await API.post(baseApi.auth.register, data)
+}
+
+export const sendOtp = async (data: any): Promise<any> => {
+    return await API.post(baseApi.auth.otp, data)
+}
+
+
 export const storeUserAuth = async (access_token: string, expires_in: string, user: any) => {
     const maxAge = parseInt(expires_in) * 60
     const jwtToken = useCookie('jwtToken')

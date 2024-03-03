@@ -76,8 +76,9 @@ import { validateEmail } from "~/composable/util";
 
     const isInputDirty = ref(false)
     const inputValue = ref('')
+    const errorField = showLabel?labelName.value:placeHolder.value
     const errors = ref({
-        'required': `${placeHolder.value} is required`,
+        'required': `${errorField} is required`,
         'is_email': `must be email`
     })
     const isValidEmail = ref(true)

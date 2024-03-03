@@ -43,8 +43,15 @@ export const API = axios.create({
         originalRequest._retry = true;
         
         notificationStore.updateError(`user authentication invalid/expired: redirecting to login...`)  
-     
         navigateTo('/auth/login')
+      } else if(err?.response?.status === 400){
+        const errorMessage =
+                Array.isArray(err?.response?.data?.message)? 
+                err?.response?.data?.message.join('/n'): err?.response?.data?.message||
+                err?.response?.data?.error ||
+                err?.response?.message ||
+                err.toString()
+        notificationStore.updateError(errorMessage)
       } else {
         const errorMessage =
                 err?.response?.data?.message ||

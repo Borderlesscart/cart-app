@@ -15,14 +15,13 @@ export const useNotificationStore = defineStore('notficationStore', {
         updateError(message: string, flash: boolean|null = null) {
             this.error.message = message
 
-            if(flash){
+            if(flash !== null){
                 this.error.flash = flash
             }       
         },
         updateSuccess(message: string, flash: boolean|null = null) {
             this.success.message = message
-
-            if(flash){
+            if(flash !== null){
                 this.success.flash = flash
             }       
         },

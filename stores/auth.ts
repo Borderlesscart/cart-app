@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { loginUser, storeUserAuth } from "~/composable/auth";
+import { loginUser, storeUserAuth, registerUser } from "~/composable/auth";
 import { useNotificationStore } from "./notification";
 
 
@@ -25,6 +25,15 @@ export const useAuthStore = defineStore('authStore', {
                 navigateTo('/')
             }
            
+        },
+        async register(data: any) {
+            const request = await registerUser(data)
+
+            if(request?.data){
+                navigateTo('/auth/otp')
+                const useNotification = useNotificationStore()
+                useNotification.updateSuccess('Enter OTP sent to your phone to verify phone number', false)
+            }
         }
     }   
 })
