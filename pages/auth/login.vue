@@ -9,60 +9,61 @@
         <!-- <div class="border-b border-dark-grey mt-8 sm:w-96 w-full mx-auto"></div> -->
         <!-- Form input -->
         <div class="flex flex-col items-center mt-10">
-            <div class="sm:w-96 w-full">
-                <GeneralTextInput 
-                type="text" 
-                name="email" 
-                place-holder="email or phone"
-                :auto-focus="true"
-                @input="value => data.user_id = value"
-                @valid="value => validateFormInput(value, 'user_id')"
-                />
-            </div>
-
-            <div class="sm:w-96 w-full mt-2">
-                <GeneralPasswordInput
-                  name="password" 
-                  place-holder="password" 
-                  label-name="password"
-                  @input="value => data.password = value"
-                  @valid="value => validateFormInput(value, 'password')"
-            />
-            </div>
-
-            <div class="sm:w-96 w-full mt-6 font-inter text-xs flex justify-between text-login-grey">
-                <div>
-                    <!-- <input
-                    type="checkbox"
-                    name="remember"
-                    id="remember"
-                    class="mr-2 cursor-pointer bg-dark"
-                    >
-                    <label for="remember">Remember Me</label> -->
+            <form>
+                <div class="sm:w-96 w-full">
+                    <GeneralTextInput 
+                    type="text" 
+                    name="email" 
+                    place-holder="email or phone"
+                    :auto-focus="true"
+                    @input="value => data.user_id = value"
+                    @valid="value => validateFormInput(value, 'user_id')"
+                    />
                 </div>
-                
-                <NuxtLink to="/auth/forgot-password" class="hover:text-input-placeholder">
-                    Forgot Password?
-                </NuxtLink>
-            </div>
-            <div class="sm:w-96 w-full mt-6">
-                <GeneralButton 
-                    :name="formSubmitting?'Loading...':'Login'" 
-                    @clicked="loginUser(data)"
-                    :disabled="validFormFields.length !== formFields || formSubmitting"
+
+                <div class="sm:w-96 w-full mt-2">
+                    <GeneralPasswordInput
+                    name="password" 
+                    place-holder="password" 
+                    label-name="password"
+                    @input="value => data.password = value"
+                    @valid="value => validateFormInput(value, 'password')"
                 />
-            </div>
-
-            <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">
-                <div class="text-input-placeholder">
-                   <span>Don't have an account yet?</span>
                 </div>
-                
-                <NuxtLink to="/auth/register" class="hover:button-color text-primary">
-                    Sign Up
-                </NuxtLink>
-            </div>
 
+                <div class="sm:w-96 w-full mt-6 font-inter text-xs flex justify-between text-login-grey">
+                    <div>
+                        <!-- <input
+                        type="checkbox"
+                        name="remember"
+                        id="remember"
+                        class="mr-2 cursor-pointer bg-dark"
+                        >
+                        <label for="remember">Remember Me</label> -->
+                    </div>
+                    
+                    <NuxtLink to="/auth/forgot-password" class="hover:text-input-placeholder">
+                        Forgot Password?
+                    </NuxtLink>
+                </div>
+                <div class="sm:w-96 w-full mt-6">
+                    <GeneralButton 
+                        :name="formSubmitting?'Loading...':'Login'" 
+                        @clicked="loginUser(data)"
+                        :disabled="validFormFields.length !== formFields || formSubmitting"
+                    />
+                </div>
+
+                <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-between ">
+                    <div class="text-input-placeholder">
+                    <span>Don't have an account yet?</span>
+                    </div>
+                    
+                    <NuxtLink to="/auth/register" class="hover:button-color text-primary">
+                        Sign Up
+                    </NuxtLink>
+                </div>
+            </form>
             
         </div>
 

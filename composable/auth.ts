@@ -10,7 +10,13 @@ export const registerUser = async (data: any): Promise<any> => {
 }
 
 export const sendOtp = async (data: any): Promise<any> => {
+    const phone = useCookie('phone')
+    phone.value = data.phone
     return await API.post(baseApi.auth.otp, data)
+}
+
+export const verifyOtp = async (data: {'phone': String, code: Number}): Promise<any> => {
+    return await API.post(baseApi.auth.verify_otp, data)
 }
 
 

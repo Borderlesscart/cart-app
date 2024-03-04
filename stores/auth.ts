@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { loginUser, storeUserAuth, registerUser } from "~/composable/auth";
+import { loginUser, storeUserAuth, registerUser, sendOtp, verifyOtp } from "~/composable/auth";
 import { useNotificationStore } from "./notification";
 
 
@@ -23,17 +23,32 @@ export const useAuthStore = defineStore('authStore', {
                 const user = request?.data?.user
                 storeUserAuth(jwtToken, expires_in, user)
                 navigateTo('/')
-            }
-           
+            }   
         },
         async register(data: any) {
             const request = await registerUser(data)
 
             if(request?.data){
+                await sendOtp({'phone': data.phone})
                 navigateTo('/auth/otp')
                 const useNotification = useNotificationStore()
                 useNotification.updateSuccess('Enter OTP sent to your phone to verify phone number', false)
             }
+        },
+        async sendOtp(data: any) {
+            const request = await sendOtp(data)
+            const useNotification = useNotificationStore()
+            useNotification.updateSuccess('A new OTP has been sent', false)
+        },
+        async verifyOtp(data: {'phone': String, code: Number}) {
+            const request = await verifyOtp(data)
+            if(request?.data){
+                const jwtToken = request?.data?.access_token
+                const expires_in = request?.data?.expires
+                const user = request?.data?.user
+                storeUserAuth(jwtToken, expires_in, user)
+                navigateTo('/')
+            }  
         }
     }   
 })

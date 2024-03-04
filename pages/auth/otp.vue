@@ -6,19 +6,95 @@
         </div>
 
         <div class="flex flex-col items-center mt-10">
-            <div class="sm:w-96 w-full mt-6">
-                    <GeneralTextInput
-                    name="otp" 
-                    place-holder="Enter otp to reset password" 
-                    label-name="One time password"
-                    :show-label="true"
-                />
-            </div>
-
-            <div class="sm:w-96 w-full mt-6">
-                    <GeneralButton name="Submit" v-on:clicked=""/>
-            </div>
+            <form>
+                <div class="sm:w-96 w-full mt-6">
+                        <GeneralTextInput
+                        name="otp" 
+                        place-holder="Enter otp to reset password" 
+                        label-name="One time password"
+                        :show-label="true"
+                        :auto-focus="true"
+                        @input="value => data.code = value"
+                        @valid="value => validateFormInput(value, 'code')"
+                    />
+                </div>
+                <div class="sm:w-96 w-full font-inter text-sm mb-2">
+                    <span v-if="countDown > 0" class="text-login-offwhite">You can request a new one in <span class="text-primary">{{ countDown }}</span> secs</span>
+                    <span v-else class="text-primary cursor-pointer">Request </span> <span class="text-login-offwhite">new OTP</span>
+                </div>
+                
+                <div class="sm:w-96 w-full">
+                        <GeneralButton
+                        :name="formSubmitting?'Loading...':'Login'" 
+                        @clicked="verifyOtp(data.code)"
+                        :disabled="validFormFields.length !== formFields || data.code.length < 6 || formSubmitting"
+                        />
+                </div>
+            </form>
          </div>
     </div>
-    
 </template>
+<script setup lang="ts">
+    import { ref, onMounted } from 'vue';
+
+
+    const phone = useCookie('phone')
+    const data = ref({phone: '', code: ''})
+    const formSubmitting = ref(false)
+    const formFields = ref(Object.keys(data.value).length)
+    const validFormFields = ref<string[]>([])
+    const authStore = useAuthStore()
+    const countDown = ref(60)
+
+    const updateCountDown = () => {
+        if(countDown.value > 0){
+            setTimeout(() => {
+                countDown.value -= 1
+                updateCountDown()
+            }, 1000)
+        }
+    }
+
+    const validateFormInput = (valid: boolean, formInput: string) => {
+        if(valid){
+            if(!validFormFields.value.includes(formInput)){
+                validFormFields.value.push(formInput)
+            }        
+        }else{
+            validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
+        }
+    }
+
+    onMounted(() => {   
+        if(!phone.value){
+            navigateTo('/auth/register')
+            return
+        }
+
+        validFormFields.value.push(phone.value)
+        updateCountDown()
+    })
+
+    const sendOtp = async (data: any) => {
+        await authStore.sendOtp(data)
+    }
+
+    const verifyOtp = async (code: string) => {
+
+        if(!phone.value){
+            navigateTo('/auth/register')
+            return
+        }
+        
+        const data = {
+            'phone': phone.value, 
+            code: parseInt(code) //covert to number
+        }
+        formSubmitting.value = true
+        await authStore.verifyOtp(data)
+        formSubmitting.value = false
+
+    }
+</script>
+<style>
+</style>

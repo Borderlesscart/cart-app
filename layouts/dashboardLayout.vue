@@ -17,6 +17,7 @@
                 </div>
                 <div v-if="showProfileDropDown" class="rounded bg-almost-dark px-4 py-2 flex flex-col text-right absolute top-16 right-4 sm:right-28 text-sm sm:text-base">
                     <span class="mb-4 text-light-dark text-primary">{{ user?.first_name }} {{ user?.last_name }} </span>
+
                     <NuxtLink to="#">
                         <span class="text-off-white hover:text-primary">View Settings</span>
                     </NuxtLink>
@@ -24,6 +25,9 @@
                         class="text-off-white cursor-pointer hover:text-primary"
                         @click="logOut()"
                     >Logout</span>
+                    <div @click="closeNotificationDropDown()" class="mt-4 flex justify-end cursor-pointer">
+                        <img src="img/cancel.svg" class="h-6"/>
+                    </div>
                 </div>  
             </div>
             
@@ -43,6 +47,10 @@
         jwtToken.value = undefined
         user.value = undefined
         navigateTo('auth/login')
+    }
+
+    const closeNotificationDropDown = () => {
+        showProfileDropDown.value = false
     }
 
 </script>
