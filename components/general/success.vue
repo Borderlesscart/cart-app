@@ -34,7 +34,6 @@
     }
 
     onMounted(() => {
-        console.log(flash.value)
         if(flash.value === true){
             setTimeout(() => {
                 clearMessage()
@@ -48,6 +47,6 @@
     /*  */
     .success-component {
         box-shadow: #00b39f 0.3px -0.8px 5px;
-        color: #00b39f;
+        color: #d1d1d1;
     }
 </style>

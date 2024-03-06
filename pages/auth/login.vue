@@ -13,7 +13,7 @@
                 <div class="sm:w-96 w-full">
                     <GeneralTextInput 
                     type="text" 
-                    name="email" 
+                    name="user_id" 
                     place-holder="email or phone"
                     :auto-focus="true"
                     @input="value => data.user_id = value"

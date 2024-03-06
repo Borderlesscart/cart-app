@@ -99,7 +99,7 @@
     </div>
 </template>
 <script setup lang="ts">
-   import { ref } from 'vue';
+   import { ref, onMounted } from 'vue';
    const data = ref({
       first_name: '',
       last_name: '',
@@ -113,6 +113,11 @@
    const formSubmitting = ref(false)
 
    const authStore = useAuthStore()
+
+   onMounted(() => {
+    const phone = useCookie('phone')
+    phone.value = '+2348171018780'
+   })
 
    const validateFormInput = (valid: boolean, formInput: string) => {
       if(valid){

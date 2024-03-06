@@ -18,14 +18,14 @@
                         @valid="value => validateFormInput(value, 'code')"
                     />
                 </div>
-                <div class="sm:w-96 w-full font-inter text-sm mb-2">
+                <div class="sm:w-96 w-full font-inter text-xs mb-2">
                     <span v-if="countDown > 0" class="text-login-offwhite">You can request a new one in <span class="text-primary">{{ countDown }}</span> secs</span>
-                    <span v-else class="text-primary cursor-pointer">Request </span> <span class="text-login-offwhite">new OTP</span>
+                    <span v-else class="text-primary cursor-pointer" @click="sendOtp()">Request  <span class="text-login-offwhite">new One Time Password</span></span>
                 </div>
                 
                 <div class="sm:w-96 w-full">
                         <GeneralButton
-                        :name="formSubmitting?'Loading...':'Login'" 
+                        :name="formSubmitting?'Loading...':$route?.query?.type === 'resett_password'?'Login':'Login'" 
                         @clicked="verifyOtp(data.code)"
                         :disabled="validFormFields.length !== formFields || data.code.length < 6 || formSubmitting"
                         />
@@ -37,14 +37,15 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
 
-
-    const phone = useCookie('phone')
     const data = ref({phone: '', code: ''})
     const formSubmitting = ref(false)
     const formFields = ref(Object.keys(data.value).length)
     const validFormFields = ref<string[]>([])
     const authStore = useAuthStore()
     const countDown = ref(60)
+
+    const route = useRoute()
+    const phone = useCookie('phone')
 
     const updateCountDown = () => {
         if(countDown.value > 0){
@@ -65,18 +66,32 @@
         }
     }
 
-    onMounted(() => {   
+    const init = () => {
+        phone.value = '+2348178018780'
         if(!phone.value){
             navigateTo('/auth/register')
             return
         }
 
-        validFormFields.value.push(phone.value)
+        updateCountDown()
+    }
+
+    init()
+
+    onMounted(() => {   
+        if(phone.value){
+            validFormFields.value.push(phone.value)
+        } 
         updateCountDown()
     })
 
-    const sendOtp = async (data: any) => {
-        await authStore.sendOtp(data)
+    const sendOtp = async () => {
+        if(!phone.value){
+            navigateTo('/auth/register')
+            return
+        }
+
+        await authStore.sendOtp({phone: phone.value})
     }
 
     const verifyOtp = async (code: string) => {
@@ -90,10 +105,16 @@
             'phone': phone.value, 
             code: parseInt(code) //covert to number
         }
-        formSubmitting.value = true
-        await authStore.verifyOtp(data)
-        formSubmitting.value = false
 
+        formSubmitting.value = true
+        console.log(route?.query?.type )
+        if(route?.query?.type === 'reset_password'){
+            await authStore.verifyPasswordReset(data)
+        }else{    
+            await authStore.verifyOtp(data)    
+        } 
+        formSubmitting.value = false
+      
     }
 </script>
 <style>

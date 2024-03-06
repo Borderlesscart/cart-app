@@ -10,7 +10,7 @@ export const API = axios.create({
 
   API.interceptors.request.use(
     (request) => {    
-      const jwtToken = useCookie('jwtToken')
+      const jwtToken: any|undefined = useCookie('jwtToken')
       if (jwtToken.value) {
         request.headers.authorization = 'Bearer ' + jwtToken.value.access_token;
       }
@@ -59,6 +59,7 @@ export const API = axios.create({
                 err?.toString()
         notificationStore.updateError(errorMessage)
       }
+      return err
     }
   );
   
