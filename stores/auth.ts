@@ -47,11 +47,13 @@ export const useAuthStore = defineStore('authStore', {
                 useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
             }
         },
+
         async sendOtp(data: any) {
             const request = await sendOtp(data)
             const useNotification = useNotificationStore()
             useNotification.updateSuccess('A new OTP has been sent', false)
         },
+
         async verifyOtp(data: {'phone': String, code: Number}) {
             const request = await verifyOtp(data)
             if(request?.data){
@@ -64,6 +66,8 @@ export const useAuthStore = defineStore('authStore', {
                 navigateTo('/')
             }  
         },
+
+
         async sendPasswordResetOtp(data: {phone: string}) {
             const request = await sendPasswordResetOtp(data)
             if(request?.status === 'success'){
@@ -72,6 +76,8 @@ export const useAuthStore = defineStore('authStore', {
                 useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
             }    
         },
+
+
         async verifyPasswordReset(data: {phone: string, code: number}) {
             const request = await verifyPasswordReset(data)
             if(request?.status === 'success'){
@@ -80,8 +86,17 @@ export const useAuthStore = defineStore('authStore', {
                     const expires_in = request?.data?.expires
                     const user = request?.data?.user
                     storeUserAuth(jwtToken, expires_in, user)
-                    navigateTo('/')
+                    navigateTo('/auth/new-password')
                 }   
+            }
+
+        },
+
+
+        async updatePassword(data: {password: string, confirm_password: string}) {
+            const request = await updatePassword(data)
+            if(request?.status === 'success'){
+                navigateTo('/')
             }
 
         }

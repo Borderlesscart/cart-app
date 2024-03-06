@@ -26,11 +26,11 @@ export const sendPasswordResetOtp = async (data: {phone: string}): Promise<any> 
 }
 
 export const verifyPasswordReset = async (data: {phone: string, code: number}): Promise<any> => {
-    return await API.post(baseApi.auth.verify_otp(), data)
+    return await API.post(baseApi.auth.verify_password_reset(), data)
 }
 
-export const updatePassword = async (data: {password: string, confirm_password: number}): Promise<any> => {
-    return await API.post(baseApi.auth.update_password(), data)
+export const updatePassword = async (data: {password: string, confirm_password: string}): Promise<any> => {
+    return await API.put(baseApi.auth.update_password(), data)
 }
 
 

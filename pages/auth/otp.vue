@@ -30,6 +30,13 @@
                         :disabled="validFormFields.length !== formFields || data.code.length < 6 || formSubmitting"
                         />
                 </div>
+
+                <div class="sm:w-96 w-full mt-4 font-inter text-sm flex justify-end ">
+                    
+                    <NuxtLink to="/auth/login" class="hover:button-color text-primary">
+                        Login
+                    </NuxtLink>
+                </div>
             </form>
          </div>
     </div>
