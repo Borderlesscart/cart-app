@@ -1,7 +1,7 @@
 <template>
 <!-- Success component -->
-<div class="success-component absolute bottom-12 sm:w-96 w-11/12 rounded mt-4 px-6 py-3 text-base  font-inter bg-light-dark flex justify-between">
-                <span>
+<div class="success-component absolute bottom-12 rounded mt-4 px-6 py-3 text-base  font-inter bg-light-dark flex justify-between">
+                <span class="mr-4">
                     {{ message }}
                 </span>
                 <button @click="clearMessage()">
