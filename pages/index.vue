@@ -32,7 +32,15 @@
       </div>
       <!-- Estimated arrival time to Nigeria -->
       <div class="mt-4 text-xs flex flex-col grow-1 text-login-offwhite">
-        <span class="mt-2" v-for="eta in selectedCountryAddress.eta">By {{ eta.type }} to Nigeria <span class="text-offwhite">{{ eta.time }}</span> </span>
+        <div class="flex mt-2" v-for="eta in selectedCountryAddress.eta">
+          <img class="w-6 h-4 mr-2" :src="'img/'+eta.type+'.svg'">
+          <span class="" >
+            By {{ eta.type }} to Nigeria
+            <span class="text-offwhite">
+              {{ eta.time }}
+            </span>
+           </span>
+        </div>
       </div>
       <!-- Address block -->
       <div class="mt-8">
