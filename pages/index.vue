@@ -1,13 +1,7 @@
 <template>
     <!-- Top header -->
     <NuxtLayout name="dashboard-layout"></NuxtLayout>
-
-    <!-- Nav bar -->
-    <div class="w-10/12 border-b border-dark-grey flex mt-16 m-auto text-off-white justify-between sm:justify-around sm:text-base text-sm">
-      <div class="cursor-pointer primary-color border-b primary-color-border font-inter"><NuxtLink to="#">Get shipping address</NuxtLink></div>
-      <div class="cursor-pointer font-inter"><NuxtLink to="#">Deliveries</NuxtLink></div>
-      <!-- <div class="cursor-pointer font-inter"><span>Exchange rate</span></div> -->
-    </div>
+    <GeneralNavbar/>
 
     <!-- Country select -->
     <div class="mt-10 flex flex-col m-auto text-off-white font-inter w-10/12 pb-14">
@@ -16,19 +10,10 @@
       </div>
 
       <div class="mt-6 flex flex-wrap grow">
-        <div 
-        v-for="countryAddress in countryAddresses"
-        class="flex flex-col sm:mr-6 mr-4 cursor-pointer"
-        @click="updateCountryAddress(countryAddress)"
-        >
-          <img v-if="selectedCountryAddress.code === countryAddress.code" :src="'img/'+countryAddress.code+'-disabled.svg'" class="sm:w-14 w-12 m-auto">
-          <img v-else :src="'img/'+countryAddress.code+'.svg'" class="sm:w-14 w-12 m-auto">
-          <span 
-            class="text-xs mt-2 text-center"
-            :class="selectedCountryAddress.code === countryAddress.code? 'text-primary': 'text-off-white'"
-          >{{ countryAddress.name }}</span>
-        </div>
-      
+        <GeneralCountries 
+          @clicked="(country: Country) => updateCountryAddress(country)"
+          select-country-code="us"
+        />
       </div>
       <!-- Estimated arrival time to Nigeria -->
       <div class="mt-4 text-xs flex flex-col grow-1 text-login-offwhite">
@@ -107,7 +92,6 @@
 </template>
 <script lang="ts" setup>
    import { onMounted, ref, toRefs, onBeforeMount} from 'vue';
-
    import type { Country } from '~/types'
    import { TransportMode } from '~/types'
 
@@ -137,66 +121,6 @@
         }
       }
     }
-
-    const uk = {
-      id: 2,
-      code: 'uk',
-      name: 'United Kingdom',
-      img: '',
-      eta: [
-        {
-          type: TransportMode.FREIGHT,
-          time: '3 days'
-        },
-        {
-          type: TransportMode.SHIP,
-          time: '3 weeks'
-        },
-      ],
-      address: {
-        full_address: 'Taimbo Cargo <br> 181 Deptford <br> High Street <br> London <br> SE8 3NTa',
-        address_breakdown: {
-          postcode: 'SE8 3NT',
-          short_address: '181 Deptford <br>  High Street <br> London SE8 3NTa',
-          city: 'London',
-          state: 'England',
-          country: 'United Kingdom'
-        }
-      }
-    }
-
-    const china = {
-      id: 2,
-      code: 'china',
-      name: 'China',
-      img: '',
-      eta: [
-        {
-          type: TransportMode.FREIGHT,
-          time: '7 days'
-        },
-        {
-          type: TransportMode.SHIP,
-          time: '6 weeks'
-        },
-      ],
-      address: {
-        full_address: '广州市越秀区广园西路218号盈富商贸城C区069-071档 <br> Shop C069-071 , Ying Fu building ,  No.218 Guang Yuan Xi Rd, Yue Xiu District <br> GuangZhou',
-        address_breakdown: {
-          postcode: '510000',
-          short_address: 'Shop C069-071 , Ying Fu building <br>  No.218 Guang Yuan Xi Rd, Yue Xiu District <br> GuangZhou',
-          city: 'Guangzhou',
-          state: 'Guangdong',
-          country: 'China'
-        }
-      }
-    }
-
-   const countryAddresses = ref<Country[]>([
-      us,
-      uk,
-      china
-   ])
 
    const selectedCountryAddress = ref<Country>(us)
 
