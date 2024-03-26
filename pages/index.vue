@@ -4,7 +4,7 @@
     <GeneralNavbar/>
 
     <!-- Country select -->
-    <div class="mt-10 flex flex-col m-auto text-off-white font-inter w-10/12 pb-14">
+    <div class="mt-10 flex flex-col m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
       <div class="sm:text-base text-sm">
         <span>Select country to ship from</span>
       </div>

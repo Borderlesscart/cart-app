@@ -1,5 +1,5 @@
 <template>
-     <div class="w-11/12 sm:w-10/12 flex mx-auto mt-6">
+     <div class="w-11/12 sm:w-10/12 flex mx-auto mt-6 max-w-6xl">
         <div class="w-1/2">
             <img src="/img/logo.svg" class="w-9 h-11">
         </div>
@@ -40,8 +40,8 @@
 
     const showProfileDropDown = ref(false)
     const showNotificationDropDown = ref(false)
-    const user = useCookie('user')
-    const jwtToken = useCookie('jwtToken')
+    const user: any|undefined = useCookie('user')
+    const jwtToken: any|undefined = useCookie('jwtToken')
 
     const logOut = () => {
         jwtToken.value = undefined

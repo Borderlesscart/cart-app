@@ -9,7 +9,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true, },
   modules: [
     '@nuxtjs/tailwindcss',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    'nuxt-primevue'
   ],
   css: ['~/assets/css/config.scss'],
   runtimeConfig: {
@@ -19,6 +20,12 @@ export default defineNuxtConfig({
     baseURL: 'localhost:4000/',
     proxyHeaders: false,
     credentials: false
+  },
+  primevue: {
+    options: {
+        unstyled: false
+    },
+    // includes: ['FileUpload'],
+    cssLayerOrder: 'tailwind-base, primevue, tailwind-utilities'
   }
-  
 })

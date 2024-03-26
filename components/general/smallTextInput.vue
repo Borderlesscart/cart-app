@@ -4,7 +4,7 @@
         <input 
             class="font-inter rounded w-full bg-dark
             outline-none 
-            py-2.5 px-2.5 text-md border border-input-border 
+            py-2 px-2 text-xs border border-input-border 
             autofill:bg-dark focus:ring focus:ring-input-border" 
             :class="showLabel? 
             'placeholder-dark-grey text-input-placeholder': 
@@ -61,13 +61,13 @@ import { validateEmail } from "~/composable/util";
             type: Boolean,
             default: false
         },
-        value: {
+        intialValue: {
             type: String,
             default: '',
         }
     })
 
-    const { type, name, placeHolder, autoFocus, showLabel, labelName, optional, formSubmitted, value} = toRefs(props)
+    const { type, name, placeHolder, autoFocus, showLabel, labelName, optional, formSubmitted, intialValue} = toRefs(props)
 
     const emits = defineEmits([
         'input',
@@ -75,7 +75,7 @@ import { validateEmail } from "~/composable/util";
     ])
 
     const isInputDirty = ref(false)
-    const inputValue = ref('')
+    const inputValue = ref(intialValue.value)
     const errorField = showLabel?labelName.value:placeHolder.value
     const errors = ref({
         'required': `${errorField} is required`,

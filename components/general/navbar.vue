@@ -1,6 +1,6 @@
 <template>
      <!-- Nav bar -->
-     <div class="w-10/12 border-b border-dark-grey flex mt-16 m-auto text-off-white justify-between sm:justify-around sm:text-base text-sm">
+     <div class="max-w-6xl w-10/12 border-b border-dark-grey flex mt-16 m-auto text-off-white justify-between sm:justify-around sm:text-base text-sm">
         <div 
             v-for="navRoute in navRoutes" 
             class="cursor-pointer font-inter"

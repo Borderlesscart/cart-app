@@ -7,5 +7,11 @@ export const baseApi = {
         forgot_password: () => 'auth/forgot-password',
         verify_password_reset: () => 'auth/verify-password-reset',
         update_password: () => 'auth/update-password'
+    },
+    user: {
+        storeBulkDeliveryItem: () => 'profile/bulk-shipped-goods',
+        updateBulkDeliveryItem: () => 'profile/delivery-list',
+        getDeliveryListItems: () => 'profile/delivery-list',
+        uploadDeliveryItem: () => 'profile/upload-shipped-goods'
     }
 }

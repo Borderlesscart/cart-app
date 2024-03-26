@@ -34,6 +34,8 @@ export const API = axios.create({
     (err) => {
       const originalRequest = err.config;
       const notificationStore = useNotificationStore()
+      const user: any|undefined = useCookie('user')
+      const jwtToken: any|undefined = useCookie('jwtToken')
 
       if (err?.response?.status === 404) {
         notificationStore.updateError(err.response?.data?.message || `${err.config.url} not found`)
@@ -41,7 +43,8 @@ export const API = axios.create({
         notificationStore.updateError(`Permission Error`)
       } else if (err?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        
+        user.value = undefined
+        jwtToken.value = undefined
         notificationStore.updateError(`user authentication invalid/expired: redirecting to login...`)  
         navigateTo('/auth/login')
       } else if(err?.response?.status === 400){
