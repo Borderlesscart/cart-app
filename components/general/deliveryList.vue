@@ -61,24 +61,25 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, toRefs } from 'vue';
+import { onMounted, ref, toRefs, onBeforeMount } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 
 const props = defineProps({
     deliveryListItemsProp: {
-        type: Array<{name: String}>,
-        default: [
-            {
-                name: ''
-            }
-        ]
+        type: Array,
+        default: []
     }
 })
 
 const { deliveryListItemsProp } = toRefs(props)
+console.log(deliveryListItemsProp)
 const emits = defineEmits(['addedListItem', 'uploadedScreenshot'])
-const deliveryListItems = ref(deliveryListItemsProp.value)
+const deliveryListItems = ref([
+    {
+        name: ''
+    }
+])
 
 const fileUploadStyle = ref({
       root: 'bg-dark',
@@ -91,13 +92,25 @@ const fileUploadStyle = ref({
 })
 
 const validFormFields = ref<string[]>([])
-const user = ref({})
 
 const uploadListItem = ref<any[]>([])
 
-const userCookie: any|undefined = useCookie('user')
-const jwtToken: any|undefined = useCookie('jwtToken')
+const userProfileStore = userStore()
 
+onBeforeMount(async () => {
+        const userCookie: any = useCookie('user')
+        const jwtToken = useCookie('jwtToken')
+        if(!userCookie.value && !jwtToken.value){
+          navigateTo('auth/login')
+          return
+        }
+
+        await userProfileStore.getUserDeliveryItems({
+        'user_id': userCookie?.value?.id,
+        'status': 'pending'
+      })
+       deliveryListItems.value = userProfileStore.deliveryItems
+})
 const clearSelectedFile = (formInput: string) => {
       const key = parseInt(formInput.split('_')[1])
       if(isValidFormInput(formInput)){

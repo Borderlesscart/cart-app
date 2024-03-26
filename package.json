@@ -21,6 +21,7 @@
     "@canopassoftware/vue-file-upload": "^1.0.8",
     "@pinia/nuxt": "^0.5.1",
     "axios": "^1.6.7",
+    "dayjs": "^1.11.10",
     "filepond": "^4.30.6",
     "filepond-plugin-image-preview": "^4.6.12",
     "pinia": "^2.1.7",

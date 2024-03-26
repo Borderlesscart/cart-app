@@ -15,86 +15,41 @@
             </div>
         </div>
         <div class="max-h-44 overflow-y-scroll scrollbar">
-          <!-- <div class="w-full lg:w-8/12 flex mb-2">
-            <div 
-            class="cursor-pointer px-4 py-2 flex w-10/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
-            >
-              <div class="flex flex-col w-10/12">
-                <span class="text-sm pb-1 font-bold font-judson">US to Lagos delivery items</span>
+          <div
+            v-if="deliveryListItems && deliveryListItems?.length > 1"
+          >
+              <div 
+                v-for="(listItem, index) in deliveryListItems"
+                class="w-full lg:w-8/12 flex mb-2"
+              >
+              <div 
+                class="cursor-pointer px-4 py-2 flex w-10/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
+              >
+                <div class="flex flex-col w-10/12">
+                  <span class="text-sm pb-1 font-bold font-judson">
+                    {{ getCountryFullName(listItem.origin_country) }} 
+                    to
+                    {{ getCountryFullName(listItem.destination_country) }}
+                    :&nbsp; {{ formatDate(listItem.created_at) }}</span>
+                </div>
+                <div class="text-dark-primary text-xs flex m-auto w-2/12">
+                  <span>View </span>
+                </div>
               </div>
-              <div class="text-dark-primary text-xs flex m-auto w-2/12">
-                <span>View </span>
-              </div>
-            </div>
-            <div class="w-2/12 m-auto">
-              <img src="/img/add.svg" class="w-8 m-auto">
-            </div>
-          </div> -->
-          <GeneralDeliveryList
-          :delivery-list-items-prop="deliveryListItems"
-          />
-          <!-- <div v-for="(deliveryItem, key) in deliveryListItems" class="w-full lg:w-8/12 flex ">
-            <div class="sm:w-8/12 w-6/12">
-              <GeneralSmallTextInput
-              name="shipped item"
-              place-holder="list shipped item"
-              label-name="shipped item"
-              :optional="true"
-              :auto-focus="key === 0?true:false"
-              :intial-value="deliveryItem.name"
-              @input="value => deliveryItem.name = value"
-              @valid="value => validateFormInput(value, 'name_'+key)"
-              />
-            </div>   
-            <div class="sm:w-4/12 w-6/12 flex justify-between">
-              <div class="w-4/12 flex items-baseline cursor-pointer mr-4 filepond--label-action">
-                <span class="mt-1 mr-auto mb-auto ml-4 text-xs relative top-1 right-1">or</span>
-                    <FileUpload 
-                    :name="'image-item-'+key"
-                    @upload="onTemplatedUpload($event)" 
-                    :multiple="false" 
-                    accept="image/*" 
-                    :maxFileSize="1000000" 
-                    @select="file => onSelectedFiles(file, 'name_'+key)"
-                    @remove="clearSelectedFile('name_'+key)"
-                    :pt="fileUploadStyle"
-                    @before-upload="data => beforeUpload(data)"
-                    >
-                    <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
-                      <div class="" v-if="files.length === 0" @click="chooseCallback()">
-                        <img src="/img/upload.svg" class="w-8 mx-auto">
-                        <span class="text-login-offwhite text-xs">upload</span>
-                      </div>
-                      <span v-else></span>
-                    </template>
-                    <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
-                      <div v-if="files.length > 0">
-                        <div v-for="(file, index) of files" :key="file.name + file.type + file.size" >
-                           <div class="p-0 flex flex-col items-center">
-                            <img role="presentation" :alt="file.name" :src="file.objectURL" class="w-8 h-8 mx-auto rounded-lg" />
-                            <button class="text-login-offwhite text-xs" @click="removeFileCallback()">remove</button>
-                           </div>
-                        </div>
-                      </div>
-                    </template>
-                    <template #empty>
-
-                    </template>  
-                    </FileUpload>
-              
-              </div>
-
-              <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
-                <img src="/img/add.svg" class="w-8 mx-auto">
-              </div>
-              
-              <div v-if="key > 0" class="w-3/12  h-max" @click="deleteListItem(key)">
-                <img src="/img/trash.svg" class="w-8 relative trash">
+              <div 
+                v-if="index === deliveryListItems.length -1"
+                class="w-2/12 m-auto"
+              >
+                <img src="/img/add.svg" class="w-8 m-auto">
               </div>
             </div>
-            
+          </div>
           
-          </div> -->
+          <GeneralDeliveryList
+          v-else
+          @added-list-item=""
+          @uploaded-screenshot=""
+          />
         </div>
        
         <div class="sm:text-base text-sm mt-2">
@@ -139,20 +94,13 @@
     import { useCookie } from 'nuxt/app';
     import { ref, onMounted, onBeforeMount } from 'vue'
     import type { Country } from '~/types'
-    import FileUpload from 'primevue/fileupload'
-    import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
+    import dayjs from 'dayjs'
+    import relativeTime from 'dayjs/plugin/relativeTime'
+    dayjs.extend(relativeTime);
 
     const selectedCountryAddress = ref<any>(null)
-    const deliveryListItems = ref([
-      {
-        name: ''
-      }
-    ])
+    const deliveryListItems = ref<Array<any>>()
 
-    const uploadListItem = ref<any[]>([])
-    const deliveryId = ref<number|null>(null)
-
-    const formFields = ref(deliveryListItems.value.length + 1)
     const validFormFields = ref<string[]>([])
     const user = ref({})
 
@@ -160,81 +108,36 @@
     const userProfileStore = userStore()
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
-    const fileUploadStyle = ref({
-      root: 'bg-dark',
-      buttonbar: 'bg-dark p-0',
-      content: 'bg-dark p-0',
-      badge: 'hidden',
-      fileName: 'hidden',
-      fileSize: 'hidden',
-      file: 'p-0'
-    })
+    const countryFullNameData = ref<string>('')
+
 
     const userCookie: any|undefined = useCookie('user')
     const jwtToken: any|undefined = useCookie('jwtToken')
 
     onBeforeMount(async () => {
-       await userProfileStore.getUserDeliveryItems({
-        'user_id': userCookie?.value?.id,
-        'status': 'pending'
-      })
-       deliveryListItems.value = userProfileStore.deliveryItems
+       
     })
-  
-    const onTemplatedUpload = (value: any) => {
 
+    const formatDate = (date: string) => {
+      const now = dayjs()
+      return dayjs(date).from(now)) 
     }
-
-    const onSelectedFiles = (data: any, formInput: string) => {
-      if(!isValidFormInput(formInput)){
-        validateFormInput(true, formInput)
-      }
-
-      const file = data.files[0]
-
-      const key = parseInt(formInput.split('_')[1])
-      const uploadList = uploadListItem.value
-      if(!uploadList.find((value, index) => index === key)){
-        uploadListItem.value.push(file)
-      }
-      
-    }
-
-    const beforeUpload = (data: any) => {
-     
-    }
-
-    const clearSelectedFile = (formInput: string) => {
-      const key = parseInt(formInput.split('_')[1])
-      if(isValidFormInput(formInput)){
-        validateFormInput(false, formInput)
-        sanitizeList(key)
-      }
-
-    }
-
-    const isValidFormInput = (formInput: string) => {
-      if(validFormFields.value.includes(formInput)){
-        return true
-      }
-      return false
-    }
-
-    const validateFormInput = (valid: boolean, formInput: string) => {
-        if(valid){
-            if(!validFormFields.value.includes(formInput)){
-                validFormFields.value.push(formInput)
-            }        
-        }else{
-            validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
+    const getCountryFullName = (code: string) => {
+      if(code === 'US'){
+          return 'United States'
         }
-    }
 
-    const sanitizeList = (key: number) => {
-      const list = deliveryListItems.value
-      if(list.length > 1){
-        deliveryListItems.value = list.filter((item, index) => key !== index)
-      }
+        if(code === 'UK'){
+          return'United Kingdom'
+        }
+
+        if(code === 'NG'){
+          return 'Nigeria'
+        }
+
+        if(code === 'Ch'){
+          return 'China'
+        }
     }
 
     const updateCountryAddress = (selectedCountry: Country) => {
@@ -242,7 +145,7 @@
     }
 
     const saveDeliveryItems = async () => {
-      const totalDeliveryItem = deliveryListItems.value.length
+      const totalDeliveryItem = deliveryListItems.value?.length
       if(totalDeliveryItem !== validFormFields.value.length){
         notification.updateError('item(s) name or screenshot required')
         return
@@ -270,31 +173,22 @@
       loading.value = false
       itemSaved.value = true
     }
-    const addListItem = () => {
-      const totalDeliveryItem = deliveryListItems.value.length
-      if(totalDeliveryItem !== validFormFields.value.length){
-        return
-      }
 
-      const listItemId = deliveryListItems.value.length + 1
-      const item = {
-        name: ''
-      }
 
-      deliveryListItems.value = [ ...deliveryListItems.value, item]
-    }
-
-    const deleteListItem = (key: any) => {
-      deliveryListItems.value = deliveryListItems.value.filter((item: any, index) => index !== key)
-    }
-
-    const init = () => {
-        const userCookie = useCookie('user')
+    const init = async () => {
+        const userCookie: any = useCookie('user')
         const jwtToken = useCookie('jwtToken')
         if(!userCookie.value && !jwtToken.value){
           navigateTo('auth/login')
           return
         }
+
+        await userProfileStore.getUserDeliveryItems({
+        'user_id': userCookie?.value?.id,
+        'status': 'pending'
+      })
+       deliveryListItems.value = userProfileStore.deliveryItems
+       console.log(deliveryListItems.value)
     }
 
     init()

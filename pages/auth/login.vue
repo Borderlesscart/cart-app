@@ -8,8 +8,8 @@
 
         <!-- <div class="border-b border-dark-grey mt-8 sm:w-96 w-full mx-auto"></div> -->
         <!-- Form input -->
-        <div class="flex flex-col items-center mt-10">
-            <form>
+        <form>
+            <div class="flex flex-col items-center mt-10">
                 <div class="sm:w-96 w-full">
                     <GeneralTextInput 
                     type="text" 
@@ -62,11 +62,9 @@
                     <NuxtLink to="/auth/register" class="hover:button-color text-primary">
                         Sign Up
                     </NuxtLink>
-                </div>
-            </form>
-            
-        </div>
-
+                </div>           
+            </div>
+        </form>
     </div>
 
 </template>
