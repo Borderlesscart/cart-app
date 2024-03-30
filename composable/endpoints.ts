@@ -12,6 +12,7 @@ export const baseApi = {
         storeBulkDeliveryItem: () => 'profile/bulk-shipped-goods',
         updateBulkDeliveryItem: () => 'profile/delivery-list',
         getDeliveryListItems: () => 'profile/delivery-list',
-        uploadDeliveryItem: () => 'profile/upload-shipped-goods'
+        uploadDeliveryItem: () => 'profile/upload-shipped-goods',
+        deleteDeliveryItem: (id: any) => `profile/delivery-list/${id}`
     }
 }

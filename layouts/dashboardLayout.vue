@@ -42,6 +42,7 @@
     const showNotificationDropDown = ref(false)
     const user: any|undefined = useCookie('user')
     const jwtToken: any|undefined = useCookie('jwtToken')
+    
 
     const logOut = () => {
         jwtToken.value = undefined

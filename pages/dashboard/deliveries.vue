@@ -4,20 +4,19 @@
      <GeneralNavbar/>
 
      <div class="mt-10 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
+      <div v-if="deliveryListItems && deliveryListItems?.length > 1">
         <div class="sm:text-base text-sm">
-            <span>Add delivery items</span>
+            <span>Pending delivery items</span>
         </div>
         <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
             <div class="flex mt-2">
             <span class="" >
-                List or upload screenshot of your order
+                List of items we are still looking out for
             </span>
             </div>
         </div>
-        <div class="max-h-44 overflow-y-scroll scrollbar">
-          <div
-            v-if="deliveryListItems && deliveryListItems?.length > 1"
-          >
+        <div class="max-h-72 overflow-y-scroll scrollbar">
+          <div>
               <div 
                 v-for="(listItem, index) in deliveryListItems"
                 class="w-full lg:w-8/12 flex mb-2"
@@ -25,34 +24,63 @@
               <div 
                 class="cursor-pointer px-4 py-2 flex w-10/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
               >
-                <div class="flex flex-col w-10/12">
-                  <span class="text-sm pb-1 font-bold font-judson">
-                    {{ getCountryFullName(listItem.origin_country) }} 
+                <div class="flex flex-col w-10/12 font-judson">
+                  <span class="text-sm pb-1 font-bold">
+                    {{ listItem.origin_country }} 
                     to
                     {{ getCountryFullName(listItem.destination_country) }}
-                    :&nbsp; {{ formatDate(listItem.created_at) }}</span>
+                    ~ 
+                    <span class="text-xs">
+                      {{ formatDate(listItem.created_at) }}
+                    </span>
+                  </span>
                 </div>
                 <div class="text-dark-primary text-xs flex m-auto w-2/12">
                   <span>View </span>
                 </div>
               </div>
+
               <div 
                 v-if="index === deliveryListItems.length -1"
-                class="w-2/12 m-auto"
+                class="w-2/12 m-auto cursor-pointer"
+                @click="addDeliveryItem()"
               >
                 <img src="/img/add.svg" class="w-8 m-auto">
               </div>
+              <div
+              v-else
+              class="w-2/12 m-auto cursor-pointer"
+              @click="deleteDeliveryItem(listItem)"
+              >
+                <img src="/img/trash.svg" class="w-8 m-auto">
+              </div>
+              
             </div>
-          </div>
+
+          </div>   
           
+        </div>
+      </div>
+      <div v-else>
+        <div class="sm:text-base text-sm">
+            <span>Add delivery items</span>
+        </div>
+        <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
+            <div class="flex mt-2">
+            <span class="" >
+                List or upload screenshot of delivery items
+            </span>
+            </div>
+        </div>
+        <div class="max-h-44 overflow-y-scroll scrollbar">
           <GeneralDeliveryList
-          v-else
           @added-list-item=""
           @uploaded-screenshot=""
           />
         </div>
-       
-        <div class="sm:text-base text-sm mt-2">
+        
+      </div>
+        <!-- <div class="sm:text-base text-sm mt-2">
             <span>Select country's warehouse you shipped to</span>
         </div>
         <div class="text-xs flex flex-col grow-1 text-login-offwhite">
@@ -61,15 +89,15 @@
                  The country of the warehouse you shipped to
             </span>
             </div>
-        </div>
+        </div> -->
 
-        <div class="mt-6 flex flex-wrap grow">
+        <!-- <div class="mt-6 flex flex-wrap grow">
             <GeneralCountries 
             @clicked="(country: Country) => updateCountryAddress(country)"
             />
-        </div>
+        </div> -->
 
-        <div class="text-login-offwhite w-10/12 mt-6">
+        <!-- <div class="text-login-offwhite w-10/12 mt-6">
           <div class="">
             <button v-if="!loading" class="text-primary" @click="saveDeliveryItems()">
                  {{ !loading && !itemSaved ? 'Save items': 'Saved' }} 
@@ -78,7 +106,7 @@
                   Saving...
             </button>
           </div>
-        </div>
+        </div> -->
 
         <div class="text-xs flex flex-col grow-1 text-login-offwhite absolute bottom-10 w-10/12">
             <div class="flex mt-2 mr">
@@ -108,11 +136,8 @@
     const userProfileStore = userStore()
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
-    const countryFullNameData = ref<string>('')
-
 
     const userCookie: any|undefined = useCookie('user')
-    const jwtToken: any|undefined = useCookie('jwtToken')
 
     onBeforeMount(async () => {
        
@@ -120,8 +145,9 @@
 
     const formatDate = (date: string) => {
       const now = dayjs()
-      return dayjs(date).from(now)) 
+      return dayjs(date).from(now)
     }
+
     const getCountryFullName = (code: string) => {
       if(code === 'US'){
           return 'United States'
@@ -140,6 +166,14 @@
         }
     }
 
+    const addDeliveryItem = () => {
+
+    }
+
+    const deleteDeliveryItem = async (item: any) => {
+      await userProfileStore.deleteUserDeliveryItem(item.id)
+      await getUserDeliveryItems('pending')
+    }
     const updateCountryAddress = (selectedCountry: Country) => {
       selectedCountryAddress.value = selectedCountry
     }
@@ -176,19 +210,21 @@
 
 
     const init = async () => {
-        const userCookie: any = useCookie('user')
         const jwtToken = useCookie('jwtToken')
         if(!userCookie.value && !jwtToken.value){
           navigateTo('auth/login')
           return
         }
 
-        await userProfileStore.getUserDeliveryItems({
+       await getUserDeliveryItems('pending')
+    }
+
+    const getUserDeliveryItems = async (status: string) => {
+      await userProfileStore.getUserDeliveryItems({
         'user_id': userCookie?.value?.id,
-        'status': 'pending'
+        status
       })
        deliveryListItems.value = userProfileStore.deliveryItems
-       console.log(deliveryListItems.value)
     }
 
     init()

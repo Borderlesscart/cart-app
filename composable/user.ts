@@ -12,3 +12,7 @@ export const getDeliveryItems = async (query: any): Promise<any> => {
     }
     )
 }
+
+export const deleteUserDeliveryItem = async (id: any): Promise<any> => {
+    return await API.delete(baseApi.user.deleteDeliveryItem(id))
+}
