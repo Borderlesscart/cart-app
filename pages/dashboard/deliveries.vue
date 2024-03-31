@@ -2,8 +2,20 @@
      <!-- Top header -->
      <NuxtLayout name="dashboard-layout"></NuxtLayout>
      <GeneralNavbar/>
-
-     <div class="mt-10 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
+    <div class="mt-4 w-10/12 m-auto">
+        <div class="text-xs flex flex-col grow-1  mb-4">
+            <div class="flex mt-2">
+              <span v-for="(route, key) in routeList" 
+              class="text-login-offwhite"
+              :class="route.isActive ? 'text-primary': ''"
+              @click="updateActiveRoute(route.id)"
+               >
+                  {{ route.name }}  <template class="" v-if="key < routeList.length - 1">/ &nbsp;</template>
+              </span>
+            </div>
+        </div>
+    </div>
+     <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
       <div v-if="deliveryListItems && deliveryListItems?.length > 1">
         <div class="sm:text-base text-sm">
             <span>Pending delivery items</span>
@@ -120,7 +132,7 @@
 </template>
 <script setup lang="ts">
     import { useCookie } from 'nuxt/app';
-    import { ref, onMounted, onBeforeMount } from 'vue'
+    import { ref, onMounted, onBeforeMount, watch } from 'vue'
     import type { Country } from '~/types'
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
@@ -137,15 +149,61 @@
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
 
+    // traverse tree to create route list
+    const subRouter = ref([ 
+       {
+        id: 'pendingDeliveryItems',
+        isActive: false,
+        name: 'delivery items',
+        childRoute: [
+          {
+            id: 'viewDeliveryItem',
+            isActive: true, //if true, display parent route, this and sub route in any
+            name: 'view delivery item'
+          },
+
+          {
+            id: 'noDel',
+            isActive: false, //if true, display parent route, this and sub route in any
+            name: 'view delivery item'
+          }
+        ]
+      },
+       {
+        id: 'addDeliveryItems',
+        isActive: false,
+        name: 'add new delivery items'
+      },
+    ])
+
+
+    const routeList = ref(subRouter.value)
+
+    const activeRoute = ref('pendingDeliveryItems') //id of active route
+
     const userCookie: any|undefined = useCookie('user')
 
     onBeforeMount(async () => {
        
     })
 
+    watch(subRouter, (oldValue, newValue) => {
+      /**
+       * Traverse the tree and update routeList
+       */
+
+      //  if route is active, skip going down the tree. continue on the same levelH
+    })
+
     const formatDate = (date: string) => {
       const now = dayjs()
       return dayjs(date).from(now)
+    }
+
+    const updateActiveRoute = (routeId: string) => {
+      if(routeId !== activeRoute.value){
+        // update subRouter
+      }
     }
 
     const getCountryFullName = (code: string) => {
@@ -217,6 +275,98 @@
         }
 
        await getUserDeliveryItems('pending')
+
+       const routeItems = subRouter.value
+      /**
+       * 
+       
+       * 
+       *    const subRouter = ref([ 
+              {
+                id: 'pendingDeliveryItems',
+                isActive: false,
+                name: 'delivery items',
+                childRoute: [
+                  {
+                    id: 'viewDeliveryItem',
+                    isActive: false, //if true, display parent route, this and sub route in any
+                    name: 'view delivery item'
+                  }
+                ]
+              },
+              {
+                id: 'addDeliveryItems',
+                isActive: true,
+                name: 'add new delivery items'
+              },
+            ])
+
+        f(n, 0) = 
+        fn:child(n, 00) = fn00
+        fn(n, 1) = fn1
+
+
+        // f(n, 00) = 
+       */
+
+      function updateActiveRoute(activeRouteId: string, status: boolean = true) {
+        function traverseAndUpdateRouteItems(routeItems: Array<any>, key: number, res: any): any {
+          let item: any = routeItems[key]
+          
+          if(item.id === activeRouteId){
+            item.isActive = status
+          }else{
+            item.isActive = !status
+          }
+          
+          if(routeItems.length - 1 === key){
+              return item
+            }
+
+          if(item.hasOwnProperty('childRoute')){
+            item['childRoute'] = traverseAndUpdateRouteItems(item.childRoute, 0, [])
+          }
+
+          res.push(item)
+
+          const t = traverseAndUpdateRouteItems(routeItems, key + 1, res)
+          res.push(t)
+          return res
+        }
+
+        return traverseAndUpdateRouteItems(subRouter.value, 0, [])
+      }
+
+      console.log(updateActiveRoute('pendingDeliveryItems'))
+       
+      function traverseWrapper(items: Array<any>) {
+
+        function traverseRouteItems(routeItems: Array<any>, key: number, res: Array<any>): any{
+
+          const item: any = routeItems[key]
+
+          res.push(item)
+          
+            if(routeItems.length - 1 === key){
+              return 
+            }
+            
+            if(item.hasOwnProperty('childRoute') && !item.isActive){
+               traverseRouteItems(item.childRoute, 0, res)
+            }
+
+            if(item.isActive){
+               traverseRouteItems(routeItems, key + 1, res)
+            }
+
+          return res
+        }
+
+        return traverseRouteItems(items, 0, [])
+      }
+      
+
+      //  console.log(traverseWrapper(subRouter.value))
     }
 
     const getUserDeliveryItems = async (status: string) => {

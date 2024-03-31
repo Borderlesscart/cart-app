@@ -73,7 +73,7 @@ const props = defineProps({
 })
 
 const { deliveryListItemsProp } = toRefs(props)
-console.log(deliveryListItemsProp)
+// console.log(deliveryListItemsProp)
 const emits = defineEmits(['addedListItem', 'uploadedScreenshot'])
 const deliveryListItems = ref([
     {
