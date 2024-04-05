@@ -13,7 +13,7 @@
         </div>
 </template>
 <script lang="ts" setup>
-    import { ref, defineEmits, defineProps } from 'vue'
+    import { ref } from 'vue'
     import type { Country } from '~/types'
     import { TransportMode } from '~/types'
 

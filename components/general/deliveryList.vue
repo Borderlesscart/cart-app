@@ -7,7 +7,7 @@
               label-name="shipped item"
               :optional="true"
               :auto-focus="key === 0?true:false"
-              :intial-value="''"
+              :intial-value="deliveryItem.name"
               @input="value => deliveryItem.name = value"
               @valid="value => validateFormInput(value, 'name_'+key)"
               />
@@ -68,19 +68,17 @@ import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 const props = defineProps({
     deliveryListItemsProp: {
         type: Array,
-        default: []
+        default: [{
+          name: ''
+        }]
     }
 })
 
 const { deliveryListItemsProp } = toRefs(props)
-// console.log(deliveryListItemsProp)
-const emits = defineEmits(['addedListItem', 'uploadedScreenshot'])
-const deliveryListItems = ref([
-    {
-        name: ''
-    }
-])
 
+const emits = defineEmits(['addedListItem', 'uploadedScreenshot'])
+const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
+console.log(deliveryListItems.value)
 const fileUploadStyle = ref({
       root: 'bg-dark',
       buttonbar: 'bg-dark p-0',
@@ -97,20 +95,6 @@ const uploadListItem = ref<any[]>([])
 
 const userProfileStore = userStore()
 
-onBeforeMount(async () => {
-        const userCookie: any = useCookie('user')
-        const jwtToken = useCookie('jwtToken')
-        if(!userCookie.value && !jwtToken.value){
-          navigateTo('auth/login')
-          return
-        }
-
-        await userProfileStore.getUserDeliveryItems({
-        'user_id': userCookie?.value?.id,
-        'status': 'pending'
-      })
-       deliveryListItems.value = userProfileStore.deliveryItems
-})
 const clearSelectedFile = (formInput: string) => {
       const key = parseInt(formInput.split('_')[1])
       if(isValidFormInput(formInput)){
@@ -122,6 +106,10 @@ const clearSelectedFile = (formInput: string) => {
 
 const beforeUpload = (data: any) => {
      
+}
+
+const addListItem = () => {
+  deliveryListItems.value.push({name: ''})
 }
 
 const deleteListItem = (key: any) => {
@@ -169,5 +157,5 @@ const onSelectedFiles = (data: any, formInput: string) => {
         return true
       }
       return false
-    }
+  }
 </script>

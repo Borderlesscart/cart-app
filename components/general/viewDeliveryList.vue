@@ -1,26 +1,28 @@
 <template>
     <div>
         <div class="sm:text-base text-sm">
-            <span>Add delivery items</span>
+            <span>Delivery items</span>
         </div>
         <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
             <div class="flex mt-2">
             <span class="" >
-                List or upload screenshot of your order 
+                List or upload screenshot of your order
             </span>
             </div>
         </div>
         <div class="max-h-44 overflow-y-scroll scrollbar">
             <GeneralDeliveryList
-              @added-list-item=""
-              @uploaded-screenshot=""
-              :delivery-list-items-prop="deliveryListItems"
+            @added-list-item=""
+            @uploaded-screenshot=""
+            :delivery-list-items-prop="deliveryListItems"
             />
         </div>
+
         <div class="sm:text-base text-sm">
-            <span>Select country you shipped from</span>
+                <span>Select country you shipped from</span>
         </div>
         <div class="mt-4 flex flex-wrap grow">
+            
             <GeneralCountries 
             @clicked="(country: Country) => updateCountryAddress(country)"
             />
@@ -43,14 +45,22 @@
     import { useCookie } from 'nuxt/app';
     import type { Country } from '~/types'
 
+    const props = defineProps({
+        deliveryListItemsProp: {
+            type: Array,
+            required: true,
+        }
+    })
+
+    const { deliveryListItemsProp } = toRefs(props)
+
     const selectedCountryAddress = ref<any>(null)
    
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
     const user = ref({})
-    const deliveryListItems = ref<Array<any>>()
+    const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
     const validFormFields = ref<string[]>([])
-
 
     const updateCountryAddress = (selectedCountry: Country) => {
       selectedCountryAddress.value = selectedCountry

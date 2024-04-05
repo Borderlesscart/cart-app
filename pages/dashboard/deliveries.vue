@@ -6,7 +6,7 @@
         <div class="text-xs flex flex-col grow-1  mb-4">
             <div class="flex mt-2">
               <span v-for="(route, key) in routeList" 
-              class="text-login-offwhite"
+              class="text-login-offwhite cursor-pointer"
               :class="route.isActive ? 'text-primary': ''"
               @click="updateActiveRoute(route.id)"
                >
@@ -16,7 +16,7 @@
         </div>
     </div>
      <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
-      <div v-if="deliveryListItems && deliveryListItems?.length > 1">
+      <div v-if="deliveryListItems && deliveryListItems?.length > 1 && activeRoute === 'pendingDeliveryItems'">
         <div class="sm:text-base text-sm">
             <span>Pending delivery items</span>
         </div>
@@ -35,6 +35,7 @@
               >
               <div 
                 class="cursor-pointer px-4 py-2 flex w-10/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
+                @click="updateActiveDeliveryList(listItem)"
               >
                 <div class="flex flex-col w-10/12 font-judson">
                   <span class="text-sm pb-1 font-bold">
@@ -55,7 +56,7 @@
               <div 
                 v-if="index === deliveryListItems.length -1"
                 class="w-2/12 m-auto cursor-pointer"
-                @click="addDeliveryItem()"
+                @click="updateActiveRoute('addDeliveryItems')"
               >
                 <img src="/img/add.svg" class="w-8 m-auto">
               </div>
@@ -73,52 +74,17 @@
           
         </div>
       </div>
-      <div v-else>
-        <div class="sm:text-base text-sm">
-            <span>Add delivery items</span>
-        </div>
-        <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
-            <div class="flex mt-2">
-            <span class="" >
-                List or upload screenshot of delivery items
-            </span>
-            </div>
-        </div>
-        <div class="max-h-44 overflow-y-scroll scrollbar">
-          <GeneralDeliveryList
-          @added-list-item=""
-          @uploaded-screenshot=""
-          />
-        </div>
-        
+
+      <div v-if="activeRoute === 'addDeliveryItems'"> 
+        <GeneralAddDeliveryList/>  
       </div>
-        <!-- <div class="sm:text-base text-sm mt-2">
-            <span>Select country's warehouse you shipped to</span>
-        </div>
-        <div class="text-xs flex flex-col grow-1 text-login-offwhite">
-            <div class="flex mt-2">
-            <span class="" >
-                 The country of the warehouse you shipped to
-            </span>
-            </div>
-        </div> -->
 
-        <!-- <div class="mt-6 flex flex-wrap grow">
-            <GeneralCountries 
-            @clicked="(country: Country) => updateCountryAddress(country)"
-            />
-        </div> -->
-
-        <!-- <div class="text-login-offwhite w-10/12 mt-6">
-          <div class="">
-            <button v-if="!loading" class="text-primary" @click="saveDeliveryItems()">
-                 {{ !loading && !itemSaved ? 'Save items': 'Saved' }} 
-            </button>
-            <button v-else="loading" class="text-primary">
-                  Saving...
-            </button>
-          </div>
-        </div> -->
+      <div v-if="activeRoute === 'viewDeliveryItem'">
+        <GeneralViewDeliveryList
+        :delivery-list-items-prop="activeDeliveryList"
+        />
+      </div>
+   
 
         <div class="text-xs flex flex-col grow-1 text-login-offwhite absolute bottom-10 w-10/12">
             <div class="flex mt-2 mr">
@@ -143,67 +109,51 @@
 
     const validFormFields = ref<string[]>([])
     const user = ref({})
-
-    const notification = useNotificationStore()
-    const userProfileStore = userStore()
+    
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
 
+    const activeDeliveryList = ref()
+
     // traverse tree to create route list
     const subRouter = ref([ 
-       {
+      {
         id: 'pendingDeliveryItems',
-        isActive: false,
+        isActive: true,
         name: 'delivery items',
         childRoute: [
           {
             id: 'viewDeliveryItem',
-            isActive: true, //if true, display parent route, this and sub route in any
-            name: 'view delivery item'
-          },
-
-          {
-            id: 'noDel',
             isActive: false, //if true, display parent route, this and sub route in any
-            name: 'view delivery item'
-          }
+            name: 'view delivery items'
+          },
         ]
       },
-       {
+      {
         id: 'addDeliveryItems',
         isActive: false,
         name: 'add new delivery items'
       },
     ])
 
-
     const routeList = ref(subRouter.value)
 
     const activeRoute = ref('pendingDeliveryItems') //id of active route
-
-    const userCookie: any|undefined = useCookie('user')
-
-    onBeforeMount(async () => {
-       
-    })
-
-    watch(subRouter, (oldValue, newValue) => {
-      /**
-       * Traverse the tree and update routeList
-       */
-
-      //  if route is active, skip going down the tree. continue on the same levelH
-    })
 
     const formatDate = (date: string) => {
       const now = dayjs()
       return dayjs(date).from(now)
     }
 
-    const updateActiveRoute = (routeId: string) => {
-      if(routeId !== activeRoute.value){
-        // update subRouter
+    const updateActiveDeliveryList = (listItem: any) => {
+      const item = listItem.CustomerDeliveryListToCustomerDelivery
+      let res = []
+      for(let i = 0; i < item.length; i++){
+        const currVal = item[i]
+        res.push(currVal.CustomerDeliveryList)
       }
+      activeDeliveryList.value = res
+      updateActiveRoute('viewDeliveryItem')
     }
 
     const getCountryFullName = (code: string) => {
@@ -229,6 +179,8 @@
     }
 
     const deleteDeliveryItem = async (item: any) => {
+      
+      const userProfileStore = userStore()
       await userProfileStore.deleteUserDeliveryItem(item.id)
       await getUserDeliveryItems('pending')
     }
@@ -237,6 +189,9 @@
     }
 
     const saveDeliveryItems = async () => {
+      const notification = useNotificationStore()
+      const userCookie: any|undefined = useCookie('user')
+
       const totalDeliveryItem = deliveryListItems.value?.length
       if(totalDeliveryItem !== validFormFields.value.length){
         notification.updateError('item(s) name or screenshot required')
@@ -260,14 +215,117 @@
         destination_country: 'NG',
         data: deliveryListItems.value
       }
-
+      const userProfileStore = userStore()
       const storeBulkItems = await userProfileStore.storeBulkDeliveryItem(data)
       loading.value = false
       itemSaved.value = true
     }
 
 
+    function updateActiveRoute(activeRouteId: string, status: boolean = true) {
+       
+
+        if(activeRouteId !== activeRoute.value){
+          // update subRouter
+          activeRoute.value = activeRouteId
+          const newSubRouter =  traverseAndUpdateRouteItems(subRouter.value, 0, [])
+          const traversed = traverseWrapper(newSubRouter)
+          routeList.value = traversed
+        }
+         
+        function traverseAndUpdateRouteItems(routeItems: Array<any>, key: number, res: any): any {
+
+          const len = routeItems.length - 1
+          if (key > len){
+              return []
+          }
+
+          let item: any = routeItems[key]
+          
+          if(item.id === activeRoute.value){
+            item.isActive = status
+          }else{
+            item.isActive = !status
+          }
+
+          if(len === key){
+              return [item]
+            }
+
+          if(item.hasOwnProperty('childRoute')){
+            const childRoute = traverseAndUpdateRouteItems(item.childRoute, 0, [])
+            item['childRoute'] = childRoute
+          }
+
+          res.push(item)
+
+          const t = traverseAndUpdateRouteItems(routeItems, key + 1, res)
+          res.push(...t)
+          return res
+        }
+    }
+
+    /**
+     * 
+     * @param items 
+     * 
+     * fn(0) = 
+     * fn(00) = 
+     * 
+     * after each recursion, check if true exists in the array/result and if it does, stop the recursion and return result
+     */
+    function traverseWrapper(items: Array<any>): Array<any> {
+
+      function traverseRouteItems(routeItems: Array<any>, key: number, res: Array<any>)
+      {
+          const len = routeItems.length - 1
+          if (key > len){
+              return []
+          }
+
+          const item = routeItems[key]
+
+          if (len === key && !item.hasOwnProperty('childRoute'))
+          {
+              return [item]
+          }
+
+          res.push(item)
+
+          if(
+              item &&
+              item.hasOwnProperty('childRoute') &&
+              !item.isActive
+          )
+          {
+              const childRoute = traverseRouteItems(item.childRoute, 0, [])
+              if (isTreeBranchActive(childRoute)){
+                  res.push(...childRoute)
+                  return res
+              }
+          }
+
+          const t = traverseRouteItems(routeItems, key + 1, res)
+          res.push(...t)
+
+          return res
+      }
+
+      function isTreeBranchActive(treeBranch: Array<any>): boolean
+      {
+        const foundNode = treeBranch.find((value) => value.isActive === true)
+        if(foundNode){
+          return true
+        }
+        return false
+      }
+
+      return traverseRouteItems(items, 0, [])
+    }
+
+
     const init = async () => {
+      const userCookie: any|undefined = useCookie('user')
         const jwtToken = useCookie('jwtToken')
         if(!userCookie.value && !jwtToken.value){
           navigateTo('auth/login')
@@ -275,101 +333,12 @@
         }
 
        await getUserDeliveryItems('pending')
-
-       const routeItems = subRouter.value
-      /**
-       * 
-       
-       * 
-       *    const subRouter = ref([ 
-              {
-                id: 'pendingDeliveryItems',
-                isActive: false,
-                name: 'delivery items',
-                childRoute: [
-                  {
-                    id: 'viewDeliveryItem',
-                    isActive: false, //if true, display parent route, this and sub route in any
-                    name: 'view delivery item'
-                  }
-                ]
-              },
-              {
-                id: 'addDeliveryItems',
-                isActive: true,
-                name: 'add new delivery items'
-              },
-            ])
-
-        f(n, 0) = 
-        fn:child(n, 00) = fn00
-        fn(n, 1) = fn1
-
-
-        // f(n, 00) = 
-       */
-
-      function updateActiveRoute(activeRouteId: string, status: boolean = true) {
-        function traverseAndUpdateRouteItems(routeItems: Array<any>, key: number, res: any): any {
-          let item: any = routeItems[key]
-          
-          if(item.id === activeRouteId){
-            item.isActive = status
-          }else{
-            item.isActive = !status
-          }
-          
-          if(routeItems.length - 1 === key){
-              return item
-            }
-
-          if(item.hasOwnProperty('childRoute')){
-            item['childRoute'] = traverseAndUpdateRouteItems(item.childRoute, 0, [])
-          }
-
-          res.push(item)
-
-          const t = traverseAndUpdateRouteItems(routeItems, key + 1, res)
-          res.push(t)
-          return res
-        }
-
-        return traverseAndUpdateRouteItems(subRouter.value, 0, [])
-      }
-
-      console.log(updateActiveRoute('pendingDeliveryItems'))
-       
-      function traverseWrapper(items: Array<any>) {
-
-        function traverseRouteItems(routeItems: Array<any>, key: number, res: Array<any>): any{
-
-          const item: any = routeItems[key]
-
-          res.push(item)
-          
-            if(routeItems.length - 1 === key){
-              return 
-            }
-            
-            if(item.hasOwnProperty('childRoute') && !item.isActive){
-               traverseRouteItems(item.childRoute, 0, res)
-            }
-
-            if(item.isActive){
-               traverseRouteItems(routeItems, key + 1, res)
-            }
-
-          return res
-        }
-
-        return traverseRouteItems(items, 0, [])
-      }
-      
-
-      //  console.log(traverseWrapper(subRouter.value))
     }
 
     const getUserDeliveryItems = async (status: string) => {
+      const userCookie: any|undefined = useCookie('user')
+
+      const userProfileStore = userStore()
       await userProfileStore.getUserDeliveryItems({
         'user_id': userCookie?.value?.id,
         status

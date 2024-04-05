@@ -14,7 +14,8 @@
                     <GeneralTextInput 
                     type="text" 
                     name="user_id" 
-                    place-holder="email or phone"
+                    place-holder="email"
+                    label-name="email"
                     :auto-focus="true"
                     @input="value => data.user_id = value"
                     @valid="value => validateFormInput(value, 'user_id')"
