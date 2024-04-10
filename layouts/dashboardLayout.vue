@@ -1,5 +1,7 @@
 <template>
-     <div class="w-11/12 sm:w-10/12 flex mx-auto mt-6 max-w-6xl">
+     <div 
+     class="w-11/12 sm:w-10/12 flex mx-auto mt-6 max-w-6xl"
+     >
         <div class="w-1/2">
             <img src="/img/logo.svg" class="w-9 h-11">
         </div>
@@ -15,11 +17,18 @@
                         <img src="/img/profile.svg" class="w-10 h-10">
                     </button>      
                 </div>
-                <div v-if="showProfileDropDown" class="rounded bg-almost-dark px-4 py-2 flex flex-col text-right absolute top-16 right-4 sm:right-28 text-sm sm:text-base">
+                <div 
+                v-if="showProfileDropDown" 
+                
+                class="rounded bg-almost-dark px-4 py-2 flex flex-col text-right absolute top-16 right-4 sm:right-28 text-sm sm:text-base"
+                >
                     <span class="mb-4 text-light-dark text-primary">{{ user?.first_name }} {{ user?.last_name }} </span>
 
                     <NuxtLink to="#">
-                        <span class="text-off-white hover:text-primary">Update profile</span>
+                        <span class="text-off-white hover:text-primary">Profile</span>
+                    </NuxtLink>
+                    <NuxtLink to="#">
+                        <span class="text-off-white hover:text-primary">Delivery Address</span>
                     </NuxtLink>
                     <span 
                         class="text-off-white cursor-pointer hover:text-primary"
@@ -51,7 +60,31 @@
     }
 
     const closeNotificationDropDown = () => {
-        showProfileDropDown.value = false
+        if(showProfileDropDown.value){
+            showProfileDropDown.value = false
+        }
+    }
+
+    const vOnClickOutside = {
+        mounted: function (element: any, binding: any) {
+            element.clickOutsideEvent = function (event: any) {
+            const excludeComponent = document.getElementById(binding.arg)
+
+            if (
+                !(element == event.target || element.contains(event.target)) &&
+                !(
+                excludeComponent &&
+                (event.target == excludeComponent || excludeComponent.contains(event.target))
+                )
+            ) {
+                binding.value(event, element)
+            }
+            }
+            document.addEventListener('click', element.clickOutsideEvent)
+        },
+        unmounted: function (element: any) {
+            document.removeEventListener('click', element.clickOutsideEvent)
+        }
     }
 
 </script>

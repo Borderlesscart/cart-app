@@ -12,8 +12,8 @@
         </div>
         <div class="max-h-44 overflow-y-scroll scrollbar">
             <GeneralDeliveryList
-              @added-list-item=""
-              @uploaded-screenshot=""
+              @update-list-item=""
+              @update-screen-shot-list=""
               :delivery-list-items-prop="deliveryListItems"
             />
         </div>

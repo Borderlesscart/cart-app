@@ -47,7 +47,6 @@
 
                     </template>  
                     </FileUpload>
-              
               </div>
 
               <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
@@ -76,9 +75,9 @@ const props = defineProps({
 
 const { deliveryListItemsProp } = toRefs(props)
 
-const emits = defineEmits(['addedListItem', 'uploadedScreenshot'])
+const emits = defineEmits(['updateListItem', 'updateScreenShotList'])
 const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
-console.log(deliveryListItems.value)
+
 const fileUploadStyle = ref({
       root: 'bg-dark',
       buttonbar: 'bg-dark p-0',
@@ -101,7 +100,8 @@ const clearSelectedFile = (formInput: string) => {
         validateFormInput(false, formInput)
         sanitizeList(key)
       }
-
+      const uploadListKey = key - 1
+      uploadListItem.value = uploadListItem.value.filter((uploadItem: any, index: number) => index !== uploadListKey)
 }
 
 const beforeUpload = (data: any) => {
@@ -109,11 +109,13 @@ const beforeUpload = (data: any) => {
 }
 
 const addListItem = () => {
+  emits('updateListItem', deliveryListItems.value)
   deliveryListItems.value.push({name: ''})
 }
 
 const deleteListItem = (key: any) => {
       deliveryListItems.value = deliveryListItems.value.filter((item: any, index) => index !== key)
+      emits('updateListItem', deliveryListItems.value)
 }
 
 const sanitizeList = (key: number) => {
@@ -149,7 +151,8 @@ const onSelectedFiles = (data: any, formInput: string) => {
       if(!uploadList.find((value, index) => index === key)){
         uploadListItem.value.push(file)
       }
-      
+      console.log(uploadListItem.value)
+      emits('updateScreenShotList', uploadListItem)
  }
 
  const isValidFormInput = (formInput: string) => {
