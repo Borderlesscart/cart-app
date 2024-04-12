@@ -12,9 +12,11 @@
         </div>
         <div class="max-h-44 overflow-y-scroll scrollbar">
             <GeneralDeliveryList
-              @update-list-item=""
-              @update-screen-shot-list=""
+              @update-list-item="updatedDeliveryList => updateDeliveryList(updatedDeliveryList)"
+              @update-screen-shot-list="updateduploadList => updateScreenShotList(updateduploadList)"
+              @validate-form-input="(valid, formInput) => validateFormInput(valid, formInput)"
               :delivery-list-items-prop="deliveryListItems"
+              :delivery-upload-items-prop="deliveryUploadItems"
             />
         </div>
         <div class="sm:text-base text-sm">
@@ -50,17 +52,40 @@
     const user = ref({})
     const deliveryListItems = ref<Array<any>>()
     const validFormFields = ref<string[]>([])
+    const deliveryUploadItems = ref<Array<any>>()
 
 
     const updateCountryAddress = (selectedCountry: Country) => {
       selectedCountryAddress.value = selectedCountry
     }
 
+    const updateScreenShotList = (updatedList: any) => {
+      console.log(updatedList)
+      deliveryUploadItems.value = updatedList
+    }
+
+    const updateDeliveryList = (updatedList: any) => {
+      console.log('delivertList',updatedList)
+      deliveryListItems.value = updatedList
+    }
+
+
+    const validateFormInput = (valid: boolean, formInput: string) => {
+            if(valid){
+                if(!validFormFields.value.includes(formInput)){
+                    validFormFields.value.push(formInput)
+                }        
+            }else{
+                validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
+            }
+    }
+
     const saveDeliveryItems = async () => {
       const notification = useNotificationStore()
       const userCookie: any|undefined = useCookie('user')
-      const totalDeliveryItem = deliveryListItems.value?.length
-      if(totalDeliveryItem !== validFormFields.value.length){
+      const totalDeliveryItems = deliveryListItems.value?.length
+      const totalUploadedItems = deliveryUploadItems.value?.length
+      if(totalDeliveryItems !== validFormFields.value.length){
         notification.updateError('item(s) name or screenshot required')
         return
       }
@@ -82,8 +107,10 @@
         destination_country: 'NG',
         data: deliveryListItems.value
       }
+
+      console.log(deliveryUploadItems.value)
       const userProfileStore = userStore()
-      const storeBulkItems = await userProfileStore.storeBulkDeliveryItem(data)
+      // const storeBulkItems = await userProfileStore.storeBulkDeliveryItem(data)
       loading.value = false
       itemSaved.value = true
     }

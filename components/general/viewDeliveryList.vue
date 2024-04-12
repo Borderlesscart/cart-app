@@ -15,6 +15,7 @@
                 @update-list-item=""
                 @update-screen-shot-list=""
                 :delivery-list-items-prop="deliveryListItems"
+                :delivery-upload-items-prop="deliveryUploadItems"
             />
         </div>
 
@@ -61,6 +62,23 @@
     const user = ref({})
     const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
     const validFormFields = ref<string[]>([])
+    const deliveryUploadItems = ref<Array<any>>([])
+
+    const init = () => {
+      deliveryUploadItems.value = deliveryListItems.value.filter(item => {
+        if(item.image_list_link){
+          return item
+        }
+      })
+
+      deliveryListItems.value = deliveryListItems.value.filter(item => {
+        if(!item.image_list_link){
+          return item
+        }
+      })
+    }
+
+    init()
 
     const updateCountryAddress = (selectedCountry: Country) => {
       selectedCountryAddress.value = selectedCountry

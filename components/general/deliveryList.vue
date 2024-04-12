@@ -70,13 +70,18 @@ const props = defineProps({
         default: [{
           name: ''
         }]
+    },
+    deliveryUploadItemsProp: {
+      type: Array,
+      default: [{}]
     }
 })
 
-const { deliveryListItemsProp } = toRefs(props)
+const { deliveryListItemsProp, deliveryUploadItemsProp } = toRefs(props)
 
-const emits = defineEmits(['updateListItem', 'updateScreenShotList'])
+const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
 const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
+const deliveryUploadItems = ref<Array<any>>(deliveryUploadItemsProp.value)
 
 const fileUploadStyle = ref({
       root: 'bg-dark',
@@ -97,11 +102,12 @@ const userProfileStore = userStore()
 const clearSelectedFile = (formInput: string) => {
       const key = parseInt(formInput.split('_')[1])
       if(isValidFormInput(formInput)){
-        validateFormInput(false, formInput)
+        emits('validateFormInput', false, formInput)
         sanitizeList(key)
       }
       const uploadListKey = key - 1
       uploadListItem.value = uploadListItem.value.filter((uploadItem: any, index: number) => index !== uploadListKey)
+      emits('updateScreenShotList', uploadListItem.value)
 }
 
 const beforeUpload = (data: any) => {
@@ -126,13 +132,7 @@ const sanitizeList = (key: number) => {
 }
 
 const validateFormInput = (valid: boolean, formInput: string) => {
-        if(valid){
-            if(!validFormFields.value.includes(formInput)){
-                validFormFields.value.push(formInput)
-            }        
-        }else{
-            validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
-        }
+  emits('validateFormInput', valid, formInput)
 }
 
 const onTemplatedUpload = (value: any) => {
@@ -141,7 +141,7 @@ const onTemplatedUpload = (value: any) => {
 
 const onSelectedFiles = (data: any, formInput: string) => {
       if(!isValidFormInput(formInput)){
-        validateFormInput(true, formInput)
+        emits('validateFormInput', true, formInput)
       }
 
       const file = data.files[0]
@@ -151,8 +151,8 @@ const onSelectedFiles = (data: any, formInput: string) => {
       if(!uploadList.find((value, index) => index === key)){
         uploadListItem.value.push(file)
       }
-      console.log(uploadListItem.value)
-      emits('updateScreenShotList', uploadListItem)
+      deliveryUploadItems.value = uploadListItem.value
+      emits('updateScreenShotList', uploadListItem.value)
  }
 
  const isValidFormInput = (formInput: string) => {

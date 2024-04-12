@@ -28,13 +28,13 @@
             </div>
         </div>
         <div class="max-h-72 overflow-y-scroll scrollbar">
-          <div>
+
               <div 
                 v-for="(listItem, index) in deliveryListItems"
-                class="w-full lg:w-8/12 flex mb-2"
+                class="w-full flex justify-between  lg:w-8/12 flex mb-2"
               >
               <div 
-                class="cursor-pointer px-4 py-2 flex w-10/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
+                class="cursor-pointer px-4 py-2 flex w-9/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
                 @click="updateActiveDeliveryList(listItem)"
               >
                 <div class="flex flex-col w-10/12 font-judson">
@@ -53,24 +53,25 @@
                 </div>
               </div>
 
-              <div 
-                v-if="index === deliveryListItems.length -1"
-                class="w-2/12 m-auto cursor-pointer"
-                @click="updateActiveRoute('addDeliveryItems')"
-              >
-                <img src="/img/add.svg" class="w-8 m-auto">
-              </div>
               <div
-              v-else
-              class="w-2/12 m-auto cursor-pointer"
+              class="w-3/12 sm:w-2/12 m-auto cursor-pointer flex justify-between"
               @click="deleteDeliveryItem(listItem)"
               >
+              <div>
                 <img src="/img/trash.svg" class="w-8 m-auto">
               </div>
-              
+              <div
+              v-if="index === deliveryListItems.length -1"
+              @click="updateActiveRoute('addDeliveryItems')"
+              class="cursor-pointer mr-4"
+              >
+                <img src="/img/add.svg" class="w-8 m-auto">
+              </div>     
+              </div>
+
             </div>
 
-          </div>   
+      
           
         </div>
       </div>
