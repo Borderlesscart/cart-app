@@ -13,6 +13,10 @@ export const getDeliveryItems = async (query: any): Promise<any> => {
     )
 }
 
+export const uploadDeliveryItem = async (data: any): Promise<any> => {
+    return await API.post(baseApi.user.uploadDeliveryItem(), data)
+}
+
 export const deleteUserDeliveryItem = async (id: any): Promise<any> => {
     return await API.delete(baseApi.user.deleteDeliveryItem(id))
 }

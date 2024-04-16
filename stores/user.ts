@@ -1,19 +1,25 @@
 import { defineStore } from "pinia";
-import { getDeliveryItems, storeBulkDeliveryItem, deleteUserDeliveryItem } from "~/composable/user";
+import { getDeliveryItems, storeBulkDeliveryItem, deleteUserDeliveryItem, uploadDeliveryItem } from "~/composable/user";
 
 export const userStore = defineStore('userStore',
     {
         state: () => {
             return  {
-                deliveryItems: []
+                deliveryOptions: {},
+                deliveryItems: [],
+                deliveryUploads: []
             }
         },
         actions: {
             async storeBulkDeliveryItem(data: any) {
-                console.log(data)
                 const storeItems = await storeBulkDeliveryItem(data)
-                console.log('resoibse', storeItems)
+                console.log('deliveryItems', storeItems)
                 this.deliveryItems = storeItems?.data
+            },
+            async uploadDeliveryItems(data: any){
+                const uploadedItems = await uploadDeliveryItem(data)
+                console.log('uploadItems', uploadedItems)
+                this.deliveryUploads = uploadedItems?.data
             },
             async getUserDeliveryItems(query: any){
                 const deliveryListItems = await getDeliveryItems(query)

@@ -4,8 +4,8 @@
         class="flex flex-col sm:mr-6 mr-4 cursor-pointer"
         @click="updateCountryAddress(countryAddress)"
         >
-          <img v-if="selectedCountryAddress?.code === countryAddress.code" :src="'/img/'+countryAddress.code+'-disabled.svg'" class="sm:w-14 w-12 m-auto">
-          <img v-else :src="'/img/'+countryAddress.code+'.svg'" class="sm:w-14 w-12 m-auto">
+          <img v-if="selectedCountryAddress?.code === countryAddress.code" :src="'/img/'+countryAddress.code+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
+          <img v-else :src="'/img/'+countryAddress.code+'.svg'" class="sm:w-10 w-8 m-auto">
           <span 
             class="text-xs mt-2 text-center"
             :class="selectedCountryAddress?.code === countryAddress.code? 'text-primary': 'text-off-white'"

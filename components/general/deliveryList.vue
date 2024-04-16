@@ -60,7 +60,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, toRefs, onBeforeMount } from 'vue';
+import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 
@@ -74,10 +74,14 @@ const props = defineProps({
     deliveryUploadItemsProp: {
       type: Array,
       default: [{}]
+    },
+    validList: {
+      type: Boolean,
+      default: false
     }
 })
 
-const { deliveryListItemsProp, deliveryUploadItemsProp } = toRefs(props)
+const { deliveryListItemsProp, deliveryUploadItemsProp, validList } = toRefs(props)
 
 const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
 const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
@@ -97,13 +101,24 @@ const validFormFields = ref<string[]>([])
 
 const uploadListItem = ref<any[]>([])
 
+const isListFormValid = ref<boolean>(false)
+
 const userProfileStore = userStore()
+
+
+
+// watch(deliveryListItems, (newDeliveryListItems, oldDeliveryListItems) => {
+//   console.log(newDeliveryListItems)
+//   isListFormValid.value = validFormFields.value.length === newDeliveryListItems.length
+//   console.log(isListFormValid.value)
+// })
 
 const clearSelectedFile = (formInput: string) => {
       const key = parseInt(formInput.split('_')[1])
       if(isValidFormInput(formInput)){
         emits('validateFormInput', false, formInput)
         sanitizeList(key)
+        validateFormInput(false, formInput)
       }
       const uploadListKey = key - 1
       uploadListItem.value = uploadListItem.value.filter((uploadItem: any, index: number) => index !== uploadListKey)
@@ -115,8 +130,13 @@ const beforeUpload = (data: any) => {
 }
 
 const addListItem = () => {
-  emits('updateListItem', deliveryListItems.value)
-  deliveryListItems.value.push({name: ''})
+  if(isListFormValid.value){
+    emits('updateListItem', deliveryListItems.value)
+    deliveryListItems.value.push({name: ''})
+
+    isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
+    console.log(isListFormValid.value)
+  } 
 }
 
 const deleteListItem = (key: any) => {
@@ -133,6 +153,17 @@ const sanitizeList = (key: number) => {
 
 const validateFormInput = (valid: boolean, formInput: string) => {
   emits('validateFormInput', valid, formInput)
+ const currentValidFormFields = validFormFields.value
+  if(valid){
+    if(!currentValidFormFields.includes(formInput)){
+      currentValidFormFields.push(formInput)
+      validFormFields.value = currentValidFormFields
+    }        
+  }else{
+        validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
+  }
+
+  isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
 }
 
 const onTemplatedUpload = (value: any) => {
@@ -142,6 +173,7 @@ const onTemplatedUpload = (value: any) => {
 const onSelectedFiles = (data: any, formInput: string) => {
       if(!isValidFormInput(formInput)){
         emits('validateFormInput', true, formInput)
+        validateFormInput(true, formInput)
       }
 
       const file = data.files[0]
