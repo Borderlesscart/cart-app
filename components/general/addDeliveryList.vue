@@ -3,23 +3,8 @@
       <div class="sm:text-base text-sm">
             <span>Select country you shipped from</span>
         </div>
-        <div class="mt-4 flex flex-wrap grow mb-6">
-            <GeneralCountries 
-            @clicked="(country: Country) => updateCountryAddress(country)"
-            />
-        </div>
-
-        <div class="sm:text-base text-sm">
-            <span>Add delivery items</span>
-        </div>
-        <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
-            <div class="flex mt-2">
-            <span class="" >
-                List or upload screenshot of your order 
-            </span>
-            </div>
-        </div>
-        <div class="max-h-44 overflow-y-scroll scrollbar">
+        
+        <div class="">
             <GeneralDeliveryList
               @update-list-item="updatedDeliveryList => updateDeliveryList(updatedDeliveryList)"
               @update-screen-shot-list="updateduploadList => updateScreenShotList(updateduploadList)"
@@ -49,12 +34,15 @@
     import type { Country } from '~/types'
 
     const selectedCountryAddress = ref<any>(null)
+    
    
     const loading = ref<boolean>(false)
     const itemSaved = ref<boolean>(false)
     const user = ref({})
     const deliveryListItems = ref<Array<any>>([{
-      name: ''
+      name: '',
+      id: null,
+      file: null
     }])
     const validFormFields = ref<string[]>([])
     const deliveryUploadItems = ref<Array<any>>([{}])
@@ -62,15 +50,11 @@
       name: ''
     }])
 
-
-
     watch(deliveryListItems, async (newDeliveryListItems, oldDeliveryListItems) => {  
       deliveryList.value = newDeliveryListItems?.filter(listItem => listItem.name.length > 0 )
     })
 
-    const updateCountryAddress = (selectedCountry: Country) => {
-      selectedCountryAddress.value = selectedCountry
-    }
+    
 
     const updateScreenShotList = (updatedList: any) => {
       deliveryUploadItems.value = updatedList
@@ -78,6 +62,9 @@
 
     const updateDeliveryList = (updatedList: any) => {
       deliveryListItems.value = updatedList
+      /**
+       * if image upload, upload directly, else
+       */
     }
 
 
@@ -85,7 +72,9 @@
             if(valid){
                 if(!validFormFields.value.includes(formInput)){
                     validFormFields.value.push(formInput)
-                }        
+                }   
+                
+                // if done writing list item, store to DB. If done uploading image. store
             }else{
                 validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
             }

@@ -1,5 +1,22 @@
 <template>
-    <div v-for="(deliveryItem, key) in deliveryListItems" class="w-full lg:w-8/12 flex ">
+    <div class="mt-4 flex flex-wrap grow mb-6">
+        <GeneralCountries 
+          @clicked="(country: Country) => updateCountryAddress(country)"
+        />
+    </div>
+
+    <div class="sm:text-base text-sm">
+      <span>Add delivery items</span>
+    </div>
+    <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
+        <div class="flex mt-2">
+          <span class="" >
+              List or upload screenshot of your order 
+          </span>
+        </div>
+    </div>
+    <div class="max-h-44 overflow-y-scroll scrollbar">
+      <div v-for="(deliveryItem, key) in deliveryListItems" class="w-full lg:w-8/12 flex ">
             <div class="sm:w-8/12 w-6/12">
               <GeneralSmallTextInput
               name="shipped item"
@@ -57,12 +74,17 @@
                 <img src="/img/trash.svg" class="w-8 relative trash">
               </div>
             </div>
-    </div>
+      </div>
+    </div>  
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
+
+import type { Country } from '~/types'
+
+const selectedCountryAddress = ref<any>(null)
 
 const props = defineProps({
     deliveryListItemsProp: {
@@ -105,13 +127,11 @@ const isListFormValid = ref<boolean>(false)
 
 const userProfileStore = userStore()
 
+const deliveryId = ref<any>(null)
 
-
-// watch(deliveryListItems, (newDeliveryListItems, oldDeliveryListItems) => {
-//   console.log(newDeliveryListItems)
-//   isListFormValid.value = validFormFields.value.length === newDeliveryListItems.length
-//   console.log(isListFormValid.value)
-// })
+const updateCountryAddress = (selectedCountry: Country) => {
+  selectedCountryAddress.value = selectedCountry
+}
 
 const clearSelectedFile = (formInput: string) => {
       const key = parseInt(formInput.split('_')[1])
@@ -129,13 +149,38 @@ const beforeUpload = (data: any) => {
      
 }
 
-const addListItem = () => {
+const addListItem = async () => {
   if(isListFormValid.value){
-    emits('updateListItem', deliveryListItems.value)
-    deliveryListItems.value.push({name: ''})
+    // store last item 
+    const oldDeliveryListItems = deliveryListItems.value
+    const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
 
+    if(latestDeliveryItem.id === null){
+      // Upload to DB
+      if(latestDeliveryItem.file){
+        // upload image and name if available
+        const formData = new FormData()
+        formData.append('file', latestDeliveryItem.file)
+        formData.append('origin_country', selectedCountryAddress.value.code.toUpperCase())
+        formData.append('destination_country', 'NG')
+        if(deliveryId.value){
+          formData.append('delivery_id', deliveryId.value)
+        }
+        
+        if(latestDeliveryItem.name !== ''){
+          formData.append('name', latestDeliveryItem.name)
+        }
+
+        const userProfileStore = userStore()
+
+        await userProfileStore.uploadDeliveryItems(formData)
+      }else{
+        // upload name
+      }
+    }
+    emits('updateListItem', deliveryListItems.value)
+    deliveryListItems.value.push({name: '', id: null, file: null})
     isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
-    console.log(isListFormValid.value)
   } 
 }
 
@@ -177,13 +222,21 @@ const onSelectedFiles = (data: any, formInput: string) => {
       }
 
       const file = data.files[0]
+      console.log(file)
 
       const key = parseInt(formInput.split('_')[1])
-      const uploadList = uploadListItem.value
-      if(!uploadList.find((value, index) => index === key)){
-        uploadListItem.value.push(file)
-      }
-      deliveryUploadItems.value = uploadListItem.value
+
+      // const uploadList = uploadListItem.value
+      // if(!uploadList.find((value, index) => index === key)){
+      //   uploadListItem.value.push(file)
+      // }
+      // deliveryUploadItems.value = uploadListItem.value
+      const currentDeliveryListItems = deliveryListItems.value
+      const listItem: any = currentDeliveryListItems[key] 
+      listItem.file = file
+      currentDeliveryListItems[key] = listItem
+      deliveryListItems.value = currentDeliveryListItems
+
       emits('updateScreenShotList', uploadListItem.value)
  }
 

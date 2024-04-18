@@ -14,7 +14,7 @@ export const getDeliveryItems = async (query: any): Promise<any> => {
 }
 
 export const uploadDeliveryItem = async (data: any): Promise<any> => {
-    return await API.post(baseApi.user.uploadDeliveryItem(), data)
+    return await API.post(baseApi.user.uploadDeliveryItem(), data, {headers: { "Content-Type": "multipart/form-data" }})
 }
 
 export const deleteUserDeliveryItem = async (id: any): Promise<any> => {

@@ -2,7 +2,7 @@
      <!-- Top header -->
      <NuxtLayout name="dashboard-layout"></NuxtLayout>
      <GeneralNavbar/>
-    <div class="mt-4 w-10/12 m-auto">
+    <div class="mt-4 w-10/12 m-auto ">
         <div class="text-xs flex flex-col grow-1  mb-4">
             <div class="flex mt-2">
               <span v-for="(route, key) in routeList" 
@@ -68,11 +68,7 @@
                 <img src="/img/add.svg" class="w-8 m-auto">
               </div>     
               </div>
-
-            </div>
-
-      
-          
+            </div>   
         </div>
       </div>
 
@@ -86,7 +82,6 @@
         />
       </div>
    
-
         <div class="text-xs flex flex-col grow-1 text-login-offwhite absolute bottom-10 w-10/12">
             <div class="flex mt-2 mr">
               <img src="/img/message.svg" class="w-4 mr-2"/>

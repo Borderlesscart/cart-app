@@ -19,7 +19,7 @@ export const userStore = defineStore('userStore',
             async uploadDeliveryItems(data: any){
                 const uploadedItems = await uploadDeliveryItem(data)
                 console.log('uploadItems', uploadedItems)
-                this.deliveryUploads = uploadedItems?.data
+                // this.deliveryUploads = uploadedItems?.data
             },
             async getUserDeliveryItems(query: any){
                 const deliveryListItems = await getDeliveryItems(query)
