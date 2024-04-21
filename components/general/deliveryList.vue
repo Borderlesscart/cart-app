@@ -34,7 +34,8 @@
             <div class="sm:w-4/12 w-6/12 flex justify-between">
               <div class="w-4/12 flex items-baseline cursor-pointer mr-4 filepond--label-action">
                 <span class="mt-1 mr-auto mb-auto ml-4 text-xs relative top-1 right-1">or</span>
-                    <FileUpload 
+                    <FileUpload
+                    v-if="deliveryItem?.image_list_link === null" 
                     :name="'image-item-'+key"
                     @upload="onTemplatedUpload($event)" 
                     :multiple="false" 
@@ -66,6 +67,18 @@
 
                     </template>  
                     </FileUpload>
+                    <div
+                    v-else
+                    class="w-4/12 flex items-baseline cursor-pointer mr-4 filepond--label-action"
+                    >
+                      <div>
+                        <img 
+                        :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
+                        
+                        class="w-8 mx-auto">
+                        <span class="text-login-offwhite text-xs">remove</span>
+                      </div>
+                    </div>
               </div>
 
               <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
@@ -93,8 +106,8 @@ const props = defineProps({
         type: Array,
         default: [{
           name: '',
-          file: null,
-          id: null
+          id: null,
+          image_list_link: null
         }]
     },
     deliveryUploadItemsProp: {
@@ -122,8 +135,11 @@ const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFo
 const deliveryListItems = ref<Array<any>>([{
   name: '',
   id: null,
+  image_list_link: null,
   file: null
 }])
+
+console.log(deliveryListItems.value)
 
 const deliveryOptions = ref<any>({id: null})
 
@@ -165,7 +181,6 @@ const init = () => {
     deliveryListItems.value = userProfileStore.newDeliveryItems.data
     deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
   }
-
 }
 
 init()
@@ -186,6 +201,73 @@ const beforeUpload = (data: any) => {
      
 }
 
+const storeLastItem = async () => {
+    const oldDeliveryListItems = deliveryListItems.value
+    const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
+
+    if(latestDeliveryItem.id === null){
+      // Upload to DB
+      var latestItem
+      var delivery
+      if(latestDeliveryItem.file){
+        // upload image and name if available
+        const formData = new FormData()
+        formData.append('file', latestDeliveryItem.file)
+        formData.append('origin_country', selectedCountryAddress.value.code.toUpperCase())
+        formData.append('destination_country', 'NG')
+        if(deliveryOptions.value.id){
+          formData.append('delivery_id', deliveryOptions.value.id)
+        }
+
+        if(latestDeliveryItem.name !== ''){
+          formData.append('name', latestDeliveryItem.name)
+        }
+
+        const userProfileStore = userStore()
+        const itemResponse = await userProfileStore.uploadDeliveryItems(formData)
+        latestItem = itemResponse.data
+        console.log(latestItem)
+        delivery = itemResponse.delivery
+      }else{
+        // upload name
+        const userCookie: any|undefined = useCookie('user')
+        const deliveryListData: any = {
+          customer_id: userCookie?.value?.id,
+          origin_country: selectedCountryAddress.value.code.toUpperCase(),
+          destination_country: 'NG',
+          data: [{name: latestDeliveryItem.name}]
+        }
+        if (deliveryOptions.value.id) {
+          deliveryListData.delivery_id = deliveryOptions.value.id
+        }
+        const itemResponse =  await userProfileStore.storeBulkDeliveryItem(deliveryListData)
+        latestItem = itemResponse.data[0]
+        delivery = itemResponse.delivery
+      }
+
+      
+      oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
+        id: latestItem.id,
+        name: latestItem.name?latestItem.name:'',
+        image_list_link: latestItem.image_list_link
+      }
+
+      deliveryListItems.value = oldDeliveryListItems  
+      deliveryOptions.value = delivery
+
+
+
+      if(page.value === 'newDelivery'){
+        userProfileStore.newDeliveryItems.data = deliveryListItems.value
+        userProfileStore.newDeliveryItems.delivery = deliveryOptions.value
+      }else{
+        userProfileStore.viewDeliveryItems.data = deliveryListItems.value
+        userProfileStore.viewDeliveryItems.delivery = deliveryOptions.value
+      }
+
+    }
+}
+
 const addListItem = async () => {
   if(isListFormValid.value){
 
@@ -195,50 +277,9 @@ const addListItem = async () => {
     }
 
     // store last item 
-    const oldDeliveryListItems = deliveryListItems.value
-    const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
-
-    if(latestDeliveryItem.id === null){
-      // Upload to DB
-      var itemResponse
-      if(latestDeliveryItem.file){
-        // upload image and name if available
-        const formData = new FormData()
-        formData.append('file', latestDeliveryItem.file)
-        formData.append('origin_country', selectedCountryAddress.value.code.toUpperCase())
-        formData.append('destination_country', 'NG')
-        if(deliveryId.value){
-          formData.append('delivery_id', deliveryId.value)
-        }
-
-        if(latestDeliveryItem.name !== ''){
-          formData.append('name', latestDeliveryItem.name)
-        }
-
-        const userProfileStore = userStore()
-        itemResponse = await userProfileStore.uploadDeliveryItems(formData)
-      }else{
-        // upload name
-        const userCookie: any|undefined = useCookie('user')
-        const deliveryListData = {
-          customer_id: userCookie?.value?.id,
-          origin_country: selectedCountryAddress.value.code.toUpperCase(),
-          destination_country: 'NG',
-          data: [{name: latestDeliveryItem.name}]
-        }
-        itemResponse =  await userProfileStore.storeBulkDeliveryItem(deliveryListData)
-      }
-      const latestData = itemResponse.data[0]
-      oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
-        id: latestData.id,
-        name: latestData.name?latestData.name:'',
-        file: latestData.image_list_link
-      }
-
-      deliveryListItems.value = oldDeliveryListItems  
-    }
+    await storeLastItem()
     emits('updateListItem', deliveryListItems.value)
-    deliveryListItems.value.push({name: '', id: null, file: null})
+    deliveryListItems.value.push({name: '', id: null, image_list_link: null})
     isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
   } 
 }
@@ -281,15 +322,8 @@ const onSelectedFiles = (data: any, formInput: string) => {
       }
 
       const file = data.files[0]
-      console.log(file)
-
       const key = parseInt(formInput.split('_')[1])
-
-      // const uploadList = uploadListItem.value
-      // if(!uploadList.find((value, index) => index === key)){
-      //   uploadListItem.value.push(file)
-      // }
-      // deliveryUploadItems.value = uploadListItem.value
+ 
       const currentDeliveryListItems = deliveryListItems.value
       const listItem: any = currentDeliveryListItems[key] 
       listItem.file = file

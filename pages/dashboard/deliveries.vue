@@ -229,7 +229,7 @@
     }
 
 
-    function updateActiveRoute(activeRouteId: string, status: boolean = true) {
+    async function updateActiveRoute(activeRouteId: string, status: boolean = true) {
        
 
         if(activeRouteId !== activeRoute.value){
@@ -238,6 +238,10 @@
           const newSubRouter =  traverseAndUpdateRouteItems(subRouter.value, 0, [])
           const traversed = traverseWrapper(newSubRouter)
           routeList.value = traversed
+        }
+
+        if(activeRouteId === 'pendingDeliveryItems'){
+          await getUserDeliveryItems('pending')
         }
          
         function traverseAndUpdateRouteItems(routeItems: Array<any>, key: number, res: any): any {

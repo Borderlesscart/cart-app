@@ -6,7 +6,7 @@
         
         <div class="">
             <GeneralDeliveryList
-              @update-list-item="updatedDeliveryList => updateDeliveryList(updatedDeliveryList)"
+
               @update-screen-shot-list="updateduploadList => updateScreenShotList(updateduploadList)"
               @validate-form-input="(valid, formInput) => validateFormInput(valid, formInput)"
               :delivery-list-items-prop="deliveryListItems"
@@ -61,12 +61,12 @@
       deliveryUploadItems.value = updatedList
     }
 
-    const updateDeliveryList = (updatedList: any) => {
-      deliveryListItems.value = updatedList
-      /**
-       * if image upload, upload directly, else
-       */
-    }
+    // const updateDeliveryList = (updatedList: any) => {
+    //   deliveryListItems.value = updatedList
+    //   /**
+    //    * if image upload, upload directly, else
+    //    */
+    // }
 
 
     const validateFormInput = (valid: boolean, formInput: string) => {
