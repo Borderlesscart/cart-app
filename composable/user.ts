@@ -9,8 +9,7 @@ export const getDeliveryItems = async (query: any): Promise<any> => {
     return await API.get(baseApi.user.getDeliveryListItems(), 
     {
         params:query
-    }
-    )
+    })
 }
 
 export const uploadDeliveryItem = async (data: any): Promise<any> => {

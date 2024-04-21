@@ -12,6 +12,7 @@
               :delivery-list-items-prop="deliveryListItems"
               :delivery-upload-items-prop="deliveryUploadItems"
               :valid-list="deliveryUploadItems.length+deliveryList.length === validFormFields.length"
+              page="addDelivery"
             />
         </div>
         
@@ -116,10 +117,10 @@
           await userProfileStore.storeBulkDeliveryItem(deliveryListData)
       }
       
-      var deliveryId
-      if(userProfileStore.deliveryItems.length > 0){
-        deliveryId = userProfileStore.deliveryOptions
-      }
+      // var deliveryId
+      // if(userProfileStore.deliveryItems.length > 0){
+      //   deliveryId = userProfileStore.deliveryOptions
+      // }
 
       const uploadFiles = deliveryUploadItems.value
 
@@ -130,9 +131,9 @@
             destination_country: 'ng'
           }
 
-          if(deliveryId){
-            uploadData.delivery_id = deliveryId
-          }
+          // if(deliveryId){
+          //   uploadData.delivery_id = deliveryId
+          // }
 
           await userProfileStore.uploadDeliveryItems(uploadData)
       }

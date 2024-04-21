@@ -12,7 +12,7 @@
       <div class="mt-6 flex flex-wrap grow">
         <GeneralCountries 
           @clicked="(country: Country) => updateCountryAddress(country)"
-          select-country-code="us"
+          select-country-code="US"
         />
       </div>
       <!-- Estimated arrival time to Nigeria -->
@@ -93,36 +93,9 @@
 <script lang="ts" setup>
    import { onMounted, ref, toRefs, onBeforeMount} from 'vue';
    import type { Country } from '~/types'
-   import { TransportMode } from '~/types'
+   import { Us } from '~/consts';
 
-   const us = {
-      id: 1,
-      code: 'us',
-      name: 'United States',
-      img: '',
-      eta: [
-        {
-          type: TransportMode.FREIGHT,
-          time: '7 days'
-        },
-        {
-          type: TransportMode.SHIP,
-          time: '6 weeks'
-        },
-      ],
-      address: {
-        full_address: '6261 South Highway 6S <br> Houston Texas 77083 <br> United states of America',
-        address_breakdown: {
-          postcode: '77083',
-          short_address: '6261 South Highway 6S <br> Houston Texas 77083',
-          city: 'Houston',
-          state: 'Texas',
-          country: 'United states of America'
-        }
-      }
-    }
-
-   const selectedCountryAddress = ref<Country>(us)
+   const selectedCountryAddress = ref<Country>(Us)
 
    const notification = useNotificationStore()
 

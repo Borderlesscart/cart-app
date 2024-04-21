@@ -2,6 +2,8 @@
     <div class="mt-4 flex flex-wrap grow mb-6">
         <GeneralCountries 
           @clicked="(country: Country) => updateCountryAddress(country)"
+          :disabled="deliveryOptions.id !== null"
+          :select-country-code="deliveryOptions.origin_country"
         />
     </div>
 
@@ -83,14 +85,16 @@ import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 
 import type { Country } from '~/types'
-
-const selectedCountryAddress = ref<any>(null)
+import { userStore } from '#imports';
+import { CountryAddresses } from '~/consts';
 
 const props = defineProps({
     deliveryListItemsProp: {
         type: Array,
         default: [{
-          name: ''
+          name: '',
+          file: null,
+          id: null
         }]
     },
     deliveryUploadItemsProp: {
@@ -100,14 +104,30 @@ const props = defineProps({
     validList: {
       type: Boolean,
       default: false
+    },
+    selectedCountryAddressProp: {
+      type: Object,
+      default: null
+    },
+    page: {
+      type: String,
+      default: 'addDelivery'
     }
 })
 
-const { deliveryListItemsProp, deliveryUploadItemsProp, validList } = toRefs(props)
+const { deliveryListItemsProp, deliveryUploadItemsProp, validList, selectedCountryAddressProp, page } = toRefs(props)
 
 const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
-const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
-const deliveryUploadItems = ref<Array<any>>(deliveryUploadItemsProp.value)
+
+const deliveryListItems = ref<Array<any>>([{
+  name: '',
+  id: null,
+  file: null
+}])
+
+const deliveryOptions = ref<any>({id: null})
+
+const selectedCountryAddress = ref<any>(selectedCountryAddressProp.value)
 
 const fileUploadStyle = ref({
       root: 'bg-dark',
@@ -129,20 +149,37 @@ const userProfileStore = userStore()
 
 const deliveryId = ref<any>(null)
 
+const notification = useNotificationStore()
+
 const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
 
+const init = () => {
+  const userProfileStore: any = userStore()
+  // populate delivery fields from store based on page selected
+  if(page.value == "viewDelivery"){
+    deliveryListItems.value = userProfileStore.viewDeliveryItems.data
+    deliveryOptions.value = userProfileStore.viewDeliveryItems.delivery
+  }else{
+    deliveryListItems.value = userProfileStore.newDeliveryItems.data
+    deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
+  }
+
+}
+
+init()
+
 const clearSelectedFile = (formInput: string) => {
-      const key = parseInt(formInput.split('_')[1])
-      if(isValidFormInput(formInput)){
-        emits('validateFormInput', false, formInput)
-        sanitizeList(key)
-        validateFormInput(false, formInput)
-      }
-      const uploadListKey = key - 1
-      uploadListItem.value = uploadListItem.value.filter((uploadItem: any, index: number) => index !== uploadListKey)
-      emits('updateScreenShotList', uploadListItem.value)
+  const key = parseInt(formInput.split('_')[1])
+  if(isValidFormInput(formInput)){
+    emits('validateFormInput', false, formInput)
+    sanitizeList(key)
+    validateFormInput(false, formInput)
+  }
+  const uploadListKey = key - 1
+  uploadListItem.value = uploadListItem.value.filter((uploadItem: any, index: number) => index !== uploadListKey)
+  emits('updateScreenShotList', uploadListItem.value)
 }
 
 const beforeUpload = (data: any) => {
@@ -151,12 +188,19 @@ const beforeUpload = (data: any) => {
 
 const addListItem = async () => {
   if(isListFormValid.value){
+
+    if(!selectedCountryAddress.value){
+        notification.updateError("Select country")
+        return
+    }
+
     // store last item 
     const oldDeliveryListItems = deliveryListItems.value
     const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
 
     if(latestDeliveryItem.id === null){
       // Upload to DB
+      var itemResponse
       if(latestDeliveryItem.file){
         // upload image and name if available
         const formData = new FormData()
@@ -166,17 +210,32 @@ const addListItem = async () => {
         if(deliveryId.value){
           formData.append('delivery_id', deliveryId.value)
         }
-        
+
         if(latestDeliveryItem.name !== ''){
           formData.append('name', latestDeliveryItem.name)
         }
 
         const userProfileStore = userStore()
-
-        await userProfileStore.uploadDeliveryItems(formData)
+        itemResponse = await userProfileStore.uploadDeliveryItems(formData)
       }else{
         // upload name
+        const userCookie: any|undefined = useCookie('user')
+        const deliveryListData = {
+          customer_id: userCookie?.value?.id,
+          origin_country: selectedCountryAddress.value.code.toUpperCase(),
+          destination_country: 'NG',
+          data: [{name: latestDeliveryItem.name}]
+        }
+        itemResponse =  await userProfileStore.storeBulkDeliveryItem(deliveryListData)
       }
+      const latestData = itemResponse.data[0]
+      oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
+        id: latestData.id,
+        name: latestData.name?latestData.name:'',
+        file: latestData.image_list_link
+      }
+
+      deliveryListItems.value = oldDeliveryListItems  
     }
     emits('updateListItem', deliveryListItems.value)
     deliveryListItems.value.push({name: '', id: null, file: null})

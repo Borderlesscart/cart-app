@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="sm:text-base text-sm">
-            <span>Delivery items</span>
+          <span>Select country you shipped from</span>
         </div>
         <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
             <div class="flex mt-2">
@@ -10,24 +10,18 @@
             </span>
             </div>
         </div>
-        <div class="max-h-44 overflow-y-scroll scrollbar">
+
+        <div class="">
             <GeneralDeliveryList
                 @update-list-item=""
                 @update-screen-shot-list=""
                 :delivery-list-items-prop="deliveryListItems"
                 :delivery-upload-items-prop="deliveryUploadItems"
+                :page="'viewDelivery'"
             />
         </div>
 
-        <div class="sm:text-base text-sm">
-                <span>Select country you shipped from</span>
-        </div>
-        <div class="mt-4 flex flex-wrap grow">
-            
-            <GeneralCountries 
-            @clicked="(country: Country) => updateCountryAddress(country)"
-            />
-        </div>
+  
 
         <div class="text-login-offwhite w-10/12 mt-6">
           <div class="">

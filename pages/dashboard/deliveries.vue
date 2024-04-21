@@ -2,8 +2,8 @@
      <!-- Top header -->
      <NuxtLayout name="dashboard-layout"></NuxtLayout>
      <GeneralNavbar/>
-    <div class="mt-4 w-10/12 m-auto ">
-        <div class="text-xs flex flex-col grow-1  mb-4">
+    <div class="mt-4 w-10/12 m-auto max-w-6xl">
+        <div class="text-xs flex flex-col grow-1 mb-4">
             <div class="flex mt-2">
               <span v-for="(route, key) in routeList" 
               class="text-login-offwhite cursor-pointer"
@@ -98,6 +98,7 @@
     import type { Country } from '~/types'
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
+    import { userStore } from '#imports';
     dayjs.extend(relativeTime);
 
     const selectedCountryAddress = ref<any>(null)
@@ -135,6 +136,7 @@
     const routeList = ref(subRouter.value)
 
     const activeRoute = ref('pendingDeliveryItems') //id of active route
+    
 
     const formatDate = (date: string) => {
       const now = dayjs()
@@ -143,12 +145,21 @@
 
     const updateActiveDeliveryList = (listItem: any) => {
       const item = listItem.CustomerDeliveryListToCustomerDelivery
+      const { CustomerDeliveryListToCustomerDelivery: _, ...delivery } = listItem
+     
       let res = []
       for(let i = 0; i < item.length; i++){
         const currVal = item[i]
         res.push(currVal.CustomerDeliveryList)
       }
       activeDeliveryList.value = res
+
+      const userProfileStore: any = userStore()
+      userProfileStore.viewDeliveryItems = {
+        delivery,
+        data: res
+      }
+      console.log(userProfileStore.viewDeliveryItems)
       updateActiveRoute('viewDeliveryItem')
     }
 
@@ -339,7 +350,7 @@
         'user_id': userCookie?.value?.id,
         status
       })
-       deliveryListItems.value = userProfileStore.deliveryItems
+       deliveryListItems.value = userProfileStore.pendingDeliveries
     }
 
     init()

@@ -6,24 +6,43 @@ export const userStore = defineStore('userStore',
         state: () => {
             return  {
                 deliveryOptions: {},
-                deliveryItems: [],
-                deliveryUploads: []
+                deliveryUploads: [],
+
+                pendingDeliveries: [],
+                newDeliveryItems: {
+                    delivery: {
+                        id: null
+                    },
+                    data: [{
+                        name: '',
+                        file: null,
+                        id: null
+                    }]
+                },
+                viewDeliveryItems: {
+                    delivery: {
+                        id: null
+                    },
+                    data: [{
+                        name: '',
+                        file: null,
+                        id: null
+                    }]
+                },
             }
         },
         actions: {
             async storeBulkDeliveryItem(data: any) {
                 const storeItems = await storeBulkDeliveryItem(data)
-                console.log('deliveryItems', storeItems)
-                this.deliveryItems = storeItems?.data
+                return storeItems?.data
             },
             async uploadDeliveryItems(data: any){
                 const uploadedItems = await uploadDeliveryItem(data)
-                console.log('uploadItems', uploadedItems)
-                // this.deliveryUploads = uploadedItems?.data
+                return uploadedItems.data
             },
             async getUserDeliveryItems(query: any){
                 const deliveryListItems = await getDeliveryItems(query)
-                this.deliveryItems = deliveryListItems?.data
+                this.pendingDeliveries = deliveryListItems?.data
             },
             async deleteUserDeliveryItem(id: any){
                 await deleteUserDeliveryItem(id)
