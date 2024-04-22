@@ -1,14 +1,17 @@
 <template>
     <div>
         <div class="sm:text-base text-sm">
-          <span>Select country you shipped from</span>
-        </div>
-        <div class="text-xs flex flex-col grow-1 text-login-offwhite mb-4">
-            <div class="flex mt-2">
-            <span class="" >
-                List or upload screenshot of your order
-            </span>
-            </div>
+          <span>
+           {{ deliveryOption.origin_country }}
+            to
+          </span>
+          <span>
+            {{ getCountryFullName(deliveryOption.destination_country) }}
+            ~ 
+                    <span class="text-xs">
+                      {{ formatDate(deliveryOption.created_at) }}
+                    </span>
+          </span>
         </div>
 
         <div class="">
@@ -20,8 +23,6 @@
                 :page="'viewDelivery'"
             />
         </div>
-
-  
 
         <div class="text-login-offwhite w-10/12 mt-6">
           <div class="">
@@ -39,6 +40,9 @@
     import { ref, onMounted, onBeforeMount } from 'vue'
     import { useCookie } from 'nuxt/app';
     import type { Country } from '~/types'
+    import dayjs from 'dayjs'
+    import relativeTime from 'dayjs/plugin/relativeTime'
+    dayjs.extend(relativeTime);
 
     const props = defineProps({
         deliveryListItemsProp: {
@@ -58,6 +62,12 @@
     const validFormFields = ref<string[]>([])
     const deliveryUploadItems = ref<Array<any>>([])
 
+    const deliveryOption = ref<any>({
+      id: null
+    })
+
+    const userProfileStore = userStore()
+
     const init = () => {
       deliveryUploadItems.value = deliveryListItems.value.filter(item => {
         if(item.image_list_link){
@@ -70,9 +80,35 @@
           return item
         }
       })
+
+      const option = userProfileStore.viewDeliveryItems.delivery
+      deliveryOption.value = option
     }
 
     init()
+
+    const getCountryFullName = (code: string) => {
+      if(code === 'US'){
+          return 'United States'
+        }
+
+        if(code === 'UK'){
+          return'United Kingdom'
+        }
+
+        if(code === 'NG'){
+          return 'Nigeria'
+        }
+
+        if(code === 'Ch'){
+          return 'China'
+        }
+    }
+
+    const formatDate = (date: string) => {
+      const now = dayjs()
+      return dayjs(date).from(now)
+    }
 
     const updateCountryAddress = (selectedCountry: Country) => {
       selectedCountryAddress.value = selectedCountry

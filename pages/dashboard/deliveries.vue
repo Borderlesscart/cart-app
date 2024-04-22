@@ -98,7 +98,6 @@
     import type { Country } from '~/types'
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
-    import { userStore } from '#imports';
     dayjs.extend(relativeTime);
 
     const selectedCountryAddress = ref<any>(null)

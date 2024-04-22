@@ -27,7 +27,8 @@ export const userStore = defineStore('userStore',
                     data: [{
                         name: '',
                         file: null,
-                        id: null
+                        id: null,
+                        image_list_link: null
                     }]
                 },
             }
