@@ -159,7 +159,6 @@
         delivery,
         data: res
       }
-      console.log(userProfileStore.viewDeliveryItems)
       updateActiveRoute('viewDeliveryItem')
     }
 

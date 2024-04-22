@@ -80,7 +80,10 @@
                       </div>
                     </div>
               </div>
-
+<!-- If item is last item, add delete button. On delete, if no more item in deliveryList, add dummy item -->
+              <div v-if="key+1 === deliveryListItems.length && (deliveryItem.image_list_link || deliveryItem.name)" class="w-3/12  h-max" @click="deleteListItem(key)">
+                <img src="/img/trash.svg" class="w-8 relative trash">
+              </div>
               <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
                 <img src="/img/add.svg" class="w-8 mx-auto">
               </div>
@@ -139,8 +142,6 @@ const deliveryListItems = ref<Array<any>>([{
   file: null
 }])
 
-console.log(deliveryListItems.value)
-
 const deliveryOptions = ref<any>({id: null})
 
 const selectedCountryAddress = ref<any>(selectedCountryAddressProp.value)
@@ -159,6 +160,7 @@ const validFormFields = ref<string[]>([])
 
 const uploadListItem = ref<any[]>([])
 
+// Responsible for adding new form to list
 const isListFormValid = ref<boolean>(false)
 
 const userProfileStore = userStore()
@@ -172,6 +174,12 @@ const updateCountryAddress = (selectedCountry: Country) => {
 }
 
 const init = () => {
+  
+}
+
+init()
+
+onBeforeMount(() => {
   const userProfileStore: any = userStore()
   // populate delivery fields from store based on page selected
   if(page.value == "viewDelivery"){
@@ -181,9 +189,19 @@ const init = () => {
     deliveryListItems.value = userProfileStore.newDeliveryItems.data
     deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
   }
-}
 
-init()
+  if(deliveryOptions.value.id){
+    selectedCountryAddress.value = CountryAddresses.filter(country => country.code === deliveryOptions.value.destination_country)
+  }
+
+  // automatically validate form input
+  for(let i = 0; i < deliveryListItems.value.length; i++){
+      const deliveryItem = deliveryListItems.value[0]
+      if(deliveryItem.name || deliveryItem.image_list_link){
+        validateFormInput(true, 'name_'+i)
+      }
+  }
+})
 
 const clearSelectedFile = (formInput: string) => {
   const key = parseInt(formInput.split('_')[1])
@@ -226,7 +244,6 @@ const storeLastItem = async () => {
         const userProfileStore = userStore()
         const itemResponse = await userProfileStore.uploadDeliveryItems(formData)
         latestItem = itemResponse.data
-        console.log(latestItem)
         delivery = itemResponse.delivery
       }else{
         // upload name
@@ -244,8 +261,7 @@ const storeLastItem = async () => {
         latestItem = itemResponse.data[0]
         delivery = itemResponse.delivery
       }
-
-      
+     
       oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
         id: latestItem.id,
         name: latestItem.name?latestItem.name:'',
@@ -255,20 +271,13 @@ const storeLastItem = async () => {
       deliveryListItems.value = oldDeliveryListItems  
       deliveryOptions.value = delivery
 
-
-
-      if(page.value === 'newDelivery'){
-        userProfileStore.newDeliveryItems.data = deliveryListItems.value
-        userProfileStore.newDeliveryItems.delivery = deliveryOptions.value
-      }else{
-        userProfileStore.viewDeliveryItems.data = deliveryListItems.value
-        userProfileStore.viewDeliveryItems.delivery = deliveryOptions.value
-      }
-
+      updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
     }
+    
 }
 
 const addListItem = async () => {
+
   if(isListFormValid.value){
 
     if(!selectedCountryAddress.value){
@@ -285,8 +294,46 @@ const addListItem = async () => {
 }
 
 const deleteListItem = (key: any) => {
-      deliveryListItems.value = deliveryListItems.value.filter((item: any, index) => index !== key)
+  // Update deliveryList
+      deliveryListItems.value = deliveryListItems.value.filter((item: any, index) =>
+      {
+        if(index !== key){
+          // make API call to delete list item
+          return true
+        }else{
+          return false
+        }
+      })
+
+      if(deliveryListItems.value.length > 0){
+        updateLocalAndGlobalList(deliveryListItems.value)
+      }else{
+        updateLocalAndGlobalList([{
+          name: '',
+          file: null,
+          id: null,
+          image_list_link: null
+        }])
+      } 
       emits('updateListItem', deliveryListItems.value)
+}
+
+const updateLocalAndGlobalList = (deliveryList: any, deliveryOptions: any = null) => {
+  const userProfileStore: any = userStore()
+  deliveryListItems.value = deliveryList
+  if(page.value === 'addDelivery'){
+    userProfileStore.newDeliveryItems.data = deliveryListItems.value
+    if(deliveryOptions){
+      userProfileStore.newDeliveryItems.delivery = deliveryOptions
+    }
+  }else{
+    userProfileStore.viewDeliveryItems.data = deliveryListItems.value
+    if(deliveryOptions){
+      userProfileStore.viewDeliveryItems.delivery = deliveryOptions
+    }
+  }
+
+  isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
 }
 
 const sanitizeList = (key: number) => {
@@ -297,6 +344,7 @@ const sanitizeList = (key: number) => {
 }
 
 const validateFormInput = (valid: boolean, formInput: string) => {
+  console.log(formInput)
   emits('validateFormInput', valid, formInput)
  const currentValidFormFields = validFormFields.value
   if(valid){
