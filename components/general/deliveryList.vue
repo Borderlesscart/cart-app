@@ -92,8 +92,8 @@
               <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
                 <img src="/img/add.svg" class="w-8 mx-auto">
               </div>
-              
-              <div v-if="key > 0" class="w-3/12  h-max" @click="deleteListItem(key)">
+              <!-- if last item and saved -->
+              <div v-if="key > 0 && key+1 < deliveryListItems.length" class="w-3/12  h-max" @click="deleteListItem(key)">
                 <img src="/img/trash.svg" class="w-8 relative trash">
               </div>
             </div>
@@ -185,11 +185,6 @@ const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
 
-const init = () => {
-  
-}
-
-init()
 
 onBeforeMount(() => {
   const userProfileStore: any = userStore()
@@ -201,7 +196,7 @@ onBeforeMount(() => {
     deliveryListItems.value = userProfileStore.newDeliveryItems.data
     deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
   }
-  
+  console.log(deliveryOptions.value)
   if(deliveryOptions.value.id){
     selectedCountryAddress.value = CountryAddresses.find(country => country.code === deliveryOptions.value.origin_country)
   }
@@ -308,11 +303,10 @@ const addListItem = async () => {
 
     // store last item 
     const stored: boolean = await storeLastItem()
-    if(stored){
-      emits('updateListItem', deliveryListItems.value)
-      deliveryListItems.value.push({name: '', id: null, image_list_link: null})
-      isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
-    }
+
+    emits('updateListItem', deliveryListItems.value)
+    deliveryListItems.value.push({name: '', id: null, image_list_link: null})
+    isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
   } 
 }
 
@@ -321,9 +315,12 @@ const deleteListItem = (key: any) => {
       deliveryListItems.value = deliveryListItems.value.filter((item: any, index) =>
       {
         if(index !== key){
-          // make API call to delete list item
+          validateFormInput(true, 'name_'+key)
           return true
         }else{
+           // validateFormInout here
+           validateFormInput(false, 'name_'+key)
+          // make API call to delete list item
           return false
         }
       })
@@ -339,6 +336,7 @@ const deleteListItem = (key: any) => {
         }])
       } 
       emits('updateListItem', deliveryListItems.value)
+
 }
 
 const updateLocalAndGlobalList = (deliveryList: any, deliveryOptions: any = null) => {
