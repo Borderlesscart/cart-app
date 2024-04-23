@@ -24,7 +24,7 @@
             />
         </div>
 
-        <div class="text-login-offwhite w-10/12 mt-6">
+        <!-- <div class="text-login-offwhite w-10/12 mt-6">
           <div class="">
             <button v-if="!loading" class="text-primary" @click="saveDeliveryItems()">
                  {{ !loading && !itemSaved ? 'Save items': 'Saved' }} 
@@ -33,7 +33,7 @@
                   Saving...
             </button>
           </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script setup lang="ts">

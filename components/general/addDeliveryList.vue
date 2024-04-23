@@ -17,16 +17,7 @@
         </div>
         
 
-        <div class="text-login-offwhite w-10/12">
-          <div class="">
-            <button v-if="!loading" class="text-primary" @click="saveDeliveryItems()">
-                 {{ !loading && !itemSaved ? 'Save items': 'Saved' }} 
-            </button>
-            <button v-else="loading" class="text-primary">
-                  Saving...
-            </button>
-          </div>
-        </div>
+        
     </div>
 </template>
 <script setup lang="ts">

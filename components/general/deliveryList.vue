@@ -22,7 +22,7 @@
             <div class="sm:w-8/12 w-6/12">
               <GeneralSmallTextInput
               name="shipped item"
-              place-holder="list shipped item"
+              :place-holder="deliveryItem.image_list_link ? '': 'e.g Nike shoes'"
               label-name="shipped item"
               :optional="true"
               :auto-focus="key === 0?true:false"
@@ -75,7 +75,7 @@
                         <img 
                         :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
                         
-                        class="w-8 mx-auto">
+                        class="w-8 h-8 mx-auto">
                         <span class="text-login-offwhite text-xs">remove</span>
                       </div>
                     </div>
@@ -84,6 +84,11 @@
               <div v-if="key+1 === deliveryListItems.length && (deliveryItem.image_list_link || deliveryItem.name)" class="w-3/12  h-max" @click="deleteListItem(key)">
                 <img src="/img/trash.svg" class="w-8 relative trash">
               </div>
+
+              <div v-if="key+1 === deliveryListItems.length && loading" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
+                <img src="/img/add-disabled.svg" class="w-8 mx-auto">
+              </div>
+
               <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
                 <img src="/img/add.svg" class="w-8 mx-auto">
               </div>
@@ -94,6 +99,13 @@
             </div>
       </div>
     </div>  
+    <div class="text-login-offwhite w-10/12">
+          <div class="">
+            <button v-if="!loading" class="text-primary">
+                 {{ loading ? 'Saving...': 'Saved' }} 
+            </button>
+          </div>
+        </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
@@ -165,7 +177,7 @@ const isListFormValid = ref<boolean>(false)
 
 const userProfileStore = userStore()
 
-const deliveryId = ref<any>(null)
+const loading = ref<boolean>(false)
 
 const notification = useNotificationStore()
 
@@ -189,9 +201,9 @@ onBeforeMount(() => {
     deliveryListItems.value = userProfileStore.newDeliveryItems.data
     deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
   }
-
+  
   if(deliveryOptions.value.id){
-    selectedCountryAddress.value = CountryAddresses.filter(country => country.code === deliveryOptions.value.destination_country)
+    selectedCountryAddress.value = CountryAddresses.find(country => country.code === deliveryOptions.value.origin_country)
   }
 
   // automatically validate form input
@@ -219,7 +231,10 @@ const beforeUpload = (data: any) => {
      
 }
 
-const storeLastItem = async () => {
+const storeLastItem = async (): Promise<boolean> => {
+    var stored = false
+    loading.value = true
+
     const oldDeliveryListItems = deliveryListItems.value
     const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
 
@@ -245,7 +260,7 @@ const storeLastItem = async () => {
         const itemResponse = await userProfileStore.uploadDeliveryItems(formData)
         latestItem = itemResponse.data
         delivery = itemResponse.delivery
-      }else{
+      }else if(latestDeliveryItem.name.length > 0){
         // upload name
         const userCookie: any|undefined = useCookie('user')
         const deliveryListData: any = {
@@ -262,18 +277,24 @@ const storeLastItem = async () => {
         delivery = itemResponse.delivery
       }
      
-      oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
-        id: latestItem.id,
-        name: latestItem.name?latestItem.name:'',
-        image_list_link: latestItem.image_list_link
+      if(latestItem && delivery){
+          oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
+          id: latestItem.id,
+          name: latestItem.name?latestItem.name:'',
+          image_list_link: latestItem.image_list_link
+        }
+
+        deliveryListItems.value = oldDeliveryListItems  
+        deliveryOptions.value = delivery
+
+        updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
+        stored = true
       }
-
-      deliveryListItems.value = oldDeliveryListItems  
-      deliveryOptions.value = delivery
-
-      updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
+     
     }
-    
+
+    loading.value = false
+    return stored
 }
 
 const addListItem = async () => {
@@ -286,10 +307,12 @@ const addListItem = async () => {
     }
 
     // store last item 
-    await storeLastItem()
-    emits('updateListItem', deliveryListItems.value)
-    deliveryListItems.value.push({name: '', id: null, image_list_link: null})
-    isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
+    const stored: boolean = await storeLastItem()
+    if(stored){
+      emits('updateListItem', deliveryListItems.value)
+      deliveryListItems.value.push({name: '', id: null, image_list_link: null})
+      isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
+    }
   } 
 }
 
@@ -344,7 +367,6 @@ const sanitizeList = (key: number) => {
 }
 
 const validateFormInput = (valid: boolean, formInput: string) => {
-  console.log(formInput)
   emits('validateFormInput', valid, formInput)
  const currentValidFormFields = validFormFields.value
   if(valid){
