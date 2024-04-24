@@ -27,7 +27,14 @@
               :optional="true"
               :auto-focus="key === 0?true:false"
               :intial-value="deliveryItem.name"
-              @input="value => deliveryItem.name = value"
+              @input="(value) => {
+                deliveryItem.name = value
+                if(deliveryItem.id){
+                  isDirtyForm = true
+                  loading = true
+                  updateDeliveryItemName(deliveryItem)
+                }
+              }"
               @valid="value => validateFormInput(value, 'name_'+key)"
               />
             </div>   
@@ -74,9 +81,13 @@
                       <div>
                         <img 
                         :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
-                        
                         class="w-8 h-8 mx-auto">
-                        <span class="text-login-offwhite text-xs">remove</span>
+                        <button 
+                          class="text-login-offwhite text-xs"
+                          @click="removeDeliveryItemImage(deliveryItem)"
+                        >
+                         remove
+                        </button>
                       </div>
                     </div>
               </div>
@@ -89,7 +100,7 @@
                 <img src="/img/add-disabled.svg" class="w-8 mx-auto">
               </div>
 
-              <div v-if="key+1 === deliveryListItems.length" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
+              <div v-if="key+1 === deliveryListItems.length && !loading" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
                 <img src="/img/add.svg" class="w-8 mx-auto">
               </div>
               <!-- if last item and saved -->
@@ -101,7 +112,7 @@
     </div>  
     <div class="text-login-offwhite w-10/12">
           <div v-if="isDirtyForm">
-            <button v-if="!loading" class="text-primary">
+            <button class="text-primary">
                  {{ loading ? 'Saving...': 'Saved' }} 
             </button>
           </div>
@@ -111,6 +122,7 @@
 import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
+
 
 import type { Country } from '~/types'
 import { userStore } from '#imports';
@@ -183,10 +195,10 @@ const notification = useNotificationStore()
 
 const isDirtyForm = ref<boolean>(false)
 
+
 const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
-
 
 onBeforeMount(() => {
   const userProfileStore: any = userStore()
@@ -228,6 +240,25 @@ const beforeUpload = (data: any) => {
      
 }
 
+const removeDeliveryItemImage = async (deliveryItem: any) => {
+  isDirtyForm.value = true
+  loading.value = true
+  const newDeliveryItem = {
+    ...deliveryItem,
+    image_list_link: null
+  }
+
+  const response = await userProfileStore.updateDeliveryItem(newDeliveryItem)
+  const updatedDeliveryItem = response.data
+
+  deliveryListItems.value = deliveryListItems.value.map((listItem: any) => {
+    if(listItem.id === updatedDeliveryItem.id){
+      return updatedDeliveryItem
+    }
+    return listItem
+  })
+  loading.value = false
+}
 const storeLastItem = async (): Promise<boolean> => {
     var stored = false
     loading.value = true
@@ -315,22 +346,30 @@ const addListItem = async () => {
   } 
 }
 
-const deleteListItem = (key: any) => {
+const deleteListItem = async (key: any) => {
+  const userProfileStore: any = userStore()
+  var deletedListItem: any
   // Update deliveryList
-      deliveryListItems.value = deliveryListItems.value.filter((item: any, index) =>
+      deliveryListItems.value =  deliveryListItems.value.filter( (item: any, index) =>
       {
         if(index !== key){
           validateFormInput(true, 'name_'+key)
           return true
         }else{
+          console.log(item)
            // validateFormInout here
-           validateFormInput(false, 'name_'+key)
-          // make API call to delete list item
+          validateFormInput(false, 'name_'+key)
+          deletedListItem = item
           isDirtyForm.value = false
           return false
         }
       })
 
+      if(deletedListItem){
+        // make API call to delete list item
+        await userProfileStore.deleteListItem(deletedListItem.id)
+      }
+      
       if(deliveryListItems.value.length > 0){
         updateLocalAndGlobalList(deliveryListItems.value)
       }else{
@@ -367,6 +406,11 @@ const sanitizeList = (key: number) => {
         deliveryListItems.value = list.filter((item, index) => key !== index)
       }
 }
+
+const updateDeliveryItemName =  useDebounce(async (deliveryItem: any) => {
+    await userProfileStore.updateDeliveryItem(deliveryItem)
+    loading.value = false
+}, 4000)
 
 const validateFormInput = (valid: boolean, formInput: string) => {
   emits('validateFormInput', valid, formInput)

@@ -19,3 +19,11 @@ export const uploadDeliveryItem = async (data: any): Promise<any> => {
 export const deleteUserDeliveryItem = async (id: any): Promise<any> => {
     return await API.delete(baseApi.user.deleteDeliveryItem(id))
 }
+
+export const deleteListItem = async (id: any): Promise<any> => {
+    return await API.delete(baseApi.user.deleteListItem(id))
+}
+
+export const updateDeliveryItem = async (data: any): Promise<any> => {
+    return await API.put(baseApi.user.updateDeliveryItem(), data)
+}

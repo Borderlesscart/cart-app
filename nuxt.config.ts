@@ -10,7 +10,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
-    'nuxt-primevue'
+    'nuxt-primevue',
+    'nuxt-lodash'
   ],
   css: ['~/assets/css/config.scss'],
   runtimeConfig: {

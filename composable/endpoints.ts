@@ -13,6 +13,8 @@ export const baseApi = {
         updateBulkDeliveryItem: () => 'profile/delivery-list',
         getDeliveryListItems: () => 'profile/delivery-list',
         uploadDeliveryItem: () => 'profile/upload-shipped-goods',
-        deleteDeliveryItem: (id: any) => `profile/delivery-list/${id}`
+        deleteDeliveryItem: (id: any) => `profile/delivery-list/${id}`,
+        deleteListItem: (id: any) => `profile/delivery-item/${id}`,
+        updateDeliveryItem: () => 'profile/shipped-goods'
     }
 }
