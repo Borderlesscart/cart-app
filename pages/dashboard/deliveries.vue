@@ -1,7 +1,10 @@
 <template>
      <!-- Top header -->
      <NuxtLayout name="dashboard-layout"></NuxtLayout>
+
      <GeneralNavbar/>
+
+<!-- Local Nav  -->
     <div class="mt-4 w-10/12 m-auto max-w-6xl">
         <div class="text-xs flex flex-col grow-1 mb-4">
             <div class="flex mt-2">
@@ -15,7 +18,11 @@
             </div>
         </div>
     </div>
+<!-- End of Local Nav -->
+
      <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
+
+      <!-- Start of pending delivery -->
       <div v-if="deliveryListItems && deliveryListItems?.length > 1 && activeRoute === 'pendingDeliveryItems'">
         <div class="sm:text-base text-sm">
             <span>Pending delivery items</span>
@@ -34,18 +41,21 @@
                 class="w-full flex justify-between  lg:w-8/12 flex mb-2"
               >
               <div 
-                class="cursor-pointer px-4 py-2 flex w-9/12 sm:w-8/12 border rounded-lg bg-login-offwhite text-dark justify-between"
+                class="cursor-pointer px-4 py-2 flex w-9/12 sm:w-8/12 border border-dark-grey rounded-lg bg-light-dark-background text-off-white justify-between"
                 @click="updateActiveDeliveryList(listItem)"
               >
                 <div class="flex flex-col w-10/12 font-judson">
-                  <span class="text-sm pb-1 font-bold">
+                  <span class="text-sm pb-1 font-bold ">
                     {{ listItem.origin_country }} 
                     to
                     {{ getCountryFullName(listItem.destination_country) }}
-                    ~ 
-                    <span class="text-xs">
-                      {{ formatDate(listItem.created_at) }}
+                    <span class="text-login-offwhite">
+                      ~
+                      <span class="text-xs">
+                        {{ formatDate(listItem.created_at) }}
+                      </span>
                     </span>
+                    
                   </span>
                 </div>
                 <div class="text-dark-primary text-xs flex m-auto w-2/12">
@@ -57,8 +67,11 @@
               class="w-3/12 sm:w-2/12 m-auto cursor-pointer flex justify-between"
               @click="deleteDeliveryItem(listItem)"
               >
-              <div>
+              <div v-if="!loading">
                 <img src="/img/trash.svg" class="w-8 m-auto">
+              </div>
+              <div v-else>
+                <img src="/img/trash-disabled.svg" class="w-8 m-auto">
               </div>
               <div
               v-if="index === deliveryListItems.length -1"
@@ -71,11 +84,14 @@
             </div>   
         </div>
       </div>
+      <!-- End of pending delivery -->
 
-      <div v-if="activeRoute === 'addDeliveryItems'"> 
+      <!-- Add new delivery list -->
+      <div v-if="activeRoute === 'addDeliveryItems' || deliveryListItems && deliveryListItems?.length <= 1"> 
         <GeneralAddDeliveryList/>  
       </div>
 
+      <!-- View and edit delivery list -->
       <div v-if="activeRoute === 'viewDeliveryItem'">
         <GeneralViewDeliveryList
         :delivery-list-items-prop="activeDeliveryList"
@@ -101,7 +117,7 @@
     dayjs.extend(relativeTime);
 
     const selectedCountryAddress = ref<any>(null)
-    const deliveryListItems = ref<Array<any>>()
+    const deliveryListItems = ref<Array<any>>([])
 
     const validFormFields = ref<string[]>([])
     const user = ref({})
@@ -135,7 +151,6 @@
     const routeList = ref(subRouter.value)
 
     const activeRoute = ref('pendingDeliveryItems') //id of active route
-    
 
     const formatDate = (date: string) => {
       const now = dayjs()
@@ -179,57 +194,15 @@
         }
     }
 
-    const addDeliveryItem = () => {
-
-    }
-
     const deleteDeliveryItem = async (item: any) => {
-      
+      loading.value = true
       const userProfileStore = userStore()
       await userProfileStore.deleteUserDeliveryItem(item.id)
       await getUserDeliveryItems('pending')
-    }
-    const updateCountryAddress = (selectedCountry: Country) => {
-      selectedCountryAddress.value = selectedCountry
-    }
-
-    const saveDeliveryItems = async () => {
-      const notification = useNotificationStore()
-      const userCookie: any|undefined = useCookie('user')
-
-      const totalDeliveryItem = deliveryListItems.value?.length
-      if(totalDeliveryItem !== validFormFields.value.length){
-        notification.updateError('item(s) name or screenshot required')
-        return
-      }
-
-      if(!selectedCountryAddress.value){
-        notification.updateError("Select warehouse's country")
-        return
-      }
-
-      if(!user.value){
-        navigateTo('/auth/login')
-      }
-
-      loading.value = true
-      
-      const data = {
-        customer_id: userCookie?.value?.id,
-        origin_country: selectedCountryAddress.value.code.toUpperCase(),
-        destination_country: 'NG',
-        data: deliveryListItems.value
-      }
-      const userProfileStore = userStore()
-      const storeBulkItems = await userProfileStore.storeBulkDeliveryItem(data)
       loading.value = false
-      itemSaved.value = true
     }
 
-
-    async function updateActiveRoute(activeRouteId: string, status: boolean = true) {
-       
-
+    async function updateActiveRoute(activeRouteId: string, status: boolean = true) {      
         if(activeRouteId !== activeRoute.value){
           // update subRouter
           activeRoute.value = activeRouteId

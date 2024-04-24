@@ -100,7 +100,7 @@
       </div>
     </div>  
     <div class="text-login-offwhite w-10/12">
-          <div class="">
+          <div v-if="isDirtyForm">
             <button v-if="!loading" class="text-primary">
                  {{ loading ? 'Saving...': 'Saved' }} 
             </button>
@@ -181,6 +181,8 @@ const loading = ref<boolean>(false)
 
 const notification = useNotificationStore()
 
+const isDirtyForm = ref<boolean>(false)
+
 const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
@@ -196,7 +198,7 @@ onBeforeMount(() => {
     deliveryListItems.value = userProfileStore.newDeliveryItems.data
     deliveryOptions.value = userProfileStore.newDeliveryItems.delivery
   }
-  console.log(deliveryOptions.value)
+
   if(deliveryOptions.value.id){
     selectedCountryAddress.value = CountryAddresses.find(country => country.code === deliveryOptions.value.origin_country)
   }
@@ -289,6 +291,9 @@ const storeLastItem = async (): Promise<boolean> => {
     }
 
     loading.value = false
+    if (stored) {
+      isDirtyForm.value = true
+    }
     return stored
 }
 
@@ -321,6 +326,7 @@ const deleteListItem = (key: any) => {
            // validateFormInout here
            validateFormInput(false, 'name_'+key)
           // make API call to delete list item
+          isDirtyForm.value = false
           return false
         }
       })
@@ -335,8 +341,6 @@ const deleteListItem = (key: any) => {
           image_list_link: null
         }])
       } 
-      emits('updateListItem', deliveryListItems.value)
-
 }
 
 const updateLocalAndGlobalList = (deliveryList: any, deliveryOptions: any = null) => {

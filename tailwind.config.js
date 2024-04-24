@@ -21,8 +21,8 @@ module.exports = {
         'btn-disabled-color': '#5E483D',
         'light-dark': '#3D3D3D',
         'website-white': '#EAE8E8',
-        'almost-dark': '#2D2D2D'
-        
+        'almost-dark': '#2D2D2D',
+        'light-dark-background':'#282828'
       }
     }
 }

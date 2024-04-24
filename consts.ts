@@ -30,7 +30,7 @@ export const Uk = {
 
 export  const China = {
     id: 2,
-    code: 'China',
+    code: 'CHINA',
     name: 'China',
     img: '',
     eta: [
