@@ -109,9 +109,7 @@
     </div>
 </template>
 <script setup lang="ts">
-    import { useCookie } from 'nuxt/app';
-    import { ref, onMounted, onBeforeMount, watch } from 'vue'
-    import type { Country } from '~/types'
+    import { ref } from 'vue'
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
     dayjs.extend(relativeTime);

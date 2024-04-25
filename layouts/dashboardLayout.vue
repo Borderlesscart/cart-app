@@ -24,10 +24,10 @@
                 >
                     <span class="mb-4 text-light-dark text-primary">{{ user?.first_name }} {{ user?.last_name }} </span>
 
-                    <NuxtLink to="#">
+                    <NuxtLink to="/dashboard/profile">
                         <span class="text-off-white hover:text-primary">Profile</span>
                     </NuxtLink>
-                    <NuxtLink to="#">
+                    <NuxtLink to="/dashboard/profile?type=address">
                         <span class="text-off-white hover:text-primary">Delivery Address</span>
                     </NuxtLink>
                     <span 
