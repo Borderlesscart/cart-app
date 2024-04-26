@@ -17,34 +17,68 @@
         </div>
     </div>
 <!-- End of Local Nav -->
+
+    <div v-if="activeRoute === 'accountDetails'">
+        <GeneralUpdateUserProfile/>
+    </div>
 </template>
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, onMounted } from 'vue'
 
      // traverse tree to create route list
      const subRouter = ref([ 
       {
         id: 'goBack',
         isActive: false,
-        name: 'Go back',
+        name: 'Home',
       },
       {
         id: 'deliveryAddress',
-        isActive: true,
+        isActive: false,
         name: 'Delivery address'
       },
       {
         id: 'accountDetails',
-        isActive: false,
+        isActive: true,
         name: 'Account details'
       },
     ])
 
     const routeList = ref(subRouter.value)
 
-    const activeRoute = ref('deliveryAddress') //id of active route
+    const activeRoute = ref('accountDetails') //id of active route
 
-    async function updateActiveRoute(activeRouteId: string, status: boolean = true) {      
+    const route = useRoute()    
+   
+
+    onMounted(() => {
+        const jwtToken = useCookie('jwtToken')
+        if(!jwtToken.value){
+            navigateTo('auth/login')
+        }
+
+        if(route?.query?.type === 'address'){
+            updateActiveRoute('deliveryAddress')
+        }else{
+            updateActiveRoute('accountDetails')
+        }
+    })
+
+    watch(
+        () => route.query?.type,
+        async type => {
+            if(type === 'address'){
+                updateActiveRoute('deliveryAddress')
+            }else{
+                updateActiveRoute('accountDetails')
+            }
+        }
+    )
+
+    async function updateActiveRoute(activeRouteId: string, status: boolean = true) {
+        if (activeRouteId === 'goBack') {
+            navigateTo('/')
+        }      
         if(activeRouteId !== activeRoute.value){
           // update subRouter
           activeRoute.value = activeRouteId

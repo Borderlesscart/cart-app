@@ -3,7 +3,10 @@
      class="w-11/12 sm:w-10/12 flex mx-auto mt-6 max-w-6xl"
      >
         <div class="w-1/2">
-            <img src="/img/logo.svg" class="w-9 h-11">
+            <NuxtLink to="/">
+                <img src="/img/logo.svg" class="w-9 h-11">
+            </NuxtLink>
+            
         </div>
         <div class="w-1/2 flex justify-end">
             <div class="notify-icon m-auto">
@@ -23,13 +26,15 @@
                 class="rounded bg-almost-dark px-4 py-2 flex flex-col text-right absolute top-16 right-4 sm:right-28 text-sm sm:text-base"
                 >
                     <span class="mb-4 text-light-dark text-primary">{{ user?.first_name }} {{ user?.last_name }} </span>
-
-                    <NuxtLink to="/dashboard/profile">
-                        <span class="text-off-white hover:text-primary">Profile</span>
-                    </NuxtLink>
-                    <NuxtLink to="/dashboard/profile?type=address">
-                        <span class="text-off-white hover:text-primary">Delivery Address</span>
-                    </NuxtLink>
+                  
+                        <button @click="routeTo('/dashboard/profile')">
+                            <span class="text-off-white hover:text-primary">Account Details</span>
+                        </button>
+                    
+                        <button @click="routeTo('/dashboard/profile?type=address')">
+                            <span class="text-off-white hover:text-primary">Delivery Address</span>
+                        </button>
+                        
                     <span 
                         class="text-off-white cursor-pointer hover:text-primary"
                         @click="logOut()"
@@ -56,7 +61,12 @@
     const logOut = () => {
         jwtToken.value = undefined
         user.value = undefined
-        navigateTo('auth/login')
+        navigateTo('/auth/login')
+    }
+
+    const routeTo = (route: string) => {
+        navigateTo(route)
+        closeNotificationDropDown()
     }
 
     const closeNotificationDropDown = () => {

@@ -114,14 +114,9 @@
     import relativeTime from 'dayjs/plugin/relativeTime'
     dayjs.extend(relativeTime);
 
-    const selectedCountryAddress = ref<any>(null)
     const deliveryListItems = ref<Array<any>>([])
 
-    const validFormFields = ref<string[]>([])
-    const user = ref({})
-    
     const loading = ref<boolean>(false)
-    const itemSaved = ref<boolean>(false)
 
     const activeDeliveryList = ref()
 
