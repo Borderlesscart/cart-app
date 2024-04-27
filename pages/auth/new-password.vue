@@ -54,7 +54,7 @@
     onBeforeMount(() => {
       const jwtToken = useCookie('jwtToken')
       if(!jwtToken.value){
-        navigateTo('auth/login')
+        navigateTo('/auth/login')
       }
     })
 

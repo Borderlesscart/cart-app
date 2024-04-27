@@ -68,7 +68,7 @@ import { validateEmail } from "~/composable/util";
     })
 
     const { type, name, placeHolder, autoFocus, showLabel, labelName, optional, formSubmitted, value} = toRefs(props)
-
+  
     const emits = defineEmits([
         'input',
         'valid'
@@ -82,6 +82,13 @@ import { validateEmail } from "~/composable/util";
         'is_email': `must be email`
     })
     const isValidEmail = ref(true)
+
+
+    onMounted(() => {
+        if(value.value){
+            emits('valid', true)
+        }
+    })
 
     const computedInputValue = computed<string>({     
        get() : string {

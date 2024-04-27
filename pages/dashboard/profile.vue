@@ -54,7 +54,7 @@
     onMounted(() => {
         const jwtToken = useCookie('jwtToken')
         if(!jwtToken.value){
-            navigateTo('auth/login')
+            navigateTo('/auth/login')
         }
 
         if(route?.query?.type === 'address'){

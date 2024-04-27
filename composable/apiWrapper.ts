@@ -54,6 +54,7 @@ export const API = axios.create({
                 err?.response?.data?.error ||
                 err?.response?.message ||
                 err.toString()
+                console.log('error',errorMessage)
         notificationStore.updateError(errorMessage)
       } else {
         const errorMessage =
@@ -62,7 +63,7 @@ export const API = axios.create({
                 err?.toString()
         notificationStore.updateError(errorMessage)
       }
-      return err
+      throw err
     }
   );
   

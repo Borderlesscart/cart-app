@@ -7,7 +7,7 @@
         </div>
 
         <div class="flex flex-col items-center mt-4">
-          <form>
+    
             <div class="sm:w-96 w-full flex justify-between">
               
               <div class="w-5/12">
@@ -19,7 +19,10 @@
                     :show-label="true"
                     label-name="First name"
                     :value="data.first_name"
-                    @input="value => data.first_name = value"
+                    @input="value => {
+                        data.first_name = value
+                        isFormDirty = true  
+                    }"
                     @valid="value => validateFormInput(value, 'first_name')"
                   />
               </div>
@@ -32,7 +35,10 @@
                     :show-label="true"
                     label-name="Last name"
                     :value="data.last_name"
-                    @input="value => data.last_name = value"
+                    @input="value => {
+                        data.last_name = value
+                        isFormDirty = true  
+                    }"
                     @valid="value => validateFormInput(value, 'last_name')"
                   />
               </div>       
@@ -46,11 +52,20 @@
                     :show-label="true"
                     label-name="phone"
                     :value="data.phone"
-                    @input="value => data.phone = value"
+                    @input="value => {
+                        data.phone = value
+                        isFormDirty = true  
+                    }"
                     @valid="value => validateFormInput(value, 'phone')"
                   />             
                     <!--  v-if="!data.phone_verified" -->
-                  <button class="text-primary text-sm relative bottom-4 float-right">Verify Phone</button>
+                  <button 
+                    v-if="!data.phone_verified"
+                    @click="verifyPhone()"
+                    class="text-primary text-sm relative bottom-4 float-right"
+                  >
+                  Verify Phone
+                </button>
             </div>
 
             <div class="sm:w-96 w-full ">
@@ -61,7 +76,10 @@
                     :show-label="true"
                     label-name="email"
                     :value="data.email"
-                    @input="value => data.email = value"
+                    @input="value => {
+                        isFormDirty = true  
+                        data.email = value
+                    }"
                     @valid="value => validateFormInput(value, 'email')"
                   />
             </div>
@@ -76,7 +94,10 @@
                     :show-label="true"
                     label-name="BVN"
                     :value="data.bvn"
-                    @input="value => data.bvn = value"
+                    @input="value => {
+                        isFormDirty = true  
+                        data.bvn = value
+                    }"
                     @valid="value => validateFormInput(value, 'bvn')"
                   />
               </div>
@@ -90,15 +111,15 @@
                     label-name="Date of Birth"
                     :value="data.dob"
                     @input="value => {
+                        isFormDirty = true  
                         data.dob = value
-                        console.log(data.dob)
                     }"
                     @valid="value => validateFormInput(value, 'dob')"
                   />
               </div>       
             </div>
 
-            <div class="flex w-full justify-between items-center">
+            <div class="flex sm:w-96 w-full justify-between items-center">
                 <span class=" border-b border-dark-grey w-2/5"></span>
                 <span class="text-sm text-login-offwhite  w-1/5 text-center">optional</span>
                 <span class=" border-b border-dark-grey  w-2/5"></span>
@@ -111,8 +132,11 @@
                     :show-label="true"
                     :optional="true"
                     label-name="old password"
-                    @input="value => data.old_password = value"
-                    @valid="value => validateFormInput(value, 'old_password')"
+                    @input="value => {
+                        data.old_password = value
+                        isFormDirty = true  
+                    }"
+                    @valid="value => {}"
               />
             </div>
 
@@ -123,19 +147,22 @@
                     :show-label="true"
                     :optional="true"
                     label-name="New password"
-                    @input="value => data.password = value"
-                    @valid="value => validateFormInput(value, 'password')"
+                    @input="value => {
+                        data.password = value
+                        isFormDirty = true  
+                    }"
+                    @valid="value => {}"
               />
             </div>
-
+<!-- || !(validFormFields.length === formFields && isFormDirty) -->
             <div class="sm:w-96 w-full mt-2">
                   <GeneralButton 
                       :name="formSubmitting?'Saving...':isFormDirty? 'Save': 'Saved'" 
                       @clicked="updateUserProfile(data)"
-                      :disabled="validFormFields.length !== formFields || isFormDirty?true:false || formSubmitting"
+                      :disabled="validFormFields.length !== formFields || formSubmitting || !(validFormFields.length === formFields && isFormDirty)"
                   />
             </div>
-          </form>
+
         </div>
     </div>
 </template>
@@ -156,51 +183,81 @@
    })
 
 
-   const formFields = ref(Object.keys(data.value).length - 4) //since the password fields are optional and two fields aren't used on the form
+   const formFields = ref(6) //since the password fields are optional and two fields aren't used on the form
    const validFormFields = ref<string[]>([])
    const formSubmitting = ref(false)
    const isFormDirty = ref(false)
 
    onBeforeMount(() => {
-        const user = useCookie('user')
+        const user: any = useCookie('user')
         const jwtToken = useCookie('jwtToken')
+
         if(!jwtToken.value || !user.value){
-        navigateTo('auth/login')
-      }
-
-      const formFields = Object.keys(data.value)
-      data.value = user.value
-
-      for(const [key, value] of Object.entries(data.value)){
-        if(
-            key !== 'email_verified' && 
-            key !== 'phone_verified' &&
-            formFields.includes(key)
-        )
-        {
-            let curr: any =value
-            if(curr && curr.length > 3){
-                console.log(curr)
-                validateFormInput(true, key)
-            }
+            navigateTo('/auth/login')
         }
-        
-      }
 
+       data.value =  user.value
+       data.value.old_password = ''
+       data.value.password = ''
    })
 
+   const verifyPhone = () => {
+    const user: any = useCookie('user')
+    if(user.value){
+        const phone: any = useCookie('phone')
+        phone.value = JSON.stringify(user.value.phone)
+        navigateTo('/auth/otp')
+    }
+    
+   }
    const validateFormInput = (valid: boolean, formInput: string) => {
       if(valid){
             if(!validFormFields.value.includes(formInput)){
                 validFormFields.value.push(formInput)
             }    
-            isFormDirty.value = true    
+              
         }else{
             validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
       }
+      console.log(validFormFields.value.length, formFields.value)
    }
 
-   const updateUserProfile = (data: any) => {
-    console.log(data)
+   const updateUserProfile = async (data: any) => {
+    formSubmitting.value = true
+    const userProfileStore = userStore()
+    let payload: any = {
+        id: data.id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone,
+        email: data.email,
+        bvn: data.bvn,
+        dob: data.dob,
+        email_verified: data.email_verified,
+        phone_verified: data.phone_verified
+    }
+
+
+    if(data.old_password.length > 6 && data.password.length > 6){
+        payload.old_password = data.old_password
+        payload.password = data.password
+    }
+
+    try {
+        const updatedProfileResponse = await userProfileStore.updateUserProfile(payload)
+        if (updatedProfileResponse.status === 'success' && updatedProfileResponse.data) {
+            // Store updated user in cookie
+            const authUser = useCookie('user')  
+            authUser.value = JSON.stringify(updatedProfileResponse.data)
+
+            formSubmitting.value = false
+            isFormDirty.value = false
+        }  
+    } catch (error) {
+        formSubmitting.value = false
+        isFormDirty.value = true
+    }
+
+    
    }
 </script>

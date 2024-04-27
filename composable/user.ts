@@ -27,3 +27,7 @@ export const deleteListItem = async (id: any): Promise<any> => {
 export const updateDeliveryItem = async (data: any): Promise<any> => {
     return await API.put(baseApi.user.updateDeliveryItem(), data)
 }
+
+export const updateUserProfile = async (data: any): Promise<any> => {
+    return await API.post(baseApi.user.updateUserProfile(), data)
+}

@@ -299,20 +299,20 @@
     }
 
 
-    const init = async () => {
-      const userCookie: any|undefined = useCookie('user')
+    onBeforeMount(async () => {
+        const userCookie: any|undefined = useCookie('user')
         const jwtToken = useCookie('jwtToken')
-        if(!userCookie.value && !jwtToken.value){
-          navigateTo('auth/login')
+
+        if(!userCookie.value || !jwtToken.value){
+          navigateTo('/auth/login')
           return
         }
 
        await getUserDeliveryItems('pending')
-    }
+    })
 
     const getUserDeliveryItems = async (status: string) => {
       const userCookie: any|undefined = useCookie('user')
-
       const userProfileStore = userStore()
       await userProfileStore.getUserDeliveryItems({
         'user_id': userCookie?.value?.id,
@@ -320,8 +320,6 @@
       })
        deliveryListItems.value = userProfileStore.pendingDeliveries
     }
-
-    init()
 </script>
 <style scoped>
 

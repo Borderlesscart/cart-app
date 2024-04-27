@@ -1,8 +1,21 @@
 <template>
-      <NuxtLayout name="public-layout"></NuxtLayout>
+      <NuxtLayout name="dashboard-layout"></NuxtLayout>
+    
+      <div class="mt-4 w-10/12 m-auto max-w-6xl">
+        <div class="text-xs flex flex-col grow-1 mb-4">
+            <div class="flex mt-2">
+            <button class="text-primary cursor-pointer"
+            @click="$router.go(-1)"
+               >
+                 Go Back
+            </button>
+            </div>
+        </div>
+    </div>
+
     <div class="w-10/12 mx-auto mt-12">
         <div class="font-judson text-login-offwhite text-center text-2xl fon">
-            <span>Enter Your One time password</span>
+            <span>Enter OTP sent to: {{ phone }}</span>
         </div>
 
         <div class="flex flex-col items-center mt-10">
@@ -20,7 +33,7 @@
                 </div>
                 <div class="sm:w-96 w-full font-inter text-xs mb-2">
                     <span v-if="countDown > 0" class="text-login-offwhite">You can request a new one in <span class="text-primary">{{ countDown }}</span> secs</span>
-                    <span v-else class="text-primary cursor-pointer" @click="sendOtp()">Request  <span class="text-login-offwhite">new One Time Password</span></span>
+                    <span v-else class="text-primary cursor-pointer" @click="sendOtp()">Request  <span class="text-login-offwhite">new OTP</span></span>
                 </div>
                 
                 <div class="sm:w-96 w-full">
@@ -52,7 +65,8 @@
     const countDown = ref(60)
 
     const route = useRoute()
-    const phone = useCookie('phone')
+    const phone: any = useCookie('phone')
+
 
     const updateCountDown = () => {
         if(countDown.value > 0){
@@ -73,19 +87,18 @@
         }
     }
 
-    const init = () => {
-        phone.value = '+2348178018780'
+    onBeforeMount(() => {
+        const phone: any = useCookie('phone')
+
         if(!phone.value){
             navigateTo('/auth/register')
             return
         }
+    })
 
-        updateCountDown()
-    }
-
-    init()
 
     onMounted(() => {   
+        const phone: any = useCookie('phone')
         if(phone.value){
             validFormFields.value.push(phone.value)
         } 
@@ -93,6 +106,7 @@
     })
 
     const sendOtp = async () => {
+        const phone: any = useCookie('phone')
         if(!phone.value){
             navigateTo('/auth/register')
             return
@@ -102,7 +116,7 @@
     }
 
     const verifyOtp = async (code: string) => {
-
+        const phone: any = useCookie('phone')
         if(!phone.value){
             navigateTo('/auth/register')
             return
@@ -114,14 +128,14 @@
         }
 
         formSubmitting.value = true
-        console.log(route?.query?.type )
+
         if(route?.query?.type === 'reset_password'){
             await authStore.verifyPasswordReset(data)
         }else{    
             await authStore.verifyOtp(data)    
         } 
+
         formSubmitting.value = false
-      
     }
 </script>
 <style>
