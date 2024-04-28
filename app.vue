@@ -1,7 +1,24 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
   const title = ref('Borderless cart - Ship goods from abroad to Nigeria')
 
   const notificationStore = useNotificationStore()
+  const userProfileStore: any = userStore()
+
+  onMounted(async () => {
+    const userCookie: any|undefined = useCookie('user')
+
+    await userProfileStore.getUserDeliveryItems({
+      'user_id': userCookie?.value?.id,
+      status: 'pending'
+    })
+
+    const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.type === 'address_type')
+    if(userProfileStore.pendingDeliveries.length > 0 && !deliveryAddress){
+      const message = "<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Add your shipping address <a href='/dashboard/profile?type=address' class='text-primary cursor-pointer'>here</a></span><span class='font-inter text-sm mt-2 text-center text-login-offwhite'>We will send your items to this address</span></div>"
+      notificationStore.updateSuccess(message, false)
+    }
+  })
 
 </script>
 

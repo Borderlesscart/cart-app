@@ -32,7 +32,7 @@
                 if(deliveryItem.id){
                   isDirtyForm = true
                   loading = true
-                  updateDeliveryItemName(deliveryItem)
+                  updateDeliveryItemName(deliveryItem, key)
                 }
               }"
               @valid="value => validateFormInput(value, 'name_'+key)"
@@ -84,7 +84,7 @@
                         class="w-8 h-8 mx-auto">
                         <button 
                           class="text-login-offwhite text-xs"
-                          @click="removeDeliveryItemImage(deliveryItem)"
+                          @click="removeDeliveryItemImage(deliveryItem, key)"
                         >
                          remove
                         </button>
@@ -127,6 +127,7 @@ import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 import type { Country } from '~/types'
 import { userStore } from '#imports';
 import { CountryAddresses } from '~/consts';
+import Tree from 'primevue/tree';
 
 const props = defineProps({
     deliveryListItemsProp: {
@@ -240,12 +241,19 @@ const beforeUpload = (data: any) => {
      
 }
 
-const removeDeliveryItemImage = async (deliveryItem: any) => {
+const removeDeliveryItemImage = async (deliveryItem: any, key: any = null) => {
   isDirtyForm.value = true
   loading.value = true
   const newDeliveryItem = {
     ...deliveryItem,
     image_list_link: null
+  }
+
+  console.log(newDeliveryItem)
+  if(!newDeliveryItem.name || length <= 0 && newDeliveryItem.image_list_link == null || newDeliveryItem.image_list_link == ''){
+    await deleteListItem(key)
+    loading.value = true
+    return
   }
 
   const response = await userProfileStore.updateDeliveryItem(newDeliveryItem)
@@ -259,6 +267,7 @@ const removeDeliveryItemImage = async (deliveryItem: any) => {
   })
   loading.value = false
 }
+
 const storeLastItem = async (): Promise<boolean> => {
     var stored = false
     loading.value = true
@@ -336,7 +345,6 @@ const addListItem = async () => {
         notification.updateError("Select country")
         return
     }
-
     // store last item 
     const stored: boolean = await storeLastItem()
 
@@ -356,7 +364,6 @@ const deleteListItem = async (key: any) => {
           validateFormInput(true, 'name_'+key)
           return true
         }else{
-          console.log(item)
            // validateFormInout here
           validateFormInput(false, 'name_'+key)
           deletedListItem = item
@@ -407,9 +414,22 @@ const sanitizeList = (key: number) => {
       }
 }
 
-const updateDeliveryItemName =  useDebounce(async (deliveryItem: any) => {
+const updateDeliveryItemName =  useDebounce(async (deliveryItem: any, key: any = null) => {
+  if (deliveryItem.name.length >= 3) {
     await userProfileStore.updateDeliveryItem(deliveryItem)
     loading.value = false
+  }
+
+  if(deliveryItem.name.length < 3 && deliveryItem.image_list_link){
+    await userProfileStore.updateDeliveryItem(deliveryItem)
+    loading.value = false
+  }
+
+  if (deliveryItem.name.length <= 0 && deliveryItem.image_list_link == null || deliveryItem.image_list_link == '') {
+    await deleteListItem(key)
+    loading.value = false
+  }
+    
 }, 4000)
 
 const validateFormInput = (valid: boolean, formInput: string) => {
@@ -431,7 +451,7 @@ const onTemplatedUpload = (value: any) => {
 
 }
 
-const onSelectedFiles = (data: any, formInput: string) => {
+const onSelectedFiles = async (data: any, formInput: string) => {
       if(!isValidFormInput(formInput)){
         emits('validateFormInput', true, formInput)
         validateFormInput(true, formInput)
@@ -443,6 +463,43 @@ const onSelectedFiles = (data: any, formInput: string) => {
       const currentDeliveryListItems = deliveryListItems.value
       const listItem: any = currentDeliveryListItems[key] 
       listItem.file = file
+
+
+      if(listItem.id){
+        // upload to server
+        loading.value = true
+        const oldDeliveryListItems = deliveryListItems.value
+
+        const formData = new FormData()
+        formData.append('file', listItem.file)
+        formData.append('origin_country', selectedCountryAddress.value.code.toUpperCase())
+        formData.append('destination_country', 'NG')
+        formData.append('list_id', listItem.id)
+        if(deliveryOptions.value.id){
+          formData.append('delivery_id', deliveryOptions.value.id)
+        }
+
+        const userProfileStore = userStore()
+        const itemResponse = await userProfileStore.uploadDeliveryItems(formData)
+        const latestItem = itemResponse.data
+        const delivery = itemResponse.delivery
+
+        if(latestItem && delivery){
+          oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
+          id: latestItem.id,
+          name: latestItem.name?latestItem.name:'',
+          image_list_link: latestItem.image_list_link
+        }
+
+        deliveryListItems.value = oldDeliveryListItems  
+        deliveryOptions.value = delivery
+
+        updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
+      }
+        
+        loading.value = false
+      }
+
       currentDeliveryListItems[key] = listItem
       deliveryListItems.value = currentDeliveryListItems
 

@@ -9,14 +9,31 @@
             
         </div>
         <div class="w-1/2 flex justify-end">
-            <div class="notify-icon m-auto">
-                <button @click="showNotificationDropDown = !showNotificationDropDown">
+            <div class="notify-icon m-auto"> 
+                <button @click="() => {
+                    closeProfileDropDown()
+                    showNotificationDropDown = !showNotificationDropDown
+                }">
                     <img src="/img/notify.svg" class="w-4">
                 </button>
+                <div 
+                v-if="showNotificationDropDown" 
+                
+                class="rounded bg-almost-dark px-4 py-2 flex flex-col text-right absolute top-14 right-28 md:right-60  sm:right-28 text-sm sm:text-base"
+                >
+                    <span class="mb-4 text-light-dark text-primary">0 Notification(s)</span>
+                                        
+                    <div @click="closeNotificationDropDown()" class="flex justify-end cursor-pointer">
+                        <img src="/img/cancel.svg" class="h-6"/>
+                    </div>
+                </div> 
             </div>
             <div class="flex flex-col font-inter">
                 <div class="profile-icon flex justify-end">
-                    <button @click="showProfileDropDown = !showProfileDropDown">
+                    <button @click="() => {
+                        closeNotificationDropDown()
+                        showProfileDropDown = !showProfileDropDown 
+                    }">
                         <img src="/img/profile.svg" class="w-10 h-10">
                     </button>      
                 </div>
@@ -39,7 +56,7 @@
                         class="text-off-white cursor-pointer hover:text-primary"
                         @click="logOut()"
                     >Logout</span>
-                    <div @click="closeNotificationDropDown()" class="mt-4 flex justify-end cursor-pointer">
+                    <div @click="closeProfileDropDown()" class="mt-4 flex justify-end cursor-pointer">
                         <img src="/img/cancel.svg" class="h-6"/>
                     </div>
                 </div>  
@@ -66,12 +83,18 @@
 
     const routeTo = (route: string) => {
         navigateTo(route)
-        closeNotificationDropDown()
+        closeProfileDropDown()
+    }
+
+    const closeProfileDropDown = () => {
+        if(showProfileDropDown.value){
+            showProfileDropDown.value = false
+        }
     }
 
     const closeNotificationDropDown = () => {
-        if(showProfileDropDown.value){
-            showProfileDropDown.value = false
+        if(showNotificationDropDown.value){
+            showNotificationDropDown.value = false
         }
     }
 

@@ -21,6 +21,9 @@
     <div v-if="activeRoute === 'accountDetails'">
         <GeneralUpdateUserProfile/>
     </div>
+    <div v-if="activeRoute === 'deliveryAddress'">
+        <GeneralUpdateUserAddress/>
+    </div>
 </template>
 <script setup lang="ts">
     import { ref, onMounted } from 'vue'
@@ -30,7 +33,7 @@
       {
         id: 'goBack',
         isActive: false,
-        name: 'Home',
+        name: 'Go Back',
       },
       {
         id: 'deliveryAddress',
@@ -50,6 +53,7 @@
 
     const route = useRoute()    
    
+    const router = useRouter()
 
     onMounted(() => {
         const jwtToken = useCookie('jwtToken')
@@ -77,7 +81,7 @@
 
     async function updateActiveRoute(activeRouteId: string, status: boolean = true) {
         if (activeRouteId === 'goBack') {
-            navigateTo('/')
+           router.go(-1)
         }      
         if(activeRouteId !== activeRoute.value){
           // update subRouter

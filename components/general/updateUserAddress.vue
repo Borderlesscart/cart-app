@@ -1,7 +1,9 @@
 <template>
     <div class="w-10/12 mx-auto pb-6  max-w-6xl">
+
+
         <div class="text-base  text-login-offwhite">
-            <span>Account Details</span>
+            <span>Delivery Address</span>
         </div>
 
         <div class="flex flex-col items-center mt-4">
@@ -11,33 +13,33 @@
               <div class="w-5/12">
                   <GeneralTextInput 
                     type="text"
-                    name="first_name" 
-                    place-holder="John" 
+                    name="country" 
+                    place-holder="Nigeria" 
 
                     :show-label="true"
-                    label-name="First name"
-                    :value="data.first_name"
+                    label-name="Country"
+                    :value="data.country"
                     @input="value => {
-                        data.first_name = value
+                        data.country = value
                         isFormDirty = true  
                     }"
-                    @valid="value => validateFormInput(value, 'first_name')"
+                    @valid="value => validateFormInput(value, 'country')"
                   />
               </div>
 
               <div class="w-5/12">
                 <GeneralTextInput 
                     type="text"
-                    name="last_name" 
-                    place-holder="Doe" 
+                    name="state" 
+                    place-holder="State" 
                     :show-label="true"
-                    label-name="Last name"
-                    :value="data.last_name"
+                    label-name="State"
+                    :value="data.state"
                     @input="value => {
-                        data.last_name = value
+                        data.state = value
                         isFormDirty = true  
                     }"
-                    @valid="value => validateFormInput(value, 'last_name')"
+                    @valid="value => validateFormInput(value, 'state')"
                   />
               </div>       
             </div>
@@ -45,41 +47,17 @@
             <div class="sm:w-96 w-full ">
                   <GeneralTextInput 
                     type="text"
-                    name="phone" 
-                    place-holder="09023548503" 
+                    name="address" 
+                    place-holder="12 Isaac Johns close, Ikeja GRA, Lagos" 
                     :show-label="true"
-                    label-name="phone"
-                    :value="data.phone"
+                    label-name="address"
+                    :value="data.address"
                     @input="value => {
-                        data.phone = value
+                        data.address = value
                         isFormDirty = true  
                     }"
-                    @valid="value => validateFormInput(value, 'phone')"
+                    @valid="value => validateFormInput(value, 'address')"
                   />             
-                    <!--  v-if="!data.phone_verified" -->
-                  <button 
-                    v-if="!data.phone_verified"
-                    @click="verifyPhone()"
-                    class="text-primary text-sm relative bottom-4 float-right"
-                  >
-                  Verify Phone
-                </button>
-            </div>
-
-            <div class="sm:w-96 w-full ">
-                <GeneralTextInput 
-                    type="email"
-                    name="email" 
-                    place-holder="johndoe@gmail.com" 
-                    :show-label="true"
-                    label-name="email"
-                    :value="data.email"
-                    @input="value => {
-                        isFormDirty = true  
-                        data.email = value
-                    }"
-                    @valid="value => validateFormInput(value, 'email')"
-                  />
             </div>
 
             <div class="sm:w-96 w-full flex justify-between">
@@ -87,71 +65,36 @@
               <div class="w-5/12">
                   <GeneralTextInput 
                     type="text"
-                    name="bvn" 
-                    place-holder="23232324342" 
+                    name="city" 
+                    place-holder="Lagos City" 
                     :show-label="true"
-                    label-name="BVN"
+                    label-name="City"
                     :value="data.bvn"
                     @input="value => {
                         isFormDirty = true  
-                        data.bvn = value
+                        data.city = value
                     }"
-                    @valid="value => validateFormInput(value, 'bvn')"
+                    @valid="value => validateFormInput(value, 'city')"
                   />
               </div>
 
               <div class="w-5/12">
                 <GeneralTextInput 
-                    type="date"
-                    name="dob" 
-                    place-holder="06/03/2001" 
+                    type="text"
+                    name="zip" 
+                    place-holder="10110001" 
                     :show-label="true"
-                    label-name="Date of Birth"
+                    label-name="Zip"
                     :value="data.dob"
                     @input="value => {
                         isFormDirty = true  
-                        data.dob = value
+                        data.Zip = value
                     }"
-                    @valid="value => validateFormInput(value, 'dob')"
+                    @valid="value => validateFormInput(value, 'zip')"
                   />
               </div>       
             </div>
-
-            <div class="flex sm:w-96 w-full justify-between items-center">
-                <span class=" border-b border-almost-dark w-2/5"></span>
-                <span class="text-sm text-input-placeholder w-1/5 text-center">optional</span>
-                <span class=" border-b border-almost-dark  w-2/5"></span>
-            </div>
-
-            <div class="sm:w-96 w-full">
-              <GeneralPasswordInput
-                    name="old_password" 
-                    place-holder="Old password" 
-                    :show-label="true"
-                    :optional="true"
-                    label-name="old password"
-                    @input="value => {
-                        data.old_password = value
-                        isFormDirty = true  
-                    }"
-                    @valid="value => {}"
-              />
-            </div>
-
-            <div class="sm:w-96 w-full">
-              <GeneralPasswordInput
-                    name="password" 
-                    place-holder="New Password" 
-                    :show-label="true"
-                    :optional="true"
-                    label-name="New password"
-                    @input="value => {
-                        data.password = value
-                        isFormDirty = true  
-                    }"
-                    @valid="value => {}"
-              />
-            </div>
+<!-- || !(validFormFields.length === formFields && isFormDirty) -->
             <div class="sm:w-96 w-full mt-2">
                   <GeneralButton 
                       :name="formSubmitting?'Saving...':isFormDirty? 'Save': 'Saved'" 
@@ -167,20 +110,16 @@
     import { ref, onMounted, onBeforeMount } from 'vue'
 
     const data = ref<any>({
-      first_name: '',
-      last_name: '',
-      phone: '',
-      email: '',
-      bvn: '',
-      dob: '',
-      old_password: '',
-      password: '',
-      email_verified: false,
-      phone_verified: false
+      country: '',
+      state: '',
+      address: '',
+      city: '',
+      zip: '',
+      address_type: '',
    })
 
 
-   const formFields = ref(6) //since the password fields are optional and two fields aren't used on the form
+   const formFields = ref(5) 
    const validFormFields = ref<string[]>([])
    const formSubmitting = ref(false)
    const isFormDirty = ref(false)
@@ -193,10 +132,20 @@
             navigateTo('/auth/login')
         }
 
-       data.value =  user.value
-       data.value.old_password = ''
-       data.value.password = ''
+        var userAddress: any 
+
+        userAddress = user.value?.addresses?.find((address: any) => address.type === 'shipping')
+
+        if(userAddress){
+            console.log(userAddress)
+        }
+
+
    })
+
+   const getUserDeliveryAddress = async () => {
+
+   }
 
    const verifyPhone = () => {
     const user: any = useCookie('user')
@@ -216,6 +165,7 @@
         }else{
             validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
       }
+      console.log(validFormFields.value.length, formFields.value)
    }
 
    const updateUserProfile = async (data: any) => {
