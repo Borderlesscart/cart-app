@@ -31,3 +31,7 @@ export const updateDeliveryItem = async (data: any): Promise<any> => {
 export const updateUserProfile = async (data: any): Promise<any> => {
     return await API.post(baseApi.user.updateUserProfile(), data)
 }
+
+export const updateUserAddress = async (data: any): Promise<any> => {
+    return await API.post(baseApi.user.updateUserAddress(), data)
+}

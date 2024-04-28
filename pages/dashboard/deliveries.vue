@@ -311,6 +311,7 @@
        await getUserDeliveryItems('pending')
     })
 
+
     const getUserDeliveryItems = async (status: string) => {
       const userCookie: any|undefined = useCookie('user')
       const userProfileStore = userStore()
@@ -319,6 +320,15 @@
         status
       })
        deliveryListItems.value = userProfileStore.pendingDeliveries
+
+      //  Display add shipping notification
+      const notificationStore = useNotificationStore()
+      const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.type === 'address_type')
+   
+      if(deliveryListItems.value.length > 0 && !deliveryAddress){
+        const message = "<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Add your shipping address <a href='/dashboard/profile?type=address' class='text-primary cursor-pointer'>here</a></span><span class='font-inter text-sm mt-2 text-center text-login-offwhite'>We will send your items to this address</span></div>"
+        notificationStore.updateSuccess(message, false)
+      }
     }
 </script>
 <style scoped>

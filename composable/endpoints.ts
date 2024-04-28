@@ -16,6 +16,7 @@ export const baseApi = {
         deleteDeliveryItem: (id: any) => `profile/delivery-list/${id}`,
         deleteListItem: (id: any) => `profile/delivery-item/${id}`,
         updateDeliveryItem: () => 'profile/shipped-goods',
-        updateUserProfile: () => 'profile/create'
+        updateUserProfile: () => 'profile/create',
+        updateUserAddress: () => 'profile/address'
     }
 }

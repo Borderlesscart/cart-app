@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getDeliveryItems, storeBulkDeliveryItem, deleteUserDeliveryItem, uploadDeliveryItem, deleteListItem, updateDeliveryItem, updateUserProfile } from "~/composable/user";
+import { getDeliveryItems, storeBulkDeliveryItem, deleteUserDeliveryItem, uploadDeliveryItem, deleteListItem, updateDeliveryItem, updateUserProfile, updateUserAddress } from "~/composable/user";
 
 export const userStore = defineStore('userStore',
     {
@@ -57,7 +57,10 @@ export const userStore = defineStore('userStore',
                 return await updateDeliveryItem(data)
             },
             async updateUserProfile(data: any): Promise<any>{
-                    return await updateUserProfile(data)
+                return await updateUserProfile(data)
+            },
+            async updateUserAddress(data: any): Promise<any>{
+                return await updateUserAddress(data)
             }
         }
     }

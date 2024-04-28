@@ -15,7 +15,6 @@
                     type="text"
                     name="country" 
                     place-holder="Nigeria" 
-
                     :show-label="true"
                     label-name="Country"
                     :value="data.country"
@@ -69,7 +68,7 @@
                     place-holder="Lagos City" 
                     :show-label="true"
                     label-name="City"
-                    :value="data.bvn"
+                    :value="data.city"
                     @input="value => {
                         isFormDirty = true  
                         data.city = value
@@ -85,20 +84,19 @@
                     place-holder="10110001" 
                     :show-label="true"
                     label-name="Zip"
-                    :value="data.dob"
+                    :value="data.zip"
                     @input="value => {
                         isFormDirty = true  
-                        data.Zip = value
+                        data.zip = value
                     }"
                     @valid="value => validateFormInput(value, 'zip')"
                   />
               </div>       
             </div>
-<!-- || !(validFormFields.length === formFields && isFormDirty) -->
             <div class="sm:w-96 w-full mt-2">
                   <GeneralButton 
                       :name="formSubmitting?'Saving...':isFormDirty? 'Save': 'Saved'" 
-                      @clicked="updateUserProfile(data)"
+                      @clicked="updateUserAddress(data)"
                       :disabled="validFormFields.length !== formFields || formSubmitting || !(validFormFields.length === formFields && isFormDirty)"
                   />
             </div>
@@ -115,7 +113,8 @@
       address: '',
       city: '',
       zip: '',
-      address_type: '',
+      address_type: 'shipping',
+      user_id: null
    })
 
 
@@ -134,28 +133,14 @@
 
         var userAddress: any 
 
-        userAddress = user.value?.addresses?.find((address: any) => address.type === 'shipping')
+        userAddress = user.value?.addresses?.find((address: any) => address.address_type === 'shipping')
 
         if(userAddress){
             console.log(userAddress)
+            data.value = userAddress
         }
-
-
    })
 
-   const getUserDeliveryAddress = async () => {
-
-   }
-
-   const verifyPhone = () => {
-    const user: any = useCookie('user')
-    if(user.value){
-        const phone: any = useCookie('phone')
-        phone.value = JSON.stringify(user.value.phone)
-        navigateTo('/auth/otp')
-    }
-    
-   }
    const validateFormInput = (valid: boolean, formInput: string) => {
       if(valid){
             if(!validFormFields.value.includes(formInput)){
@@ -165,36 +150,20 @@
         }else{
             validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
       }
-      console.log(validFormFields.value.length, formFields.value)
    }
 
-   const updateUserProfile = async (data: any) => {
+   const updateUserAddress = async (data: any) => {
     formSubmitting.value = true
     const userProfileStore = userStore()
-    let payload: any = {
-        id: data.id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        phone: data.phone,
-        email: data.email,
-        bvn: data.bvn,
-        dob: data.dob,
-        email_verified: data.email_verified,
-        phone_verified: data.phone_verified
-    }
-
-
-    if(data.old_password.length > 6 && data.password.length > 6){
-        payload.old_password = data.old_password
-        payload.password = data.password
-    }
 
     try {
-        const updatedProfileResponse = await userProfileStore.updateUserProfile(payload)
-        if (updatedProfileResponse.status === 'success' && updatedProfileResponse.data) {
+        const updatedUserAddressResponse = await userProfileStore.updateUserAddress(data)
+        console.log(updatedUserAddressResponse)
+        if (updatedUserAddressResponse.status === 'success' && updatedUserAddressResponse.data) {
             // Store updated user in cookie
-            const authUser = useCookie('user')  
-            authUser.value = JSON.stringify(updatedProfileResponse.data)
+            const oldUser: any = useCookie('user')  
+            const newUserAddress = [updatedUserAddressResponse.data]
+            oldUser.value.addresses = newUserAddress
 
             formSubmitting.value = false
             isFormDirty.value = false

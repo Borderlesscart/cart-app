@@ -223,6 +223,15 @@ onBeforeMount(() => {
         validateFormInput(true, 'name_'+i)
       }
   }
+
+  if (deliveryListItems.value.length === 0) {
+    updateLocalAndGlobalList([{
+          name: '',
+          file: null,
+          id: null,
+          image_list_link: null
+    }])
+  }
 })
 
 const clearSelectedFile = (formInput: string) => {
@@ -249,10 +258,9 @@ const removeDeliveryItemImage = async (deliveryItem: any, key: any = null) => {
     image_list_link: null
   }
 
-  console.log(newDeliveryItem)
   if(!newDeliveryItem.name || length <= 0 && newDeliveryItem.image_list_link == null || newDeliveryItem.image_list_link == ''){
     await deleteListItem(key)
-    loading.value = true
+    loading.value = false
     return
   }
 
@@ -485,7 +493,7 @@ const onSelectedFiles = async (data: any, formInput: string) => {
         const delivery = itemResponse.delivery
 
         if(latestItem && delivery){
-          oldDeliveryListItems[oldDeliveryListItems.length - 1] = {
+          oldDeliveryListItems[key] = {
           id: latestItem.id,
           name: latestItem.name?latestItem.name:'',
           image_list_link: latestItem.image_list_link
