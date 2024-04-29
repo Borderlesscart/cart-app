@@ -41,10 +41,11 @@ export const useAuthStore = defineStore('authStore', {
             // }
 
             if(request?.data){
-                await sendOtp({'phone': data.phone})
-                navigateTo('/auth/otp')
-                const useNotification = useNotificationStore()
-                useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
+                // await sendOtp({'phone': data.phone})
+                // navigateTo('/auth/otp')
+                // const useNotification = useNotificationStore()
+                // useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
+                navigateTo('/')
             }
         },
 
