@@ -22,14 +22,14 @@
                 class="float-right cursor-pointer relative bottom-8 right-4"
                 @click="toggleHidePassword()"
                 >
-                    <img src="/img/eye.svg">
+                    <img src="~/assets/img/eye.svg">
                 </span>
                 <span 
                 v-else
                 class="float-right cursor-pointer relative bottom-8 right-4"
                 @click="toggleHidePassword()"
                 >
-                    <img src="/img/crossed-eye.svg">
+                    <img src="~/assets/img/crossed-eye.svg">
                 </span>
                 <span v-if="!optional && isInputDirty" class="font-inter text-xs text-primary">{{ errors.required }}</span> &nbsp;
                 <span v-if="!optional &&  isInputDirty || !isValidPassword" class="font-inter text-xs text-primary">{{ errors.password_length }}</span> &nbsp;

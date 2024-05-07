@@ -5,11 +5,11 @@
         @click="updateCountryAddress(countryAddress)"
         >
           <div v-if="isCountriesDisabled">
-            <img :src="'/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
+            <img :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
           </div>
           <div v-else>
-            <img v-if="selectedCountryAddress?.code === countryAddress.code" :src="'/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
-            <img v-else :src="'/img/'+countryAddress.code.toLowerCase()+'.svg'" class="sm:w-10 w-8 m-auto">
+            <img v-if="selectedCountryAddress?.code === countryAddress.code" :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
+            <img v-else :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'.svg'" class="sm:w-10 w-8 m-auto">
           </div>
                
           <span 

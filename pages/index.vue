@@ -18,7 +18,7 @@
       <!-- Estimated arrival time to Nigeria -->
       <div class="mt-4 text-xs flex flex-col grow-1 text-login-offwhite">
         <div class="flex mt-2" v-for="eta in selectedCountryAddress.eta">
-          <img class="w-6 h-4 mr-2" :src="'img/'+eta.type+'.svg'">
+          <img class="w-6 h-4 mr-2" :src="'~/assets/img/'+eta.type+'.svg'">
           <span class="" >
             By {{ eta.type }} to Nigeria
             <span class="text-offwhite">
@@ -29,11 +29,11 @@
       </div>
       <!-- Address block -->
       <div class="mt-8">
-        <div><img src="img/pin.svg" class="w-4"></div>
+        <div><img src="~/assets/img/pin.svg" class="w-4"></div>
         <div class="mt-2 flex sm:w-10/12 md:w-10/12 pb-4 border-b border-dark-grey justify-between font-inter text-offwhite text-sm sm:text-base">
           <div class="capitalize" v-html="selectedCountryAddress.address.full_address"></div>
           <div class=" flex mt-auto cursor-pointer" @click="copy(selectedCountryAddress.address.full_address)">
-            <img src="img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
+            <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
           <div class="sm:text-base text-sm"><span>Postcode</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.postcode}}</span>
-            <img src="img/copy.svg" class="w-4">
+            <img src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
@@ -58,7 +58,7 @@
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2" v-html="selectedCountryAddress.address.address_breakdown.short_address">
             </span>
-            <img src="img/copy.svg" class="w-4">
+            <img src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
@@ -66,7 +66,7 @@
           <div class="sm:text-base text-sm"><span>City</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.city }}</span>
-            <img src="img/copy.svg" class="w-4">
+            <img src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
@@ -74,7 +74,7 @@
           <div class="sm:text-base text-sm"><span>State</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.state }}</span>
-            <img src="img/copy.svg" class="w-4">
+            <img src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
@@ -82,7 +82,7 @@
           <div class="sm:text-base text-sm"><span>Country</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.country }}</span>
-            <img src="img/copy.svg" class="w-4">
+            <img src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 

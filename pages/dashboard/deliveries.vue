@@ -68,17 +68,17 @@
               @click="deleteDeliveryItem(listItem)"
               >
               <div v-if="!loading">
-                <img src="/img/trash.svg" class="w-8 m-auto">
+                <img src="~/assets/img/trash.svg" class="w-8 m-auto">
               </div>
               <div v-else>
-                <img src="/img/trash-disabled.svg" class="w-8 m-auto">
+                <img src="~/assets/img/trash-disabled.svg" class="w-8 m-auto">
               </div>
               <div
               v-if="index === deliveryListItems.length -1"
               @click="updateActiveRoute('addDeliveryItems')"
               class="cursor-pointer mr-4"
               >
-                <img src="/img/add.svg" class="w-8 m-auto">
+                <img src="~/assets/img/add.svg" class="w-8 m-auto">
               </div>     
               </div>
             </div>   
@@ -100,7 +100,7 @@
    
         <div class="text-xs flex flex-col grow-1 text-login-offwhite absolute bottom-10 w-10/12">
             <div class="flex mt-2 mr">
-              <img src="/img/message.svg" class="w-4 mr-2"/>
+              <img src="~/assets/img/message.svg" class="w-4 mr-2"/>
               <span class="" >
                   We will notify you when we receive your package
               </span>  
