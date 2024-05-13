@@ -34,7 +34,13 @@
         <div class="mt-2 flex sm:w-10/12 md:w-10/12 pb-4 border-b border-dark-grey justify-between font-inter text-offwhite text-sm sm:text-base">
           <div class="capitalize" v-html="selectedCountryAddress.address.full_address"></div>
           <div class=" flex mt-auto cursor-pointer" @click="copy(selectedCountryAddress.address.full_address, 'address.full_address')">
-            <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
+            <span v-if="activeKey === 'address.full_address'">
+              <img src="~/assets/img/copied.svg" class="w-4 mr-2"> <span class="text-xs">Copied address</span>
+            </span>
+            <span v-if="activeKey ===  null || activeKey !== 'address.full_address'">
+              <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
+            </span>
+
           </div>
         </div>
       </div>
