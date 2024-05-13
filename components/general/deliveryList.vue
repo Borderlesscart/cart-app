@@ -79,15 +79,21 @@
                     class="w-4/12 flex items-baseline cursor-pointer mr-4 filepond--label-action"
                     >
                       <div>
-                        <img 
-                        :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
-                        class="w-8 h-8 mx-auto">
-                        <button 
-                          class="text-login-offwhite text-xs"
-                          @click="removeDeliveryItemImage(deliveryItem, key)"
-                        >
-                         remove
-                        </button>
+                        <!-- <div class="w-8 h-8 mx-auto"> -->
+                          <div class="">
+                            <Image 
+                            :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
+                            preview
+                            :pt="imagePreviewStyle"
+                            />
+                            <button 
+                              class="text-login-offwhite text-xs"
+                              @click="removeDeliveryItemImage(deliveryItem, key)"
+                            >
+                            remove
+                            </button>
+                          </div>
+                          
                       </div>
                     </div>
               </div>
@@ -122,6 +128,7 @@
 import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
+import Image from 'primevue/image';
 
 
 import type { Country } from '~/types'
@@ -179,6 +186,11 @@ const fileUploadStyle = ref({
       fileName: 'hidden',
       fileSize: 'hidden',
       file: 'p-0'
+})
+
+const imagePreviewStyle = ref({
+  root: 'block',
+  image: 'w-8 h-8 mx-auto'
 })
 
 const validFormFields = ref<string[]>([])
