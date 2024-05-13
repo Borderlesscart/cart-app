@@ -11,12 +11,12 @@
                     <GeneralTextInput 
                         type="text" 
                         name="user_id" 
-                        place-holder="09023445432"
+                        place-holder="+2349023445432"
                         :auto-focus="true"
                         @input="value => data.phone = value"
                         @valid="value => validateFormInput(value, 'phone')"
                         :show-label="true"
-                        label-name="phone"
+                        label-name="phone ( +234... )"
                     />
                 </div>
 

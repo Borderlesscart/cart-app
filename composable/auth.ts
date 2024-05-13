@@ -30,7 +30,8 @@ export const verifyPasswordReset = async (data: {phone: string, code: number}): 
 }
 
 export const updatePassword = async (data: {password: string, confirm_password: string}): Promise<any> => {
-    return await API.put(baseApi.auth.update_password(), data)
+    const response = await API.put(baseApi.auth.update_password(), data)
+    return response
 }
 
 

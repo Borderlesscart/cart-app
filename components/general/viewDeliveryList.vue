@@ -57,7 +57,7 @@
 
     const userProfileStore = userStore()
 
-    const init = () => {
+    onBeforeMount(() => {
       deliveryUploadItems.value = deliveryListItems.value.filter(item => {
         if(item.image_list_link){
           return item
@@ -72,9 +72,7 @@
 
       const option = userProfileStore.viewDeliveryItems.delivery
       deliveryOption.value = option
-    }
-
-    init()
+    })
 
     const getCountryFullName = (code: string) => {
       if(code === 'US'){

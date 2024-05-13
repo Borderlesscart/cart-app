@@ -22,7 +22,18 @@
 
      <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
 
-      <!-- Start of pending delivery -->
+      <!-- When no delivery list item added -->
+      <div v-if="deliveryListItems.length === 0 && activeRoute === 'pendingDeliveryItems'">
+        <div class="text-xs flex flex-col grow-1  mb-4">
+          <div class="flex mt-2">
+            <span class="text-login-offwhite" >
+                No delivery items yet. <span class="primary-color" @click="updateActiveRoute('addDeliveryItems')">Add here</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start of pending delivery || for when number of delivery items is greater than 1-->
       <div v-if="deliveryListItems && deliveryListItems?.length > 1 && activeRoute === 'pendingDeliveryItems'">
         <div class="sm:text-base text-sm">
             <span>Pending delivery items</span>
@@ -86,13 +97,23 @@
       </div>
       <!-- End of pending delivery -->
 
+      <!-- View delivery items for single pending list item -->
+      <div v-if="deliveryListItems && deliveryListItems?.length === 1 && activeRoute === 'pendingDeliveryItems'"> 
+        <GeneralViewDeliveryList
+        v-if="activeDeliveryList.length > 0"
+        :delivery-list-items-prop="activeDeliveryList"
+        />
+      </div>
+
       <!-- Add new delivery list -->
-      <div v-if="activeRoute === 'addDeliveryItems' || deliveryListItems && deliveryListItems?.length <= 1"> 
+      <div v-if="activeRoute === 'addDeliveryItems'"> 
         <GeneralAddDeliveryList/>  
       </div>
 
+       
       <!-- View and edit delivery list -->
       <div v-if="activeRoute === 'viewDeliveryItem'">
+        
         <GeneralViewDeliveryList
         :delivery-list-items-prop="activeDeliveryList"
         />
@@ -118,7 +139,7 @@
 
     const loading = ref<boolean>(false)
 
-    const activeDeliveryList = ref()
+    const activeDeliveryList = ref<Array<any>>([])
 
     // traverse tree to create route list
     const subRouter = ref([ 
@@ -150,7 +171,7 @@
       return dayjs(date).from(now)
     }
 
-    const updateActiveDeliveryList = (listItem: any) => {
+    const populateActiveDeliveryList = (listItem: any) => {
       const item = listItem.CustomerDeliveryListToCustomerDelivery
       const { CustomerDeliveryListToCustomerDelivery: _, ...delivery } = listItem
      
@@ -159,13 +180,19 @@
         const currVal = item[i]
         res.push(currVal.CustomerDeliveryList)
       }
+
       activeDeliveryList.value = res
 
       const userProfileStore: any = userStore()
+
       userProfileStore.viewDeliveryItems = {
         delivery,
-        data: res
+        data: activeDeliveryList.value
       }
+    }
+
+    const updateActiveDeliveryList = (listItem: any) => {
+      populateActiveDeliveryList(listItem)
       updateActiveRoute('viewDeliveryItem')
     }
 
@@ -206,6 +233,10 @@
 
         if(activeRouteId === 'pendingDeliveryItems'){
           await getUserDeliveryItems('pending')
+
+          if(deliveryListItems.value.length === 1){
+            populateActiveDeliveryList(deliveryListItems.value[0])
+          }
         }
          
         function traverseAndUpdateRouteItems(routeItems: Array<any>, key: number, res: any): any {
@@ -309,6 +340,14 @@
         }
 
        await getUserDeliveryItems('pending')
+
+       if(deliveryListItems.value.length === 0){
+        updateActiveRoute('addDeliveryItems')
+       }
+
+       if(deliveryListItems.value.length === 1){
+        populateActiveDeliveryList(deliveryListItems.value[0])
+       }
     })
 
 

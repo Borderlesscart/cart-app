@@ -136,7 +136,6 @@
       formSubmitting.value = false
     } catch (error) {
       formSubmitting.value = false
-      console.log(error)
     }  
    }
 </script>

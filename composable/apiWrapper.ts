@@ -50,11 +50,10 @@ export const API = axios.create({
       } else if(err?.response?.status === 400){
         const errorMessage =
                 Array.isArray(err?.response?.data?.message)? 
-                err?.response?.data?.message.join('/n'): err?.response?.data?.message||
+                err?.response?.data?.message.join('/<br>'): err?.response?.data?.message||
                 err?.response?.data?.error ||
                 err?.response?.message ||
                 err.toString()
-                console.log('error',errorMessage)
         notificationStore.updateError(errorMessage)
       } else {
         const errorMessage =

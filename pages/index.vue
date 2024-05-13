@@ -37,7 +37,7 @@
             <span v-if="activeKey === 'address.full_address'">
               <img src="~/assets/img/copied.svg" class="w-4 mr-2"> <span class="text-xs">Copied address</span>
             </span>
-            <span v-if="activeKey ===  null || activeKey !== 'address.full_address'">
+            <span v-if="activeKey ===  null || activeKey !== 'address.full_address'" @click="copy(selectedCountryAddress.address.full_address, 'address.full_address')">
               <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
             </span>
 
@@ -115,9 +115,7 @@
    const notification = useNotificationStore()
 
    onMounted(() => {
-        const user = useCookie('user')
-        const jwtToken = useCookie('jwtToken')
-    })
+   })
 
     onBeforeMount(() => {
       const jwtToken = useCookie('jwtToken')

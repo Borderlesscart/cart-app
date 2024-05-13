@@ -43,8 +43,12 @@ export const useAuthStore = defineStore('authStore', {
                 // }
 
                 if(request?.data){
+                    const jwtToken = request?.data?.access_token
+                    const expires_in = request?.data?.expires
+                    const user = request?.data?.user
+                    storeUserAuth(jwtToken, expires_in, user)
                     navigateTo('/')
-                    useNotification.updateSuccess('Welcome to borderless cart. Sign in to continue', false)
+                    useNotification.updateSuccess("<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Welcome aboard </span><span class='font-inter text-sm mt-2 text-left text-login-offwhite'>Copy shipping address, Send goods to copied address. List sent goods on deliveries page.</span></div>", false)
                 }
             }catch(error){
                 throw error
@@ -97,11 +101,19 @@ export const useAuthStore = defineStore('authStore', {
 
 
         async updatePassword(data: {password: string, confirm_password: string}) {
-            const request = await updatePassword(data)
-            if(request?.status === 'success'){
-                navigateTo('/')
-            }
+            try{
+                const request = await updatePassword(data)
+                if(request?.status === 'success'){
+                    const jwtToken = request?.data?.access_token
+                    const expires_in = request?.data?.expires
+                    const user = request?.data?.user
+                    storeUserAuth(jwtToken, expires_in, user)
+                    navigateTo('/')
 
+                }
+            }catch(error){
+                throw error
+            }
         }
     }   
 })

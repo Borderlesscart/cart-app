@@ -6,7 +6,6 @@
         
         <div class="">
             <GeneralDeliveryList
-
               @update-screen-shot-list="updateduploadList => updateScreenShotList(updateduploadList)"
               @validate-form-input="(valid, formInput) => validateFormInput(valid, formInput)"
               :delivery-list-items-prop="deliveryListItems"
@@ -15,15 +14,12 @@
               page="addDelivery"
             />
         </div>
-        
-
-        
+         
     </div>
 </template>
 <script setup lang="ts">
     import { ref, onMounted, onBeforeMount, watch } from 'vue'
     import { useCookie } from 'nuxt/app';
-    import type { Country } from '~/types'
 
     const selectedCountryAddress = ref<any>(null)
     
@@ -52,21 +48,12 @@
       deliveryUploadItems.value = updatedList
     }
 
-    // const updateDeliveryList = (updatedList: any) => {
-    //   deliveryListItems.value = updatedList
-    //   /**
-    //    * if image upload, upload directly, else
-    //    */
-    // }
-
 
     const validateFormInput = (valid: boolean, formInput: string) => {
             if(valid){
                 if(!validFormFields.value.includes(formInput)){
                     validFormFields.value.push(formInput)
-                }   
-                
-                // if done writing list item, store to DB. If done uploading image. store
+                }     
             }else{
                 validFormFields.value = validFormFields.value.filter(validFormField => validFormField !== formInput)
             }

@@ -10,7 +10,7 @@
                 <div class="sm:w-96 w-full mt-6">
                         <GeneralPasswordInput
                             name="password" 
-                            place-holder="New password" 
+                            place-holder="new password" 
                             label-name="password"
                             :show-label="true"
                             @input="value => data.password = value"
@@ -21,7 +21,7 @@
                 <div class="sm:w-96 w-full mt-2">
                         <GeneralPasswordInput
                             name="confirm_password" 
-                            place-holder="Confirm New password" 
+                            place-holder="confirm new password" 
                             label-name="confirm password"
                             :show-label="true"
                             @input="value => data.confirm_password = value"
@@ -69,8 +69,13 @@
     }
 
     const updatePassword = async (data: {password: string, confirm_password: string}) => {
-        formSubmitting.value = true
-        const request = await authStore.updatePassword(data)
-        formSubmitting.value = false
+        try {
+            formSubmitting.value = true
+            const request = await authStore.updatePassword(data)
+            formSubmitting.value = false
+        } catch (error) {
+            formSubmitting.value = false
+        }
+        
     }
 </script>
