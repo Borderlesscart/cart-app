@@ -28,27 +28,29 @@ export const useAuthStore = defineStore('authStore', {
             }   
         },
         async register(data: any) {
-            const request = await registerUser(data)
+            try{
+                const request = await registerUser(data)
+                const useNotification = useNotificationStore()
 
-            // if(request?.code == 'ERR_BAD_REQUEST'){
-            //     const message = request?.response?.data?.error
-            //     if(message == 'Phone number already in use'){
-            //         await sendOtp({'phone': data.phone})
-            //         navigateTo('/auth/otp')
-            //         const useNotification = useNotificationStore()
-            //         useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
-            //     }
-            // }
+                // if(request?.code == 'ERR_BAD_REQUEST'){
+                //     const message = request?.response?.data?.error
+                //     if(message == 'Phone number already in use'){
+                //         await sendOtp({'phone': data.phone})
+                //         navigateTo('/auth/otp')
+                //         const useNotification = useNotificationStore()
+                //         useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
+                //     }
+                // }
 
-            if(request?.data){
-                // await sendOtp({'phone': data.phone})
-                // navigateTo('/auth/otp')
-                // const useNotification = useNotificationStore()
-                // useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
-                navigateTo('/')
+                if(request?.data){
+                    navigateTo('/')
+                    useNotification.updateSuccess('Welcome to borderless cart. Sign in to continue', false)
+                }
+            }catch(error){
+                throw error
             }
+            
         },
-
         async sendOtp(data: any) {
             const request = await sendOtp(data)
             const useNotification = useNotificationStore()

@@ -5,11 +5,21 @@
         @click="updateCountryAddress(countryAddress)"
         >
           <div v-if="isCountriesDisabled">
-            <img :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
+            <img v-if="countryAddress.code === 'US'" :src="usImgDisabled" class="sm:w-10 w-8 m-auto">
+            <img v-if="countryAddress.code === 'UK'" :src="ukImgDisabled" class="sm:w-10 w-8 m-auto">
+            <img v-if="countryAddress.code === 'CHINA'" :src="chinaImgDisabled" class="sm:w-10 w-8 m-auto">
           </div>
           <div v-else>
-            <img v-if="selectedCountryAddress?.code === countryAddress.code" :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'-disabled.svg'" class="sm:w-10 w-8 m-auto">
-            <img v-else :src="'~/assets/img/'+countryAddress.code.toLowerCase()+'.svg'" class="sm:w-10 w-8 m-auto">
+            <div v-if="selectedCountryAddress?.code === countryAddress.code">
+              <img v-if="countryAddress.code === 'US'" :src="usImgDisabled" class="sm:w-10 w-8 m-auto">
+              <img v-if="countryAddress.code === 'UK'" :src="ukImgDisabled" class="sm:w-10 w-8 m-auto">
+              <img v-if="countryAddress.code === 'CHINA'" :src="chinaImgDisabled" class="sm:w-10 w-8 m-auto">
+            </div>
+            <div v-else>
+              <img v-if="countryAddress.code === 'US'" :src="usImg" class="sm:w-10 w-8 m-auto">
+              <img v-if="countryAddress.code === 'UK'" :src="ukImg" class="sm:w-10 w-8 m-auto">
+              <img v-if="countryAddress.code === 'CHINA'" :src="chinaImg" class="sm:w-10 w-8 m-auto">
+            </div>
           </div>
                
           <span 
@@ -29,6 +39,12 @@
     import { ref } from 'vue'
     import { CountryAddresses } from '~/consts';
     import type { Country } from '~/types'
+    import usImg from '~/assets/img/us.svg'
+    import usImgDisabled from '~/assets/img/us-disabled.svg'
+    import ukImg from '~/assets/img/uk.svg'
+    import ukImgDisabled from '~/assets/img/uk-disabled.svg'
+    import chinaImg from '~/assets/img/china.svg'
+    import chinaImgDisabled from '~/assets/img/china-disabled.svg'
 
     const emits = defineEmits([
         'clicked'

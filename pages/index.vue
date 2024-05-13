@@ -18,7 +18,8 @@
       <!-- Estimated arrival time to Nigeria -->
       <div class="mt-4 text-xs flex flex-col grow-1 text-login-offwhite">
         <div class="flex mt-2" v-for="eta in selectedCountryAddress.eta">
-          <img class="w-6 h-4 mr-2" :src="'~/assets/img/'+eta.type+'.svg'">
+          <img v-if="eta.type === 'ship'" class="w-6 h-4 mr-2" :src="shipIcon">
+          <img v-if="eta.type === 'freight'" class="w-6 h-4 mr-2" :src="freightIcon">
           <span class="" >
             By {{ eta.type }} to Nigeria
             <span class="text-offwhite">
@@ -32,7 +33,7 @@
         <div><img src="~/assets/img/pin.svg" class="w-4"></div>
         <div class="mt-2 flex sm:w-10/12 md:w-10/12 pb-4 border-b border-dark-grey justify-between font-inter text-offwhite text-sm sm:text-base">
           <div class="capitalize" v-html="selectedCountryAddress.address.full_address"></div>
-          <div class=" flex mt-auto cursor-pointer" @click="copy(selectedCountryAddress.address.full_address)">
+          <div class=" flex mt-auto cursor-pointer" @click="copy(selectedCountryAddress.address.full_address, 'address.full_address')">
             <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
           </div>
         </div>
@@ -45,44 +46,49 @@
       </div>
 
       <div class="flex mt-6 flex-wrap justify-start gap-y-8">
-        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.postcode)">
+        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.postcode, 'address.address_breakdown.postcode')">
           <div class="sm:text-base text-sm"><span>Postcode</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.postcode}}</span>
-            <img src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.postcode'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
+            <img v-else src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
-        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.short_address)">
+        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.short_address, 'address.address_breakdown.short_address')">
           <div class="sm:text-base text-sm"><span>Address</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2" v-html="selectedCountryAddress.address.address_breakdown.short_address">
             </span>
-            <img src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.short_address'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
+            <img v-else src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
-        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.city)">
+        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.city, 'address.address_breakdown.city')">
           <div class="sm:text-base text-sm"><span>City</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.city }}</span>
-            <img src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.city'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
+            <img v-else src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
-        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.state)">
+        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.state, 'address.address_breakdown.state')">
           <div class="sm:text-base text-sm"><span>State</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.state }}</span>
-            <img src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.state'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
+            <img v-else src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
-        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.country)">
+        <div class="w-2/6 cursor-pointer"  @click="copy(selectedCountryAddress.address.address_breakdown.country, 'address.address_breakdown.country')">
           <div class="sm:text-base text-sm"><span>Country</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.country }}</span>
-            <img src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.country'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
+            <img v-else src="~/assets/img/copy.svg" class="w-4">
           </div>
         </div>
 
@@ -94,8 +100,11 @@
    import { onMounted, ref, toRefs, onBeforeMount} from 'vue';
    import type { Country } from '~/types'
    import { Us } from '~/consts';
+   import shipIcon from '~/assets/img/ship.svg'
+   import freightIcon from '~/assets/img/freight.svg'
 
    const selectedCountryAddress = ref<Country>(Us)
+   const activeKey = ref<string|null>(null)
 
    const notification = useNotificationStore()
 
@@ -115,9 +124,11 @@
       selectedCountryAddress.value = selectedCountry
     }
 
-    const copy = (value: string) => {
+    const copy = (value: string, activeKeyIndex: string) => {
       navigator.clipboard.writeText(stripHtml(value))
-      notification.updateSuccess('copied')
+      if(activeKeyIndex !== activeKey.value){
+        activeKey.value = activeKeyIndex
+      }
     }
 
     function stripHtml(html: string){

@@ -40,9 +40,9 @@
                   <GeneralTextInput 
                     type="text"
                     name="phone" 
-                    place-holder="09023548503" 
+                    place-holder="+2349023548503" 
                     :show-label="true"
-                    label-name="phone"
+                    label-name="phone ( +234... )"
                     @input="value => data.phone = value"
                     @valid="value => validateFormInput(value, 'phone')"
                   />
@@ -130,8 +130,13 @@
    }
 
    const signUpUser = async (data: any) => {
+    try {
       formSubmitting.value = true
       await authStore.register(data)
       formSubmitting.value = false
+    } catch (error) {
+      formSubmitting.value = false
+      console.log(error)
+    }  
    }
 </script>
