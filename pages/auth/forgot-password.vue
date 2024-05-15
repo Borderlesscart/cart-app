@@ -11,20 +11,20 @@
                     <GeneralTextInput 
                         type="text" 
                         name="user_id" 
-                        place-holder="+2349023445432"
+                        place-holder="+23490... OR john@gm.."
                         :auto-focus="true"
-                        @input="value => data.phone = value"
-                        @valid="value => validateFormInput(value, 'phone')"
+                        @input="value => data.user_id = value"
+                        @valid="value => validateFormInput(value, 'user_id')"
                         :show-label="true"
-                        label-name="phone ( +234... )"
+                        label-name="email OR phone ( +234... )"
                     />
                 </div>
 
                 <div class="sm:w-96 w-full mt-2">
                     <GeneralButton 
-                        name="Change password" 
+                        :name="formSubmitting?'...':'continue'" 
                         @clicked="forgotPassword(data)"
-                        :disabled="validFormFields.length !== formFields || data.phone.length < 7"
+                        :disabled="validFormFields.length !== formFields || data.user_id.length < 7 || formSubmitting"
                     />
                 </div>
             </div>
@@ -33,13 +33,14 @@
     
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+    import { ref } from 'vue';
+    import { validateEmail, validatePhone } from "~/composable/util";
 
-    const data = ref({phone: ''})
+    const data = ref({user_id: ''})
     const formSubmitting = ref(false)
     const formFields = ref(Object.keys(data.value).length)
     const validFormFields = ref<string[]>([])
-    const authStore = useAuthStore()
+   
 
     const validateFormInput = (valid: boolean, formInput: string) => {
         if(valid){
@@ -51,7 +52,24 @@ import { ref } from 'vue';
         }
     }
 
-    const forgotPassword = async (data: {phone: string}) => {
-        await authStore.sendPasswordResetOtp(data)
+    const forgotPassword = async (data: {user_id: string}) => {
+        try{
+            formSubmitting.value = true
+            const authStore = useAuthStore()
+            const useNotification = useNotificationStore()
+            
+            // check if its an email or a phone number and call the right endpoint
+            if (validateEmail(data.user_id)) {  
+                await authStore.sendPasswordResetOtpEmail({email: data.user_id})
+            } else if (validatePhone(data.user_id)){
+                await authStore.sendPasswordResetOtp({phone: data.user_id})
+            } else {
+                useNotification.updateError('Enter a valid email or phone number with country code e.g +2349...', false)
+            }
+
+            formSubmitting.value = false
+        }catch(e){
+            formSubmitting.value = false
+        }  
     }
 </script>

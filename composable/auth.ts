@@ -25,8 +25,18 @@ export const sendPasswordResetOtp = async (data: {phone: string}): Promise<any> 
     return await API.post(baseApi.auth.forgot_password(), data)
 }
 
+export const sendPasswordResetOtpEmail = async (data: {email: string}): Promise<any> => {
+    const email = useCookie('email')
+    email.value = data.email
+    return await API.post(baseApi.auth.forgot_password_email(), data)
+}
+
 export const verifyPasswordReset = async (data: {phone: string, code: number}): Promise<any> => {
     return await API.post(baseApi.auth.verify_password_reset(), data)
+}
+
+export const verifyPasswordResetEmail = async (data: {email: string, code: number}): Promise<any> => {
+    return await API.post(baseApi.auth.verify_password_reset_email(), data)
 }
 
 export const updatePassword = async (data: {password: string, confirm_password: string}): Promise<any> => {

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { loginUser, storeUserAuth, registerUser, sendOtp, verifyOtp,
-        sendPasswordResetOtp, verifyPasswordReset, updatePassword 
+        sendPasswordResetOtp, verifyPasswordReset, updatePassword, 
+        verifyPasswordResetEmail, sendPasswordResetOtpEmail
     } from "~/composable/auth";
 import { useNotificationStore } from "./notification";
 
@@ -55,10 +56,17 @@ export const useAuthStore = defineStore('authStore', {
             }
             
         },
+
         async sendOtp(data: any) {
             const request = await sendOtp(data)
             const useNotification = useNotificationStore()
-            useNotification.updateSuccess('A new OTP has been sent', false)
+            useNotification.updateSuccess('A new OTP has been sent')
+        },
+
+        async sendOtpEmail(data: any) {
+            const request = await this.sendPasswordResetOtpEmail(data)
+            const useNotification = useNotificationStore()
+            useNotification.updateSuccess('A new OTP has been sent')
         },
 
         async verifyOtp(data: {'phone': String, code: Number}) {
@@ -76,12 +84,31 @@ export const useAuthStore = defineStore('authStore', {
 
 
         async sendPasswordResetOtp(data: {phone: string}) {
-            const request = await sendPasswordResetOtp(data)
-            if(request?.status === 'success'){
-                navigateTo('/auth/otp?type=reset_password')
-                const useNotification = useNotificationStore()
-                useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
-            }    
+            try{
+                const request = await sendPasswordResetOtp(data)
+                if(request?.status === 'success'){
+                    navigateTo('/auth/otp?type=reset_password')
+                    const useNotification = useNotificationStore()
+                    useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
+                }  
+            }catch(error){
+                throw error
+            }
+              
+        },
+
+        async sendPasswordResetOtpEmail(data: {email: string}) {
+            try{
+                const request = await sendPasswordResetOtpEmail(data)
+                if(request?.status === 'success'){
+                    navigateTo('/auth/otp?type=reset_password&mode=email')
+                    const useNotification = useNotificationStore()
+                    useNotification.updateSuccess('Enter OTP sent to your email for verification', false)
+                }    
+            }catch(error){
+                throw error
+            }
+            
         },
 
 
@@ -99,15 +126,31 @@ export const useAuthStore = defineStore('authStore', {
 
         },
 
+        async verifyPasswordResetEmail(data: {email: string, code: number}) {
+            const request = await verifyPasswordResetEmail(data)
+            if(request?.status === 'success'){
+                if(request?.data){
+                    // console.log('data', request?.data)
+                    const jwtToken = request?.data?.access_token
+                    const expires_in = request?.data?.expires
+                    const user = request?.data?.user
+                    // console.log(jwtToken, expires_in, user)
+                    storeUserAuth(jwtToken, expires_in, user)
+                    navigateTo('/auth/new-password')
+                }   
+            }
+
+        },
+
 
         async updatePassword(data: {password: string, confirm_password: string}) {
             try{
                 const request = await updatePassword(data)
                 if(request?.status === 'success'){
-                    const jwtToken = request?.data?.access_token
-                    const expires_in = request?.data?.expires
-                    const user = request?.data?.user
-                    storeUserAuth(jwtToken, expires_in, user)
+                    // const jwtToken = request?.data?.access_token
+                    // const expires_in = request?.data?.expires
+                    // const user = request?.data?.user
+                    // storeUserAuth(jwtToken, expires_in, user)
                     navigateTo('/')
 
                 }

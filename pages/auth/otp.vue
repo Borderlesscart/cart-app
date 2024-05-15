@@ -15,7 +15,8 @@
 
     <div class="w-10/12 mx-auto mt-12">
         <div class="font-judson text-login-offwhite text-center text-2xl fon">
-            <span>Enter OTP sent to: {{ phone }}</span>
+            <span v-if="$route.query.mode === 'email'">Enter OTP sent to: {{ email }}</span>
+            <span v-else>Enter OTP sent to: {{ phone }}</span>
         </div>
 
         <div class="flex flex-col items-center mt-10">
@@ -40,7 +41,7 @@
                         <GeneralButton
                         :name="formSubmitting?'Loading...':$route?.query?.type === 'resett_password'?'Login':'Login'" 
                         @clicked="verifyOtp(data.code)"
-                        :disabled="validFormFields.length !== formFields || data.code.length < 6 || formSubmitting"
+                        :disabled="validFormFields.length !== formFields || data.code.length < 4 || formSubmitting"
                         />
                 </div>
 
@@ -66,7 +67,7 @@
 
     const route = useRoute()
     const phone: any = useCookie('phone')
-
+    const email: any = useCookie('email')
 
     const updateCountDown = () => {
         if(countDown.value > 0){
@@ -89,9 +90,10 @@
 
     onBeforeMount(() => {
         const phone: any = useCookie('phone')
+        const email: any = useCookie('email')
 
-        if(!phone.value){
-            navigateTo('/auth/register')
+        if(!phone.value || !email.value){
+            navigateTo('/auth/login')
             return
         }
     })
@@ -99,39 +101,58 @@
 
     onMounted(() => {   
         const phone: any = useCookie('phone')
+        const email: any = useCookie('email')
         if(phone.value){
             validFormFields.value.push(phone.value)
-        } 
+        } else if(email.value){
+            validFormFields.value.push(email.value)
+        }
         updateCountDown()
     })
 
     const sendOtp = async () => {
         const phone: any = useCookie('phone')
-        if(!phone.value){
-            navigateTo('/auth/register')
+        const email: any = useCookie('email')
+        if(!phone.value || !email.value){
+            navigateTo('/auth/login')
             return
         }
 
-        await authStore.sendOtp({phone: phone.value})
+        if(route?.query?.mode === 'email'){
+            await authStore.sendOtpEmail({email: email.value})
+        }else{
+            await authStore.sendOtp({phone: phone.value})
+        }
+        
     }
 
     const verifyOtp = async (code: string) => {
         const phone: any = useCookie('phone')
-        if(!phone.value){
-            navigateTo('/auth/register')
+        const email: any = useCookie('email')
+        if(!phone.value || !email.value){
+            navigateTo('/auth/login')
             return
         }
         
-        const data = {
-            'phone': phone.value, 
+        let data = {
+            phone: phone.value, 
             code: parseInt(code) //covert to number
         }
 
         formSubmitting.value = true
 
-        if(route?.query?.type === 'reset_password'){
+        if(route?.query?.type === 'reset_password' && route?.query?.mode !== 'email'){
+            // phone password reset
             await authStore.verifyPasswordReset(data)
+        }else if(route?.query?.mode === 'email'){
+            // email password reset
+            const data = {
+                code: parseInt(code), //covert to number
+                email: email.value
+            }
+            await authStore.verifyPasswordResetEmail(data)
         }else{    
+            // otp verification for phone number 
             await authStore.verifyOtp(data)    
         } 
 

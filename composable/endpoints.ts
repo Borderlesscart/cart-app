@@ -5,7 +5,9 @@ export const baseApi = {
         otp: () => 'auth/send-sms-otp',
         verify_otp: () => 'auth/verify-phone',
         forgot_password: () => 'auth/forgot-password',
+        forgot_password_email: () => 'auth/forgot-password-email',
         verify_password_reset: () => 'auth/verify-password-reset',
+        verify_password_reset_email: () => 'auth/verify-password-reset-email',
         update_password: () => 'auth/update-password'
     },
     user: {
