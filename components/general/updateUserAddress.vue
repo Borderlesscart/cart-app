@@ -6,6 +6,14 @@
             <span>Delivery Address</span>
         </div>
 
+        <div class="text-xs flex flex-col grow-1 text-login-offwhite mt-2">
+        <div class="flex ">
+          <span class="" >
+              This is where we ship your items to.
+          </span>
+        </div>
+    </div>
+
         <div class="flex flex-col items-center mt-4">
     
             <div class="sm:w-96 w-full flex justify-between">
@@ -136,7 +144,6 @@
         userAddress = user.value?.addresses?.find((address: any) => address.address_type === 'shipping')
 
         if(userAddress){
-            console.log(userAddress)
             data.value = userAddress
         }
    })
@@ -158,7 +165,6 @@
 
     try {
         const updatedUserAddressResponse = await userProfileStore.updateUserAddress(data)
-        console.log(updatedUserAddressResponse)
         if (updatedUserAddressResponse.status === 'success' && updatedUserAddressResponse.data) {
             // Store updated user in cookie
             const oldUser: any = useCookie('user')  
