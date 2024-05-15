@@ -89,7 +89,7 @@ export const useAuthStore = defineStore('authStore', {
                 if(request?.status === 'success'){
                     navigateTo('/auth/otp?type=reset_password')
                     const useNotification = useNotificationStore()
-                    useNotification.updateSuccess('Enter OTP sent to your phone for verifcation', false)
+                    useNotification.updateSuccess('Enter OTP sent to your phone for verifcation')
                 }  
             }catch(error){
                 throw error
@@ -103,7 +103,7 @@ export const useAuthStore = defineStore('authStore', {
                 if(request?.status === 'success'){
                     navigateTo('/auth/otp?type=reset_password&mode=email')
                     const useNotification = useNotificationStore()
-                    useNotification.updateSuccess('Enter OTP sent to your email for verification', false)
+                    useNotification.updateSuccess('Enter OTP sent to your email for verification')
                 }    
             }catch(error){
                 throw error
@@ -130,11 +130,9 @@ export const useAuthStore = defineStore('authStore', {
             const request = await verifyPasswordResetEmail(data)
             if(request?.status === 'success'){
                 if(request?.data){
-                    // console.log('data', request?.data)
                     const jwtToken = request?.data?.access_token
                     const expires_in = request?.data?.expires
                     const user = request?.data?.user
-                    // console.log(jwtToken, expires_in, user)
                     storeUserAuth(jwtToken, expires_in, user)
                     navigateTo('/auth/new-password')
                 }   
