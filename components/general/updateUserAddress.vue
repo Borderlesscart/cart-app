@@ -146,6 +146,8 @@
         if(userAddress){
             data.value = userAddress
         }
+        
+        data.value.user_id = user.value.id
    })
 
    const validateFormInput = (valid: boolean, formInput: string) => {
