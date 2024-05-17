@@ -17,6 +17,7 @@
                     place-holder="email"
                     label-name="email"
                     :auto-focus="true"
+                    :value="data.user_id"
                     @input="value => data.user_id = value"
                     @valid="value => validateFormInput(value, 'user_id')"
                     />
@@ -97,12 +98,20 @@
 
     const authStore = useAuthStore()
     const loginUser = async (data: any) => {
-        formSubmitting.value = true
-        await authStore.login(data) 
-        formSubmitting.value = false
+        try {
+            formSubmitting.value = true
+            await authStore.login(data) 
+            formSubmitting.value = false
+        } catch (error) {
+            formSubmitting.value = false
+        }
+       
     }
 
-    
-    // const emit = defineEmits()
-
+    onBeforeMount(() => {
+        const user_id = localStorage.getItem('user_id')
+        if(user_id){
+            data.value.user_id = user_id
+        }
+    })
 </script>
