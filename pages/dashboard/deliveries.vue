@@ -79,17 +79,17 @@
               @click="deleteDeliveryItem(listItem)"
               >
               <div v-if="!loading">
-                <img src="~/assets/img/trash.svg" class="w-8 m-auto">
+                <img :src="trashImg" class="w-8 m-auto">
               </div>
               <div v-else>
-                <img src="~/assets/img/trash-disabled.svg" class="w-8 m-auto">
+                <img :src="trashDisabledImg" class="w-8 m-auto">
               </div>
               <div
               v-if="index === deliveryListItems.length -1"
               @click="updateActiveRoute('addDeliveryItems')"
               class="cursor-pointer mr-4"
               >
-                <img src="~/assets/img/add.svg" class="w-8 m-auto">
+                <img :src="addImg" class="w-8 m-auto">
               </div>     
               </div>
             </div>   
@@ -121,7 +121,7 @@
    
         <div class="text-xs flex flex-col grow-1 text-login-offwhite absolute bottom-10 w-10/12">
             <div class="flex mt-2 mr">
-              <img src="~/assets/img/message.svg" class="w-4 mr-2"/>
+              <img :src="messageImg" class="w-4 mr-2"/>
               <span class="" >
                   We will notify you when we receive your package
               </span>  
@@ -134,6 +134,11 @@
     import dayjs from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
     dayjs.extend(relativeTime);
+
+    import messageImg from '~/assets/img/message.svg'
+    import trashImg from '~/assets/img/trash.svg'
+    import trashDisabledImg from '~/assets/img/trash-disabled.svg'
+    import addImg from '~/assets/img/add.svg'
 
     const deliveryListItems = ref<Array<any>>([])
 

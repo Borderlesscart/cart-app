@@ -30,15 +30,15 @@
       </div>
       <!-- Address block -->
       <div class="mt-8">
-        <div><img src="~/assets/img/pin.svg" class="w-4"></div>
+        <div><img :src="pinImg" class="w-4"></div>
         <div class="mt-2 flex sm:w-10/12 md:w-10/12 pb-4 border-b border-dark-grey justify-between font-inter text-offwhite text-sm sm:text-base">
           <div class="capitalize" v-html="selectedCountryAddress.address.full_address"></div>
           <div class=" flex mt-auto cursor-pointer" @click="copy(selectedCountryAddress.address.full_address, 'address.full_address')">
             <span v-if="activeKey === 'address.full_address'">
-              <img src="~/assets/img/copied.svg" class="w-4 mr-2"> <span class="text-xs">Copied address</span>
+              <img :src="copiedImg" class="w-4 mr-2"> <span class="text-xs">Copied address</span>
             </span>
             <span v-if="activeKey ===  null || activeKey !== 'address.full_address'" @click="copy(selectedCountryAddress.address.full_address, 'address.full_address')">
-              <img src="~/assets/img/copy.svg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
+              <img :src="copyImg" class="w-4 mr-2"> <span class="text-xs">Copy address</span>
             </span>
 
           </div>
@@ -56,8 +56,8 @@
           <div class="sm:text-base text-sm"><span>Postcode</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.postcode}}</span>
-            <img v-if="activeKey === 'address.address_breakdown.postcode'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
-            <img v-else src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.postcode'" :src="copiedImg" class="w-4" alt="icon depicting copied image">
+            <img v-else :src="copyImg" class="w-4">
           </div>
         </div>
 
@@ -66,8 +66,8 @@
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2" v-html="selectedCountryAddress.address.address_breakdown.short_address">
             </span>
-            <img v-if="activeKey === 'address.address_breakdown.short_address'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
-            <img v-else src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.short_address'" :src="copiedImg" class="w-4" alt="icon depicting copied image">
+            <img v-else :src="copyImg" class="w-4">
           </div>
         </div>
 
@@ -75,8 +75,8 @@
           <div class="sm:text-base text-sm"><span>City</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.city }}</span>
-            <img v-if="activeKey === 'address.address_breakdown.city'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
-            <img v-else src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.city'" :src="copiedImg" class="w-4" alt="icon depicting copied image">
+            <img v-else :src="copyImg" class="w-4">
           </div>
         </div>
 
@@ -84,8 +84,8 @@
           <div class="sm:text-base text-sm"><span>State</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.state }}</span>
-            <img v-if="activeKey === 'address.address_breakdown.state'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
-            <img v-else src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.state'" :src="copiedImg" class="w-4" alt="icon depicting copied image">
+            <img v-else :src="copyImg" class="w-4">
           </div>
         </div>
 
@@ -93,8 +93,8 @@
           <div class="sm:text-base text-sm"><span>Country</span></div>
           <div class="flex sm:text-sm text-xs mt-2">
             <span class="mr-2">{{ selectedCountryAddress.address.address_breakdown.country }}</span>
-            <img v-if="activeKey === 'address.address_breakdown.country'" src="~/assets/img/copied.svg" class="w-4" alt="icon depicting copied image">
-            <img v-else src="~/assets/img/copy.svg" class="w-4">
+            <img v-if="activeKey === 'address.address_breakdown.country'" :src="copiedImg" class="w-4" alt="icon depicting copied image">
+            <img v-else :src="copyImg" class="w-4">
           </div>
         </div>
 
@@ -108,6 +108,9 @@
    import { Us } from '~/consts';
    import shipIcon from '~/assets/img/ship.svg'
    import freightIcon from '~/assets/img/freight.svg'
+   import copyImg from '~/assets/img/copy.svg'
+   import copiedImg from '~/assets/img/copied.svg'
+   import pinImg from '~/assets/img/pin.svg'
 
    const selectedCountryAddress = ref<Country>(Us)
    const activeKey = ref<string|null>(null)

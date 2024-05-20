@@ -55,7 +55,7 @@
                     >
                     <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
                       <div class="" v-if="files.length === 0" @click="chooseCallback()">
-                        <img src="~/assets/img/upload.svg" class="w-8 mx-auto">
+                        <img :src="uploadImg" class="w-8 mx-auto">
                         <span class="text-login-offwhite text-xs">upload</span>
                       </div>
                       <span v-else></span>
@@ -99,19 +99,19 @@
               </div>
 <!-- If item is last item, add delete button. On delete, if no more item in deliveryList, add dummy item -->
               <div v-if="key+1 === deliveryListItems.length && (deliveryItem.image_list_link || deliveryItem.name)" class="w-3/12  h-max" @click="deleteListItem(key)">
-                <img src="~/assets/img/trash.svg" class="w-8 relative trash">
+                <img :src="trashImg" class="w-8 relative trash">
               </div>
 
               <div v-if="key+1 === deliveryListItems.length && loading" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
-                <img src="~/assets/img/add-disabled.svg" class="w-8 mx-auto">
+                <img :src="addDisabledImg" class="w-8 mx-auto">
               </div>
 
               <div v-if="key+1 === deliveryListItems.length && !loading" class="w-4/12 flex items-baseline cursor-pointer" @click="addListItem()">
-                <img src="~/assets/img/add.svg" class="w-8 mx-auto">
+                <img :src="addImg" class="w-8 mx-auto">
               </div>
               <!-- if last item and saved -->
               <div v-if="key > 0 && key+1 < deliveryListItems.length" class="w-3/12  h-max" @click="deleteListItem(key)">
-                <img src="~/assets/img/trash.svg" class="w-8 relative trash">
+                <img :src="trashImg" class="w-8 relative trash">
               </div>
             </div>
       </div>
@@ -129,6 +129,10 @@ import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 import Image from 'primevue/image';
+import uploadImg from '~/assets/img/upload.svg'
+import trashImg from '~/assets/img/trash.svg'
+import addDisabledImg from '~/assets/img/add-disabled.svg'
+import addImg from '~/assets/img/add.svg'
 
 
 import type { Country } from '~/types'

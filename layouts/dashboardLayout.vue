@@ -4,7 +4,7 @@
      >
         <div class="w-1/2">
             <NuxtLink to="/">
-                <img src="~/assets/img/logo.svg" class="w-9 h-11">
+                <img :src="logoImg" class="w-9 h-11">
             </NuxtLink>
             
         </div>
@@ -14,7 +14,7 @@
                     closeProfileDropDown()
                     showNotificationDropDown = !showNotificationDropDown
                 }">
-                    <img src="~/assets/img/notify.svg" class="w-4">
+                    <img :src="notifyImg" class="w-4">
                 </button>
                 <div 
                 v-if="showNotificationDropDown" 
@@ -24,7 +24,7 @@
                     <span class="mb-4 text-light-dark text-primary">0 Notification(s)</span>
                                         
                     <div @click="closeNotificationDropDown()" class="flex justify-end cursor-pointer">
-                        <img src="~/assets/img/cancel.svg" class="h-6"/>
+                        <img :src="cancelImg" class="h-6"/>
                     </div>
                 </div> 
             </div>
@@ -34,7 +34,7 @@
                         closeNotificationDropDown()
                         showProfileDropDown = !showProfileDropDown 
                     }">
-                        <img src="~/assets/img/profile.svg" class="w-10 h-10">
+                        <img :src="profileImg" class="w-10 h-10">
                     </button>      
                 </div>
                 <div 
@@ -57,7 +57,7 @@
                         @click="logOut()"
                     >Logout</span>
                     <div @click="closeProfileDropDown()" class="mt-4 flex justify-end cursor-pointer">
-                        <img src="~/assets/img/cancel.svg" class="h-6"/>
+                        <img :src="cancelImg" class="h-6"/>
                     </div>
                 </div>  
             </div>
@@ -67,7 +67,10 @@
 </template>
 <script lang="ts" setup>
     import { onMounted, ref, toRefs} from 'vue';
-
+    import cancelImg from '~/assets/img/cancel.svg'
+    import profileImg from '~/assets/img/profile.svg'
+    import notifyImg from '~/assets/img/notify.svg'
+    import logoImg from '~/assets/img/logo.svg'
 
     const showProfileDropDown = ref(false)
     const showNotificationDropDown = ref(false)

@@ -22,14 +22,14 @@
                 class="float-right cursor-pointer relative bottom-8 right-4"
                 @click="toggleHidePassword()"
                 >
-                    <img src="~/assets/img/eye.svg">
+                    <img :src="eyeImg">
                 </span>
                 <span 
                 v-else
                 class="float-right cursor-pointer relative bottom-8 right-4"
                 @click="toggleHidePassword()"
                 >
-                    <img src="~/assets/img/crossed-eye.svg">
+                    <img :src="crossedEyeImg">
                 </span>
                 <span v-if="!optional && isInputDirty" class="font-inter text-xs text-primary">{{ errors.required }}</span> &nbsp;
                 <span v-if="!optional &&  isInputDirty || !isValidPassword" class="font-inter text-xs text-primary">{{ errors.password_length }}</span> &nbsp;
@@ -37,6 +37,8 @@
 </template>
 <script lang="ts" setup>
 import { onMounted, ref, toRefs } from 'vue';
+import crossedEyeImg from '~/assets/img/crossed-eye.svg'
+import eyeImg from '~/assets/img/eye.svg'
 
     const props = defineProps({
         name: {

@@ -8,5 +8,5 @@
     </div>
 </template>
 <script setup lang="ts">
-import logoImg from '~/assets/img/logo.svg'
+    import logoImg from '~/assets/img/logo.svg'
 </script>

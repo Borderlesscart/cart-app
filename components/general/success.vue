@@ -3,14 +3,15 @@
 <div class="success-component absolute bottom-12 rounded mt-4 px-6 py-3 text-base  font-inter bg-light-dark flex justify-between">
                 <span class="mr-4" v-html="message"></span>
                 <button @click="clearMessage()">
-                    <img src="~/assets/img/cancel.svg" class="h-6 w-6"/>
+                    <img :src="cancelImg" class="h-6 w-6"/>
                 </button>
             </div>
 </template>
 
 <script lang="ts" setup>
     import { onMounted, ref, toRefs } from 'vue';
-
+    import cancelImg from '~/assets/img/cancel.svg'
+    
      const props = defineProps({
         message: {
             type: String,
