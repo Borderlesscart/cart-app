@@ -2,7 +2,8 @@ import axios from 'axios';
 import { useNotificationStore } from '#imports';
 
 export const API = axios.create({
-    baseURL: 'http://localhost:4000/',
+    // baseURL: 'http://localhost:4000/',
+    baseURL: 'https://api.borderlesscart.com/',
     withCredentials: false,
   });
 

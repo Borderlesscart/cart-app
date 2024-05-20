@@ -15,10 +15,12 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/config.scss'],
   runtimeConfig: {
-    baseUrl: 'localhost:4000/'
+    // baseUrl: 'localhost:4000/',
+    baseUrl: 'api.borderlesscart.com/'
   },
   axios: {
-    baseURL: 'localhost:4000/',
+    // baseURL: 'localhost:4000/',
+    baseUrl: 'api.borderlesscart.com/',
     proxyHeaders: false,
     credentials: false
   },

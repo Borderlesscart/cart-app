@@ -82,7 +82,7 @@
                         <!-- <div class="w-8 h-8 mx-auto"> -->
                           <div class="">
                             <Image 
-                            :src="'http://localhost:4000/public/img/'+deliveryItem.image_list_link"
+                            :src="'https://api.borderlesscart.com/public/img/'+deliveryItem.image_list_link"
                             preview
                             :pt="imagePreviewStyle"
                             />

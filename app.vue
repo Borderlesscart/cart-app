@@ -1,6 +1,14 @@
 <script setup lang="ts">
   const title = ref('Borderless cart - Ship goods from abroad to Nigeria')
   const notificationStore = useNotificationStore()
+
+  onBeforeMount(() => {
+      const jwtToken = useCookie('jwtToken')
+
+      if(!jwtToken.value){
+        navigateTo('/auth/login')
+      }
+  })
 </script>
 
 <template>
