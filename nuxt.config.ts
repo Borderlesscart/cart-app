@@ -29,14 +29,15 @@ export default defineNuxtConfig({
     // includes: ['FileUpload'],
     cssLayerOrder: 'tailwind-base, primevue, tailwind-utilities'
   },
-  // vite: {
-  //   vue: {
-  //     template: {
-  //       transformAssetUrls: {
-  //           includeAbsolute: false,
-  //           base: null
-  //       },
-  //   },
-  //   },
-  // }
+  vite: {
+    template: {
+      transformAssetUrls: {
+          includeAbsolute: false,
+          base: null
+      },
+    },
+    vue: {
+     
+    },
+  }
 })
