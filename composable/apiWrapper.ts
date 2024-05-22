@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { useNotificationStore } from '#imports';
 
-export const API = axios.create({
-    // baseURL: 'http://localhost:4000/',
-    baseURL: 'https://api.borderlesscart.com/',
+export const useApi = () => {
+  const config = useRuntimeConfig()
+  const axiosApi = axios.create({
+    baseURL: config.public.baseUrl,
     withCredentials: false,
   });
 
-  // 
-
-  API.interceptors.request.use(
+  axiosApi.interceptors.request.use(
     (request) => {    
       const jwtToken: any|undefined = useCookie('jwtToken')
       if (jwtToken.value) {
@@ -28,7 +27,7 @@ export const API = axios.create({
     }
   );
   
-  API.interceptors.response.use(
+  axiosApi.interceptors.response.use(
     (response: any) => {
       return response?.data;
     },
@@ -66,4 +65,11 @@ export const API = axios.create({
       throw err
     }
   );
+  
+  return axiosApi
+}
+
+
+  // 
+
   

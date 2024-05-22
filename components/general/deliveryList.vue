@@ -82,7 +82,7 @@
                         <!-- <div class="w-8 h-8 mx-auto"> -->
                           <div class="">
                             <Image 
-                            :src="'https://api.borderlesscart.com/public/img/'+deliveryItem.image_list_link"
+                            :src="config.public.baseUrl+'public/img/'+deliveryItem.image_list_link"
                             preview
                             :pt="imagePreviewStyle"
                             />
@@ -170,6 +170,8 @@ const props = defineProps({
 const { deliveryListItemsProp, deliveryUploadItemsProp, validList, selectedCountryAddressProp, page } = toRefs(props)
 
 const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
+
+const config = useRuntimeConfig()
 
 const deliveryListItems = ref<Array<any>>([{
   name: '',

@@ -4,7 +4,7 @@
     <GeneralNavbar/>
 
     <!-- Country select -->
-    <div class="mt-10 flex flex-col m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
+    <div class="sm:mt-10 mt-8 flex flex-col m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
       <div class="sm:text-base text-sm">
         <span>Select country to ship from</span>
       </div>
@@ -46,7 +46,7 @@
       </div>
 
      <!-- Address breakdown block  -->
-     <div class="mt-14 sm:w-10/12">
+     <div class="sm:mt-14 mt-8 sm:w-10/12">
       <div class="sm:text-base text-sm">
         <span>Address breakdown</span>
       </div>
@@ -115,14 +115,12 @@
    const selectedCountryAddress = ref<Country>(Us)
    const activeKey = ref<string|null>(null)
 
-   const notification = useNotificationStore()
-
    onMounted(() => {
    })
 
     onBeforeMount(() => {
       const jwtToken = useCookie('jwtToken')
-
+      
       if(!jwtToken.value){
         navigateTo('/auth/login')
       }

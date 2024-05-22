@@ -59,69 +59,6 @@
             }
     }
 
-    const saveDeliveryItems = async () => {
-      const notification = useNotificationStore()
-      const userCookie: any|undefined = useCookie('user')
-      const totalDeliveryItems: any = deliveryList.value?.length
-      const totalUploadedItems = deliveryUploadItems.value?.length
-      const totalFormItems = totalDeliveryItems+totalUploadedItems
-      console.log(totalDeliveryItems, totalUploadedItems, validFormFields.value.length)
-      if(totalFormItems !== validFormFields.value.length){
-        notification.updateError('item(s) name or screenshot required')
-        return
-      }
-
-      if(!selectedCountryAddress.value){
-        notification.updateError("Select warehouse's country")
-        return
-      }
-
-      if(!user.value){
-        navigateTo('/auth/login')
-      }
-
-      loading.value = true
-  
-      const deliveryListData = {
-        customer_id: userCookie?.value?.id,
-        origin_country: selectedCountryAddress.value.code.toUpperCase(),
-        destination_country: 'NG',
-        data: deliveryList.value
-      }
-
-      const userProfileStore = userStore()
-
-      if(deliveryListItems.value && deliveryListItems.value?.length  > 0){
-          await userProfileStore.storeBulkDeliveryItem(deliveryListData)
-      }
-      
-      // var deliveryId
-      // if(userProfileStore.deliveryItems.length > 0){
-      //   deliveryId = userProfileStore.deliveryOptions
-      // }
-
-      const uploadFiles = deliveryUploadItems.value
-
-      if(uploadFiles){
-          const uploadData: any = {
-            file: uploadFiles[0],
-            origin_country: selectedCountryAddress.value.code.toUpperCase(),
-            destination_country: 'ng'
-          }
-
-          // if(deliveryId){
-          //   uploadData.delivery_id = deliveryId
-          // }
-
-          await userProfileStore.uploadDeliveryItems(uploadData)
-      }
-      
-      
-      
-      loading.value = false
-      itemSaved.value = true
-    }
-
     const init = () => {
       deliveryList.value = deliveryListItems.value?.filter(listItem => {
         return listItem.name.length > 0

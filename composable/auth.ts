@@ -1,5 +1,7 @@
 import { baseApi } from "~/composable/endpoints";
-import { API } from "./apiWrapper";
+import { useApi } from "./apiWrapper";
+
+const API = useApi()
 
 export const loginUser = async (data: any): Promise<any> => {
    return await API.post(baseApi.auth.login(), data)
