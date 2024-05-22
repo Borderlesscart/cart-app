@@ -123,7 +123,7 @@
             <div class="flex mt-2 mr">
               <img :src="messageImg" class="w-4 mr-2"/>
               <span class="" >
-                  We will notify you when we receive your package
+                  We will notify you once we receive your package
               </span>  
             </div>
         </div>
