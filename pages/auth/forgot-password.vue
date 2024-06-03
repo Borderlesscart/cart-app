@@ -27,6 +27,14 @@
                         :disabled="validFormFields.length !== formFields || data.user_id.length < 7 || formSubmitting"
                     />
                 </div>
+
+                <div class="sm:w-96 w-full font-inter text-xs mt-4">
+                    <button class="text-primary cursor-pointer float-right"
+                    @click="$router.go(-1)"
+                    >
+                        Go Back
+                    </button>
+                </div>
             </div>
         </form>
     </div>

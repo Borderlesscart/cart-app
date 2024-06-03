@@ -72,9 +72,9 @@
             </div>
             <div class="text-xs font-inter text-login-offwhite sm:w-96 w-full mt-2">
               <span>By signing up, I agree with borderless cart's 
-                <NuxtLink to="#" class="text-primary">user agreement</NuxtLink>
+                <NuxtLink to="https://borderlesscart.com/tos.php" target="_blank" class="text-primary">user agreement</NuxtLink>
                 and 
-                <NuxtLink to="#" class="text-primary">privacy policy</NuxtLink></span>
+                <NuxtLink to="https://borderlesscart.com/privacy-policy.php" target="_blank" class="text-primary">privacy policy</NuxtLink></span>
             </div>
 
             <div class="sm:w-96 w-full mt-4">

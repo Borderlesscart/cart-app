@@ -22,8 +22,17 @@
 
      <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
 
+      <!-- When making network calls for delivery items for the first time-->
+      <div v-if="loading && deliveryListItems.length === 0" class="text-xs flex flex-col grow-1  mb-4">
+          <div class="flex mt-2">
+            <span class="text-login-offwhite" >
+                loading...
+            </span>
+          </div>
+      </div>
+
       <!-- When no delivery list item added -->
-      <div v-if="deliveryListItems.length === 0 && activeRoute === 'pendingDeliveryItems'">
+      <div v-if="!loading && deliveryListItems.length === 0 && activeRoute === 'pendingDeliveryItems'">
         <div class="text-xs flex flex-col grow-1  mb-4">
           <div class="flex mt-2">
             <span class="text-login-offwhite" >
@@ -357,21 +366,29 @@
 
 
     const getUserDeliveryItems = async (status: string) => {
-      const userCookie: any|undefined = useCookie('user')
-      const userProfileStore = userStore()
-      await userProfileStore.getUserDeliveryItems({
-        'user_id': userCookie?.value?.id,
-        status
-      })
-       deliveryListItems.value = userProfileStore.pendingDeliveries
+      try{
+        loading.value = true
 
-      //  Display add shipping notification
-      const notificationStore = useNotificationStore()
-      const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.address_type === 'shipping')
-   
-      if(deliveryListItems.value.length > 0 && !deliveryAddress){
-        const message = "<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Add your shipping address <a href='/dashboard/profile?type=address' class='text-primary cursor-pointer'>here</a></span><span class='font-inter text-sm mt-2 text-center text-login-offwhite'>We will send your items to this address</span></div>"
-        notificationStore.updateSuccess(message, false)
+        const userCookie: any|undefined = useCookie('user')
+        const userProfileStore = userStore()
+        await userProfileStore.getUserDeliveryItems({
+          'user_id': userCookie?.value?.id,
+          status
+        })
+        deliveryListItems.value = userProfileStore.pendingDeliveries
+
+        //  Display add shipping notification
+        const notificationStore = useNotificationStore()
+        const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.address_type === 'shipping')
+    
+        if(deliveryListItems.value.length > 0 && !deliveryAddress){
+          const message = "<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Add your shipping address <a href='/dashboard/profile?type=address' class='text-primary cursor-pointer'>here</a></span><span class='font-inter text-sm mt-2 text-center text-login-offwhite'>We will send your items to this address</span></div>"
+          notificationStore.updateSuccess(message, false)
+        }
+
+        loading.value = false
+      }catch(error){
+        loading.value = false
       }
     }
 </script>

@@ -44,11 +44,19 @@ export const userStore = defineStore('userStore',
                 return uploadedItems.data
             },
             async getUserDeliveryItems(query: any){
-                const deliveryListItems = await getDeliveryItems(query)
-                this.pendingDeliveries = deliveryListItems?.data
+                try{
+                    const deliveryListItems = await getDeliveryItems(query)
+                    this.pendingDeliveries = deliveryListItems?.data
+                }catch(error){
+                    throw error
+                }
             },
             async deleteUserDeliveryItem(id: any){
-                await deleteUserDeliveryItem(id)
+                try{
+                    await deleteUserDeliveryItem(id)
+                }catch(error){
+                    throw error
+                } 
             },
             async deleteListItem(id: any): Promise<any>{
                 return await deleteListItem(id)

@@ -67,8 +67,8 @@
 
    const countryAddresses = ref<Country[]>(CountryAddresses)
 
-   const selectedCountryAddress = ref<Country|undefined>(countryAddresses.value.find((country: Country) => country.code === selectCountryCode.value))
-   const isCountriesDisabled = ref<Boolean>(disabled.value)
+   const selectedCountryAddress = ref<Country|undefined>(undefined)
+   const isCountriesDisabled = ref<Boolean>(false)
 
    const updateCountryAddress = (countryAddress: Country) => {
     if(!disabled.value){
@@ -76,4 +76,9 @@
       emits('clicked', countryAddress)
     }   
    }
+
+   onMounted(() => {
+    selectedCountryAddress.value = countryAddresses.value.find((country: Country) => country.code === selectCountryCode.value)
+    isCountriesDisabled.value = disabled.value
+   })
 </script>

@@ -47,7 +47,7 @@
                     @upload="onTemplatedUpload($event)" 
                     :multiple="false" 
                     accept="image/*" 
-                    :maxFileSize="1000000" 
+                    :maxFileSize="2500000" 
                     @select="file => onSelectedFiles(file, 'name_'+key)"
                     @remove="clearSelectedFile('name_'+key)"
                     :pt="fileUploadStyle"
@@ -167,7 +167,7 @@ const props = defineProps({
     }
 })
 
-const { deliveryListItemsProp, deliveryUploadItemsProp, validList, selectedCountryAddressProp, page } = toRefs(props)
+const { selectedCountryAddressProp, page } = toRefs(props)
 
 const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
 
@@ -218,6 +218,7 @@ const isDirtyForm = ref<boolean>(false)
 const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
+
 
 onBeforeMount(() => {
   const userProfileStore: any = userStore()
@@ -399,8 +400,12 @@ const deleteListItem = async (key: any) => {
       })
 
       if(deletedListItem){
-        // make API call to delete list item
-        await userProfileStore.deleteListItem(deletedListItem.id)
+        try{
+          // make API call to delete list item
+          await userProfileStore.deleteListItem(deletedListItem.id)
+        }catch(error){
+
+        }
       }
       
       if(deliveryListItems.value.length > 0){
@@ -441,19 +446,23 @@ const sanitizeList = (key: number) => {
 }
 
 const updateDeliveryItemName =  useDebounce(async (deliveryItem: any, key: any = null) => {
-  if (deliveryItem.name.length >= 3) {
-    await userProfileStore.updateDeliveryItem(deliveryItem)
-    loading.value = false
-  }
+  try{
+    if (deliveryItem.name.length >= 3) {
+      await userProfileStore.updateDeliveryItem(deliveryItem)
+      loading.value = false
+    }
 
-  if(deliveryItem.name.length < 3 && deliveryItem.image_list_link){
-    await userProfileStore.updateDeliveryItem(deliveryItem)
-    loading.value = false
-  }
+    if(deliveryItem.name.length < 3 && deliveryItem.image_list_link){
+      await userProfileStore.updateDeliveryItem(deliveryItem)
+      loading.value = false
+    }
 
-  if (deliveryItem.name.length <= 0 && deliveryItem.image_list_link == null || deliveryItem.image_list_link == '') {
-    await deleteListItem(key)
-    loading.value = false
+    if (deliveryItem.name.length <= 0 && deliveryItem.image_list_link == null || deliveryItem.image_list_link == '') {
+      await deleteListItem(key)
+      loading.value = false
+    }
+  }catch(error){
+      loading.value = false
   }
     
 }, 4000)
@@ -484,14 +493,20 @@ const onSelectedFiles = async (data: any, formInput: string) => {
       }
 
       const file = data.files[0]
+
+      if(!file){
+        notification.updateError('File size should be less than 2.5mb')
+        return
+      }
+
       const key = parseInt(formInput.split('_')[1])
  
       const currentDeliveryListItems = deliveryListItems.value
       const listItem: any = currentDeliveryListItems[key] 
       listItem.file = file
 
-
-      if(listItem.id){
+      try{
+        if(listItem.id){ 
         // upload to server
         loading.value = true
         const oldDeliveryListItems = deliveryListItems.value
@@ -520,16 +535,19 @@ const onSelectedFiles = async (data: any, formInput: string) => {
         deliveryListItems.value = oldDeliveryListItems  
         deliveryOptions.value = delivery
 
-        updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
-      }
-        
+          updateLocalAndGlobalList(deliveryListItems.value, deliveryOptions.value)
+        }
+          
+          loading.value = false
+        }
+
+        currentDeliveryListItems[key] = listItem
+        deliveryListItems.value = currentDeliveryListItems
+
+        emits('updateScreenShotList', uploadListItem.value)
+      }catch(error){
         loading.value = false
       }
-
-      currentDeliveryListItems[key] = listItem
-      deliveryListItems.value = currentDeliveryListItems
-
-      emits('updateScreenShotList', uploadListItem.value)
  }
 
  const isValidFormInput = (formInput: string) => {
