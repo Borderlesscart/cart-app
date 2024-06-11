@@ -21,7 +21,10 @@
 <!-- End of Local Nav -->
 
      <div class="mt-4 m-auto text-off-white font-inter w-10/12 pb-14 max-w-6xl">
-
+      <ConfirmPopup
+      :pt="confirmPopupStyle"
+      >
+      </ConfirmPopup>
       <!-- When making network calls for delivery items for the first time-->
       <div v-if="loading && deliveryListItems.length === 0" class="text-xs flex flex-col grow-1  mb-4">
           <div class="flex mt-2">
@@ -83,26 +86,33 @@
                 </div>
               </div>
 
-              <div
-              class="w-3/12 sm:w-2/12 m-auto cursor-pointer flex justify-between"
-              @click="deleteDeliveryItem(listItem)"
-              >
-              <div v-if="!loading">
-                <img :src="trashImg" class="w-8 m-auto">
-              </div>
-              <div v-else>
-                <img :src="trashDisabledImg" class="w-8 m-auto">
-              </div>
-              <div
-              v-if="index === deliveryListItems.length -1"
-              @click="updateActiveRoute('addDeliveryItems')"
-              class="cursor-pointer mr-4"
-              >
-                <img :src="addImg" class="w-8 m-auto">
-              </div>     
-              </div>
+              
+                <div
+                class="w-3/12 sm:w-2/12 m-auto cursor-pointer flex justify-between"
+                
+                >
+                  <button v-if="!loading"
+                  @click="initiateDeleteDeliveryItem($event, listItem)"
+                  >
+                    <img :src="trashImg" class="w-8 m-auto">
+                  </button>
+                  <button v-else
+                  @click="initiateDeleteDeliveryItem($event, listItem)">
+                    <img :src="trashDisabledImg" class="w-8 m-auto">
+                  </button>
+                  <div
+                  v-if="index === deliveryListItems.length -1"
+                  @click="updateActiveRoute('addDeliveryItems')"
+                  class="cursor-pointer mr-4"
+                  >
+                    <img :src="addImg" class="w-8 m-auto">
+                  </div>     
+                </div>
+             
             </div>   
+            
         </div>
+        
       </div>
       <!-- End of pending delivery -->
 
@@ -148,12 +158,18 @@
     import trashImg from '~/assets/img/trash.svg'
     import trashDisabledImg from '~/assets/img/trash-disabled.svg'
     import addImg from '~/assets/img/add.svg'
+    import { useConfirm } from 'primevue/useconfirm';
+    import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 
     const deliveryListItems = ref<Array<any>>([])
 
     const loading = ref<boolean>(false)
 
     const activeDeliveryList = ref<Array<any>>([])
+
+    const confirmPopupStyle = ref({
+      root: 'font-inter'
+    })
 
     // traverse tree to create route list
     const subRouter = ref([ 
@@ -226,6 +242,25 @@
         if(code === 'Ch'){
           return 'China'
         }
+    }
+
+    const confirm = useConfirm()
+    const initiateDeleteDeliveryItem = async (event: any, item: any) => {
+      confirm.require({
+        target: event.currentTarget,
+        message: 'Are you sure you want to delete this item?',
+        icon: 'pi pi-exclamation-triangle',
+        rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+        acceptClass: 'p-button-sm',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Delete',
+        accept: async () => {
+          await deleteDeliveryItem(item)
+        },
+        reject: async () => {
+          console.log('reject')
+        }
+      });
     }
 
     const deleteDeliveryItem = async (item: any) => {
@@ -380,7 +415,7 @@
         //  Display add shipping notification
         const notificationStore = useNotificationStore()
         const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.address_type === 'shipping')
-    
+  
         if(deliveryListItems.value.length > 0 && !deliveryAddress){
           const message = "<div class='flex flex-col'><span class='class='font-judson text-2xl''>👋🏾 Add your shipping address <a href='/dashboard/profile?type=address' class='text-primary cursor-pointer'>here</a></span><span class='font-inter text-sm mt-2 text-center text-login-offwhite'>We will send your items to this address</span></div>"
           notificationStore.updateSuccess(message, false)
