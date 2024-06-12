@@ -32,9 +32,13 @@ export const userStore = defineStore('userStore',
                         image_list_link: null
                     }]
                 },
+                showAddShippingAddressNotification: false
             }
         },
         actions: {
+            async updateAddShippingAddressNotification(value: boolean) {
+                this.showAddShippingAddressNotification = value
+            },
             async storeBulkDeliveryItem(data: any) {
                 const storeItems = await storeBulkDeliveryItem(data)
                 return storeItems?.data
@@ -68,7 +72,13 @@ export const userStore = defineStore('userStore',
                 return await updateUserProfile(data)
             },
             async updateUserAddress(data: any): Promise<any>{
-                return await updateUserAddress(data)
+                try{
+                    const response = await updateUserAddress(data)
+                    this.updateAddShippingAddressNotification(false)
+                    return response
+                }catch(err){
+                    throw err
+                }
             }
         }
     }

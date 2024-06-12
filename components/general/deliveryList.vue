@@ -125,7 +125,7 @@
         </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref, toRefs, onBeforeMount, watch } from 'vue';
+import { ref, toRefs, onBeforeMount } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 import Image from 'primevue/image';
@@ -133,8 +133,6 @@ import uploadImg from '~/assets/img/upload.svg'
 import trashImg from '~/assets/img/trash.svg'
 import addDisabledImg from '~/assets/img/add-disabled.svg'
 import addImg from '~/assets/img/add.svg'
-
-
 
 import type { Country } from '~/types'
 import { userStore } from '#imports';

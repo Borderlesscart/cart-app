@@ -13,7 +13,6 @@
                     type="text"
                     name="first_name" 
                     place-holder="John" 
-
                     :show-label="true"
                     label-name="First name"
                     :value="data.first_name"
@@ -113,7 +112,7 @@
                         data.dob = value
                     }"
                     @valid="value => validateFormInput(value, 'dob')"
-                  />
+                />
               </div>       
             </div>
 
@@ -164,7 +163,7 @@
     </div>
 </template>
 <script setup lang="ts">
-    import { ref, onMounted, onBeforeMount } from 'vue'
+    import { ref, onBeforeMount } from 'vue'
 
     const data = ref<any>({
       first_name: '',
@@ -200,13 +199,17 @@
 
    const verifyPhone = () => {
     const user: any = useCookie('user')
+
     if(user.value){
         const phone: any = useCookie('phone')
         phone.value = JSON.stringify(user.value.phone)
+
+        const email: any = useCookie('email')
+        email.value = JSON.stringify(user.value.email)
         navigateTo('/auth/otp')
-    }
-    
+    }   
    }
+
    const validateFormInput = (valid: boolean, formInput: string) => {
       if(valid){
             if(!validFormFields.value.includes(formInput)){

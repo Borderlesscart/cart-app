@@ -1,6 +1,7 @@
 <script setup lang="ts">
   const title = ref('Borderless cart - Ship goods from abroad to Nigeria')
   const notificationStore = useNotificationStore()
+  const userProfileStore = userStore()
 
   onBeforeMount(() => {
       const jwtToken = useCookie('jwtToken')
@@ -25,17 +26,28 @@
 
     <div 
       v-if="notificationStore.error.message"
-      class="w-11/12 sm:w-10/12 flex mx-auto">
+      class="w-11/12 sm:w-10/12 flex mx-auto"
+    >
       <GeneralError 
       :message="notificationStore.error.message"
       :flash="notificationStore.error.flash"/>
-    </div>   
+    </div>
+
     <div 
     v-if="notificationStore.success.message"
-    class="w-11/12 sm:w-10/12 flex mx-auto">
+    class="w-11/12 sm:w-10/12 flex mx-auto"
+    >
       <GeneralSuccess
       :message="notificationStore.success.message"
       :flash="notificationStore.success.flash"/>
-    </div> 
+    </div>
+
+    <div
+    v-if="userProfileStore.showAddShippingAddressNotification && !notificationStore.success.message && !notificationStore.error.message"
+    class="w-11/12 sm:w-10/12 flex mx-auto"
+    >
+      <GeneralWelcome/>
+    </div>
+
   </div>
 </template>
