@@ -478,8 +478,6 @@ const updateLocalAndGlobalList = (deliveryList: any, deliveryOptions: any = null
     }
   }
 
-  console.log(deliveryList)
-
   isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
 }
 
