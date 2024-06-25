@@ -1,7 +1,7 @@
 <template>
     <button 
     @click.prevent="buttonClicked()" 
-    class="font-judson py-2.5 text-lg w-full rounded"
+    class="font-inter py-2.5 text-lg w-full rounded"
     :class="disabled?'bg-btn-disabled-color text-login-offwhite':'bg-button-color text-light-grey'"
     :disabled="disabled"
     >

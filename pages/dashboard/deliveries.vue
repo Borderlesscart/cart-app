@@ -34,6 +34,14 @@
           </div>
       </div>
 
+      <div v-if="mounting" class="text-xs flex flex-col grow-1  mb-4">
+          <div class="flex mt-2">
+            <span class="text-login-offwhite" >
+                loading...
+            </span>
+          </div>
+      </div>
+
       <!-- When no delivery list item added -->
       <div v-if="!loading && deliveryListItems.length === 0 && activeRoute === 'pendingDeliveryItems'">
         <div class="text-xs flex flex-col grow-1  mb-4">
@@ -119,14 +127,19 @@
       <!-- View delivery items for single pending list item -->
       <div v-if="deliveryListItems && deliveryListItems?.length === 1 && activeRoute === 'pendingDeliveryItems'"> 
         <GeneralViewDeliveryList
-        v-if="activeDeliveryList.length > 0"
-        :delivery-list-items-prop="activeDeliveryList"
+          v-if="activeDeliveryList.length > 0"
+          :delivery-list-items-prop="activeDeliveryList"
+          @mounted="mountedViewDeliveryList()"
+          @un-mounted="unMountedViewDeliveryList()"
         />
       </div>
 
       <!-- Add new delivery list -->
       <div v-if="activeRoute === 'addDeliveryItems'"> 
-        <GeneralAddDeliveryList/>  
+        <GeneralAddDeliveryList
+          @mounted="mountedViewDeliveryList()"
+          @un-mounted="unMountedViewDeliveryList()"
+        />  
       </div>
 
        
@@ -134,7 +147,9 @@
       <div v-if="activeRoute === 'viewDeliveryItem'">
         
         <GeneralViewDeliveryList
-        :delivery-list-items-prop="activeDeliveryList"
+          :delivery-list-items-prop="activeDeliveryList"
+          @mounted="mountedViewDeliveryList()"
+          @un-mounted="unMountedViewDeliveryList()"
         />
       </div>
    
@@ -196,9 +211,18 @@
 
     const activeRoute = ref('pendingDeliveryItems') //id of active route
 
+    const mounting = ref<boolean>(false) 
+
     const formatDate = (date: string) => {
       const now = dayjs()
       return dayjs(date).from(now)
+    }
+
+    const mountedViewDeliveryList = () => {
+      mounting.value = false
+    }
+
+    const unMountedViewDeliveryList = () => {
     }
 
     const populateActiveDeliveryList = (listItem: any) => {
@@ -214,6 +238,7 @@
       activeDeliveryList.value = res
 
       const userProfileStore: any = userStore()
+      userProfileStore.activeDeliveryList = res
 
       userProfileStore.viewDeliveryItems = {
         delivery,
@@ -224,6 +249,7 @@
     const updateActiveDeliveryList = (listItem: any) => {
       populateActiveDeliveryList(listItem)
       updateActiveRoute('viewDeliveryItem')
+      mounting.value = true
     }
 
     const getCountryFullName = (code: string) => {
@@ -258,7 +284,6 @@
           await deleteDeliveryItem(item)
         },
         reject: async () => {
-          console.log('reject')
         }
       });
     }
@@ -281,7 +306,7 @@
         }
 
         if(activeRouteId === 'pendingDeliveryItems'){
-          await getUserDeliveryItems('pending')
+          // await getUserDeliveryItems('pending')
 
           if(deliveryListItems.value.length === 1){
             populateActiveDeliveryList(deliveryListItems.value[0])
@@ -413,7 +438,6 @@
         deliveryListItems.value = userProfileStore.pendingDeliveries
 
         //  Display add shipping notification
-        const notificationStore = useNotificationStore()
         const deliveryAddress: any = userCookie.value.addresses?.find((address: any) => address.address_type === 'shipping')
   
         if(deliveryListItems.value.length > 0 && !deliveryAddress){

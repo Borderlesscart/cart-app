@@ -30,10 +30,11 @@
               @input="(value) => {
                 deliveryItem.name = value
                 if(deliveryItem.id){
-                  isDirtyForm = true
+                  // isDirtyForm = true
                   loading = true
                   updateDeliveryItemName(deliveryItem, key)
                 }
+                isDirtyForm = true
               }"
               @valid="value => validateFormInput(value, 'name_'+key)"
               />
@@ -52,6 +53,7 @@
                     @remove="clearSelectedFile('name_'+key)"
                     :pt="fileUploadStyle"
                     @before-upload="data => beforeUpload(data)"
+                    @error="event => uploadError(event)"
                     >
                     <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
                       <div class="" v-if="files.length === 0" @click="chooseCallback()">
@@ -65,7 +67,7 @@
                         <div v-for="(file, index) of files" :key="file.name + file.type + file.size" >
                            <div class="p-0 flex flex-col items-center">
                             <img role="presentation" :alt="file.name" :src="file.objectURL" class="w-8 h-8 mx-auto rounded-lg" />
-                            <button class="text-login-offwhite text-xs" @click="removeFileCallback()">remove</button>
+                            <button class="text-login-offwhite text-xs" @click="removeFileCallback(index)">remove</button>
                            </div>
                         </div>
                       </div>
@@ -118,14 +120,17 @@
     </div>  
     <div class="text-login-offwhite w-10/12">
           <div v-if="isDirtyForm">
-            <button class="text-primary">
-                 {{ loading ? 'Saving...': 'Saved' }} 
+            <button 
+            class="text-primary"
+            @click="addListItem()"
+            >
+                 {{ loading ? 'Saving...': isLastItemStored? 'Saved' : 'Save' }} 
             </button>
           </div>
         </div>
 </template>
 <script lang="ts" setup>
-import { ref, toRefs, onBeforeMount } from 'vue';
+import { ref, toRefs, onBeforeMount, computed, onMounted, onUnmounted } from 'vue';
 import FileUpload from 'primevue/fileupload'
 import 'primevue/resources/themes/mdc-dark-deeppurple/theme.css'
 import Image from 'primevue/image';
@@ -168,7 +173,7 @@ const props = defineProps({
 
 const { selectedCountryAddressProp, page } = toRefs(props)
 
-const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput'])
+const emits = defineEmits(['updateListItem', 'updateScreenShotList', 'validateFormInput', 'mounted', 'unMounted'])
 
 const config = useRuntimeConfig()
 
@@ -213,11 +218,47 @@ const notification = useNotificationStore()
 
 const isDirtyForm = ref<boolean>(false)
 
+onMounted(() => {
+    emits('mounted')
+})
+
+onUnmounted(() => {
+  const userProfileStore: any = userStore()
+  deliveryListItems.value = [{
+    name: '',
+    id: null,
+    image_list_link: null,
+    file: null
+  }]
+  userProfileStore.viewDeliveryItems.data = [{
+                        name: '',
+                        file: null,
+                        id: null,
+                        image_list_link: null
+                    }]
+
+  deliveryOptions.value = {id: null}
+  userProfileStore.viewDeliveryItems.delivery = {
+                        id: null
+  }
+  emits('unMounted')
+})
 
 const updateCountryAddress = (selectedCountry: Country) => {
   selectedCountryAddress.value = selectedCountry
 }
 
+const uploadError = (event: any) => {
+}
+
+const isLastItemStored = computed((): boolean => {
+  const oldDeliveryListItems = deliveryListItems.value
+  const latestDeliveryItem = oldDeliveryListItems[oldDeliveryListItems.length - 1]
+  if(latestDeliveryItem.id === null){
+    return false
+  }
+  return true
+})
 
 onBeforeMount(() => {
   const userProfileStore: any = userStore()
@@ -377,6 +418,9 @@ const addListItem = async () => {
     emits('updateListItem', deliveryListItems.value)
     deliveryListItems.value.push({name: '', id: null, image_list_link: null})
     isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
+    isDirtyForm.value = false
+    // show save button
+
   } 
 }
 
@@ -433,6 +477,8 @@ const updateLocalAndGlobalList = (deliveryList: any, deliveryOptions: any = null
       userProfileStore.viewDeliveryItems.delivery = deliveryOptions
     }
   }
+
+  console.log(deliveryList)
 
   isListFormValid.value = validFormFields.value.length === deliveryListItems.value.length
 }
@@ -544,6 +590,7 @@ const onSelectedFiles = async (data: any, formInput: string) => {
         deliveryListItems.value = currentDeliveryListItems
 
         emits('updateScreenShotList', uploadListItem.value)
+        isDirtyForm.value = true
       }catch(error){
         loading.value = false
       }

@@ -106,7 +106,7 @@
                     place-holder="06/03/2001" 
                     :show-label="true"
                     label-name="Date of Birth"
-                    :value="data.dob"
+                    :value="data.dob.length > 0? data.dob: dayjs(data.dob).format('DD/MM/YYYY')"
                     @input="value => {
                         isFormDirty = true  
                         data.dob = value
@@ -164,6 +164,7 @@
 </template>
 <script setup lang="ts">
     import { ref, onBeforeMount } from 'vue'
+    import dayjs from 'dayjs'
 
     const data = ref<any>({
       first_name: '',
@@ -221,42 +222,39 @@
       }
    }
 
-   const updateUserProfile = async (data: any) => {
-    formSubmitting.value = true
-    const userProfileStore = userStore()
-    let payload: any = {
-        id: data.id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        phone: data.phone,
-        email: data.email,
-        bvn: data.bvn,
-        dob: data.dob,
-        email_verified: data.email_verified,
-        phone_verified: data.phone_verified
-    }
+    const updateUserProfile = async (data: any) => {
+        formSubmitting.value = true
+        const userProfileStore = userStore()
+        let payload: any = {
+            id: data.id,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            phone: data.phone,
+            email: data.email,
+            bvn: data.bvn,
+            dob: data.dob,
+            email_verified: data.email_verified,
+            phone_verified: data.phone_verified
+        }
 
+        if(data.old_password.length > 6 && data.password.length > 6){
+            payload.old_password = data.old_password
+            payload.password = data.password
+        }
 
-    if(data.old_password.length > 6 && data.password.length > 6){
-        payload.old_password = data.old_password
-        payload.password = data.password
-    }
+        try {
+            const updatedProfileResponse = await userProfileStore.updateUserProfile(payload)
+            if (updatedProfileResponse.status === 'success' && updatedProfileResponse.data) {
+                // Store updated user in cookie
+                const authUser = useCookie('user')  
+                authUser.value = JSON.stringify(updatedProfileResponse.data)
 
-    try {
-        const updatedProfileResponse = await userProfileStore.updateUserProfile(payload)
-        if (updatedProfileResponse.status === 'success' && updatedProfileResponse.data) {
-            // Store updated user in cookie
-            const authUser = useCookie('user')  
-            authUser.value = JSON.stringify(updatedProfileResponse.data)
-
+                formSubmitting.value = false
+                isFormDirty.value = false
+            }  
+        } catch (error) {
             formSubmitting.value = false
-            isFormDirty.value = false
-        }  
-    } catch (error) {
-        formSubmitting.value = false
-        isFormDirty.value = true
-    }
-
-    
+            isFormDirty.value = true
+        }
    }
 </script>

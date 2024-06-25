@@ -32,7 +32,8 @@ export const userStore = defineStore('userStore',
                         image_list_link: null
                     }]
                 },
-                showAddShippingAddressNotification: false
+                showAddShippingAddressNotification: false,
+                activeDeliveryList: []
             }
         },
         actions: {

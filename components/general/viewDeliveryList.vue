@@ -18,6 +18,8 @@
             <GeneralDeliveryList
                 @update-list-item=""
                 @update-screen-shot-list=""
+                @mounted="() => { $emit('mounted')}"
+                @un-mounted="() => { $emit('unMounted')}"
                 :delivery-list-items-prop="deliveryListItems"
                 :delivery-upload-items-prop="deliveryUploadItems"
                 :page="'viewDelivery'"
@@ -40,15 +42,12 @@
         }
     })
 
-    const { deliveryListItemsProp } = toRefs(props)
+    const emits = defineEmits(['mounted', 'unMounted'])
 
-    const selectedCountryAddress = ref<any>(null)
+    const { deliveryListItemsProp } = toRefs(props)
    
-    const loading = ref<boolean>(false)
-    const itemSaved = ref<boolean>(false)
-    const user = ref({})
     const deliveryListItems = ref<Array<any>>(deliveryListItemsProp.value)
-    const validFormFields = ref<string[]>([])
+
     const deliveryUploadItems = ref<Array<any>>([])
 
     const deliveryOption = ref<any>({
@@ -97,39 +96,4 @@
       return dayjs(date).from(now)
     }
 
-    const updateCountryAddress = (selectedCountry: Country) => {
-      selectedCountryAddress.value = selectedCountry
-    }
-
-    const saveDeliveryItems = async () => {
-      const notification = useNotificationStore()
-      const userCookie: any|undefined = useCookie('user')
-      const totalDeliveryItem = deliveryListItems.value?.length
-      if(totalDeliveryItem !== validFormFields.value.length){
-        notification.updateError('item(s) name or screenshot required')
-        return
-      }
-
-      if(!selectedCountryAddress.value){
-        notification.updateError("Select warehouse's country")
-        return
-      }
-
-      if(!user.value){
-        navigateTo('/auth/login')
-      }
-
-      loading.value = true
-      
-      const data = {
-        customer_id: userCookie?.value?.id,
-        origin_country: selectedCountryAddress.value.code.toUpperCase(),
-        destination_country: 'NG',
-        data: deliveryListItems.value
-      }
-      const userProfileStore = userStore()
-      const storeBulkItems = await userProfileStore.storeBulkDeliveryItem(data)
-      loading.value = false
-      itemSaved.value = true
-    }
 </script>

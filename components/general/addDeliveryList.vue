@@ -8,10 +8,13 @@
             <GeneralDeliveryList
               @update-screen-shot-list="updateduploadList => updateScreenShotList(updateduploadList)"
               @validate-form-input="(valid, formInput) => validateFormInput(valid, formInput)"
+              @mounted="() => {$emit('mounted')}"
+              @un-mounted="() => { $emit('unMounted')}"
               :delivery-list-items-prop="deliveryListItems"
               :delivery-upload-items-prop="deliveryUploadItems"
               :valid-list="deliveryUploadItems.length+deliveryList.length === validFormFields.length"
               page="addDelivery"
+
             />
         </div>
          
@@ -37,6 +40,8 @@
     const deliveryList = ref<Array<any>>([{
       name: ''
     }])
+
+    const emits = defineEmits(['mounted', 'unMounted'])
 
     watch(deliveryListItems, async (newDeliveryListItems, oldDeliveryListItems) => {  
       deliveryList.value = newDeliveryListItems?.filter(listItem => listItem.name.length > 0 )

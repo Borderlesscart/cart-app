@@ -18,12 +18,14 @@
           <span>Select country to ship from</span>
         </div>
 
-        <div class="mt-6 flex flex-wrap grow">
-          <GeneralCountries 
-            @clicked="(country: Country) => updateCountryAddress(country)"
-            select-country-code="US"
-          />
-        </div>
+        <!-- <ClientOnly> -->
+          <div class="mt-6 flex flex-wrap grow">
+            <GeneralCountries 
+              @clicked="(country: Country) => updateCountryAddress(country)"
+              select-country-code="US"
+            />
+          </div>
+      <!-- </ClientOnly> -->
         <!-- Estimated arrival time to Nigeria -->
         <div class="mt-4 text-xs flex flex-col grow-1 text-login-offwhite">
           <div class="flex mt-2" v-for="eta in selectedCountryAddress.eta">

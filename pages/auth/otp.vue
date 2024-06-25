@@ -91,8 +91,7 @@
     onBeforeMount(() => {
         const phone: any = useCookie('phone')
         const email: any = useCookie('email')
-
-        if(!phone.value || !email.value){
+        if(!phone.value && !email.value){
             navigateTo('/auth/login')
             return
         }
@@ -113,7 +112,7 @@
     const sendOtp = async () => {
         const phone: any = useCookie('phone')
         const email: any = useCookie('email')
-        if(!phone.value || !email.value){
+        if(!phone.value && !email.value){
             navigateTo('/auth/login')
             return
         }
@@ -123,40 +122,47 @@
         }else{
             await authStore.sendOtp({phone: phone.value})
         }
-        
+
+        countDown.value = 60
+        updateCountDown()
     }
 
     const verifyOtp = async (code: string) => {
         const phone: any = useCookie('phone')
         const email: any = useCookie('email')
-        if(!phone.value || !email.value){
+        if(!phone.value && !email.value){
             navigateTo('/auth/login')
             return
         }
-        
-        let data = {
-            phone: phone.value, 
-            code: parseInt(code) //covert to number
-        }
 
-        formSubmitting.value = true
-
-        if(route?.query?.type === 'reset_password' && route?.query?.mode !== 'email'){
-            // phone password reset
-            await authStore.verifyPasswordReset(data)
-        }else if(route?.query?.mode === 'email'){
-            // email password reset
-            const data = {
-                code: parseInt(code), //covert to number
-                email: email.value
+        try{
+            let data = {
+                phone: phone.value, 
+                code: parseInt(code) //covert to number
             }
-            await authStore.verifyPasswordResetEmail(data)
-        }else{    
-            // otp verification for phone number 
-            await authStore.verifyOtp(data)    
-        } 
 
-        formSubmitting.value = false
+            formSubmitting.value = true
+
+            if(route?.query?.type === 'reset_password' && route?.query?.mode !== 'email'){
+                // phone password reset
+                await authStore.verifyPasswordReset(data)
+            }else if(route?.query?.mode === 'email'){
+                // email password reset
+                const data = {
+                    code: parseInt(code), //covert to number
+                    email: email.value
+                }
+                await authStore.verifyPasswordResetEmail(data)
+            }else{    
+                // otp verification for phone number 
+                await authStore.verifyOtp(data)    
+            } 
+
+            formSubmitting.value = false
+        }catch(error){
+            formSubmitting.value = false
+        }
+        
     }
 </script>
 <style>
