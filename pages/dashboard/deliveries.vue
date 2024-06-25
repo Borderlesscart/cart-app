@@ -306,7 +306,7 @@
         }
 
         if(activeRouteId === 'pendingDeliveryItems'){
-          // await getUserDeliveryItems('pending')
+          await getUserDeliveryItems('pending')
 
           if(deliveryListItems.value.length === 1){
             populateActiveDeliveryList(deliveryListItems.value[0])
